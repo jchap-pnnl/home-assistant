@@ -232,6 +232,9 @@ ATTR_TEMPERATURE = 'temperature'
 TEMP_CELSIUS = '°C'
 TEMP_FAHRENHEIT = '°F'
 
+# Efficiency attribute
+ATTR_EFFICIENCY = 'efficiency'
+
 # Length units
 LENGTH_CENTIMETERS = 'cm'  # type: str
 LENGTH_METERS = 'm'  # type: str
