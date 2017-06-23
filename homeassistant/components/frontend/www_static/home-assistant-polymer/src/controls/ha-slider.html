@@ -15,21 +15,26 @@
         position: relative;
       }
       .normal-range {
-        background-color: #87c1af;
         height: 20px;
         position: absolute;
+      }
+      .box-happy {
+        background-color: #87c1af;
+      }
+      .box-sad {
+        background-color: #f1b2b2;
       }
     </style>
 
     <template is='dom-if' if='[[slider_value]]'>
       <div class='ha-slider'>
         <div 
-          class='normal-range'
+          class$='normal-range [[box_class]]'
           style$='left: [[computeLeft(zone_min)]];
             width: [[computeWidth(zone_max, zone_min)]];
             top: 5px;
             bottom: 5px;'></div>
-        <paper-slider value=[[slider_value]]></paper-slider>
+        <paper-slider id='[[unique_id]]' value=[[slider_value]] on-change="getSliderValue"></paper-slider>
       </div>
     </template>
     <slot></slot>
@@ -45,12 +50,14 @@ Polymer({
       type: Number,
     },
     zone_min: {
-      type: Number,
-      value: 8
+      type: Number
     },
     zone_max: {
-      type: Number,
-      value: 32
+      type: Number
+    },
+    box_class: {
+      type: String,
+      computed: 'getBoxClass(slider_value, zone_min, zone_max)'
     }
   },
   computeLeft: function (min) {
@@ -62,6 +69,27 @@ Polymer({
     const componentWidth = 200;
     const width = (max - min) * componentWidth / 100;
     return `${width}px`;
-  }
+  },
+  getBoxClass: function (sliderValue, zoneMin, zoneMax) {
+    let boxStatus = '';
+
+    if (typeof this.slider_value !== 'undefined' &&
+      typeof this.zone_min !== 'undefined' &&
+      typeof this.zone_max !== 'undefined')
+    {
+      boxStatus = (sliderValue >= zoneMin && sliderValue <= zoneMax ? 'box-happy' : 'box-sad');
+    }
+
+    return boxStatus;
+  },
+  getSliderValue: function (evt) {
+    const newValue = evt.target.value;
+    console.log(newValue);
+    this.slider_value = newValue;
+
+    // this.box_class = this.getBoxClass(this.slider_value, this.zone_min, this.zone_max);
+  },
 });
+
+
 </script>
