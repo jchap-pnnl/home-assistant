@@ -1,0 +1,67 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id='ha-slider'>
+  <template>
+    <style include="paper-material">
+      :host {
+        display: block;
+        border-radius: 2px;
+        transition: all 0.30s ease-out;
+
+        background-color: white;
+      }
+      .ha-slider {
+        position: relative;
+      }
+      .normal-range {
+        background-color: #87c1af;
+        height: 20px;
+        position: absolute;
+      }
+    </style>
+
+    <template is='dom-if' if='[[slider_value]]'>
+      <div class='ha-slider'>
+        <div 
+          class='normal-range'
+          style$='left: [[computeLeft(zone_min)]];
+            width: [[computeWidth(zone_max, zone_min)]];
+            top: 5px;
+            bottom: 5px;'></div>
+        <paper-slider value=[[slider_value]]></paper-slider>
+      </div>
+    </template>
+    <slot></slot>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-slider',
+
+  properties: {
+    slider_value: {
+      type: Number,
+    },
+    zone_min: {
+      type: Number,
+      value: 8
+    },
+    zone_max: {
+      type: Number,
+      value: 32
+    }
+  },
+  computeLeft: function (min) {
+    const componentWidth = 200;
+    const left = min + 15 * componentWidth / 100;
+    return `${left}px`;
+  },
+  computeWidth: function (max, min) {
+    const componentWidth = 200;
+    const width = (max - min) * componentWidth / 100;
+    return `${width}px`;
+  }
+});
+</script>

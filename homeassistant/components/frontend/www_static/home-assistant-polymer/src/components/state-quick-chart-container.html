@@ -1,0 +1,88 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+
+<link rel="import" href="../../bower_components/google-apis/google-legacy-loader.html">
+
+<link rel="import" href="./state-quick-chart.html">
+
+<dom-module id="state-quick-chart-container">
+  <template>
+    <link href="https://ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css" rel="stylesheet" type="text/css">
+    <style>
+    :host {
+      display: block;
+    }
+
+    .loading-container {
+      text-align: center;
+      padding: 8px;
+    }
+
+    .loading {
+      height: 0px;
+      overflow: hidden;
+    }
+    </style>
+
+    <google-legacy-loader on-api-load="_googleApiLoaded"></google-legacy-loader>
+
+    <template is='dom-if' if='[[_isLoading]]'>
+      <div class='loading-container'>
+        <paper-spinner active alt='Updating history data'></paper-spinner>
+      </div>
+    </template>
+
+    <template is='dom-if' if='[[!_isLoading]]'>
+      <state-quick-chart
+        stateObj=[[stateObj]]
+        unit='s'
+        is-single-device='[[true]]'>
+      </state-quick-chart>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'state-quick-chart-container',
+
+  properties: {
+    historyData: {
+      type: Object,
+      value: null,
+    },
+
+    stateObj: {
+      type: Object
+    },
+
+    isLoadingData: {
+      type: Boolean,
+      value: false,
+    },
+
+    _apiLoaded: {
+      type: Boolean,
+      value: false,
+    },
+
+    _isLoading: {
+      type: Boolean,
+      computed: '_computeIsLoading(isLoadingData, _apiLoaded)',
+    },
+  },
+
+  _googleApiLoaded: function () {
+    window.google.load('visualization', '1', {
+      packages: ['timeline', 'corechart'],
+      callback: function () {
+        this._apiLoaded = true;
+      }.bind(this),
+    });
+  },
+
+  _computeIsLoading: function (_isLoadingData, _apiLoaded) {
+    return _isLoadingData || !_apiLoaded;
+  },
+});
+</script>
