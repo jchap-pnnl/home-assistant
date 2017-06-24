@@ -34,7 +34,7 @@
             width: [[computeWidth(zone_max, zone_min)]];
             top: 5px;
             bottom: 5px;'></div>
-        <paper-slider id='[[unique_id]]' value=[[slider_value]] on-change="getSliderValue"></paper-slider>
+        <paper-slider value=[[slider_value]] on-change="getSliderValue"></paper-slider>
       </div>
     </template>
     <slot></slot>
@@ -48,6 +48,7 @@ Polymer({
   properties: {
     slider_value: {
       type: Number,
+      observer: 'updateSliderValue'
     },
     zone_min: {
       type: Number
@@ -61,12 +62,12 @@ Polymer({
     }
   },
   computeLeft: function (min) {
-    const componentWidth = 200;
-    const left = min + 15 * componentWidth / 100;
+    const componentWidth = 168;
+    const left = min * componentWidth / 100 + 15;
     return `${left}px`;
   },
   computeWidth: function (max, min) {
-    const componentWidth = 200;
+    const componentWidth = 168;
     const width = (max - min) * componentWidth / 100;
     return `${width}px`;
   },
@@ -84,11 +85,11 @@ Polymer({
   },
   getSliderValue: function (evt) {
     const newValue = evt.target.value;
-    console.log(newValue);
     this.slider_value = newValue;
-
-    // this.box_class = this.getBoxClass(this.slider_value, this.zone_min, this.zone_max);
   },
+  updateSliderValue: function (slider_value) {
+    console.log('we are updating ' + slider_value);
+  }
 });
 
 

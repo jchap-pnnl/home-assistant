@@ -219,8 +219,6 @@ Polymer({
   },
 
   getThermostat: function (hass) {
-      console.log(hass);
-
       var thermostat = Object.keys(hass.states).find(function (key) {
           return hass.states[key]._domain === 'climate';
       });
@@ -242,8 +240,6 @@ Polymer({
   },
 
   getDomain: function (obj) {
-    console.log('getting data');
-    console.log(obj);
     return obj._domain.replace(/_/g, ' ');
   },
 
@@ -260,7 +256,6 @@ Polymer({
   },
 
   computeTitleClass: function (groupEntity) {
-    console.log('computing title class');
     var classes = 'header horizontal layout center ';
     if (groupEntity) {
       classes += 'header-more-info';
@@ -271,7 +266,6 @@ Polymer({
   },
 
   entityTapped: function (ev) {
-    console.log('tapped it');
     var entityId;
     if (ev.target.classList.contains('paper-toggle-button') ||
         ev.target.classList.contains('paper-icon-button') ||
