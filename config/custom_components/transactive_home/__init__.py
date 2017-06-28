@@ -12,7 +12,9 @@ transactive_home:
 """
 
 import logging
+import os
 import json
+from homeassistant.config import load_yaml_config_file
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,4 +44,18 @@ def setup(hass, config):
 
     _LOGGER.info("Transacive Home loading.")
     # Return boolean to indicate that initialization was successfully.
+
+    descriptions = load_yaml_config_file(
+        os.path.join(os.path.dirname(__file__), 'services.yaml'))
+
+    hass.services.register(
+        DOMAIN,
+        'update_transactive_home',
+        update_transactive_home,
+        descriptions['update_transactive_home'])
+
     return True
+
+def update_transactive_home(call):
+        """Do any update to the component."""
+        _LOGGER.info("A new transactive home value: %s", call.data.get('value'))
