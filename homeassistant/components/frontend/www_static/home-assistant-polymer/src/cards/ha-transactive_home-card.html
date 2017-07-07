@@ -88,7 +88,7 @@
 
     <ha-card on-tap='entityTapped'>
       <div class='header domain'>
-        <div class='name'>[[getDomain(stateObj)]]</div>
+        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
       </div>
       <table class='state'>
         <tbody>
@@ -235,35 +235,8 @@ Polymer({
       return thermostats;
   },
 
-  getData: function () {
-    var data = [];
-    return data;
-  },
-
-  getDomain: function (obj) {
-    return obj._domain.replace(/_/g, ' ');
-  },
-
   getList: function (obj) {
-    var items = JSON.parse(obj.state);
-    return items[0].measures;
-  },
-
-  computeTitle: function (states, groupEntity) {
-    console.log('computing title');
-    return groupEntity ?
-      window.hassUtil.computeStateName(groupEntity) :
-      window.hassUtil.computeDomain(states[0]).replace(/_/g, ' ');
-  },
-
-  computeTitleClass: function (groupEntity) {
-    var classes = 'header horizontal layout center ';
-    if (groupEntity) {
-      classes += 'header-more-info';
-    } else {
-      classes += 'domain';
-    }
-    return classes;
+    return obj.attributes.measures;
   },
 
   entityTapped: function (ev) {
@@ -281,29 +254,6 @@ Polymer({
       entityId = this.groupEntity.entity_id;
     }
     this.fire('hass-more-info', { entityId: entityId });
-  },
-
-  showGroupToggle: function (groupEntity, states) {
-    if (!groupEntity || !states || groupEntity.attributes.control === 'hidden' ||
-        (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
-      return false;
-    }
-
-    // only show if we can toggle 2+ transactive_home in group
-    var canToggleCount = 0;
-    for (var i = 0; i < states.length; i++) {
-      if (!window.hassUtil.canToggleState(this.hass, states[i])) {
-        continue;
-      }
-
-      canToggleCount++;
-
-      if (canToggleCount > 1) {
-        break;
-      }
-    }
-
-    return canToggleCount > 1;
   },
 });
 </script>
