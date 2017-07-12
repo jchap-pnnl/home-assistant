@@ -10,7 +10,11 @@
     properties: {
       stateObj: {
         type: Object,
-        observer: 'dataChanged',
+        observer: 'dataChangedBar',
+      },
+      stateObj: {
+        type: Object,
+        observer: 'dataChangedLine',
       },
 
       unit: {
@@ -45,25 +49,31 @@
       this.isAttached = true;
     },
 
-    dataChanged: function () {
+    dataChangedBar: function () {
       if (this.stateObj)
       {
-        this.drawChart();
+        this.drawChartBar();
+      }
+    },
+    dataChangedLine: function () {
+      if (this.stateObj)
+      {
+        this.drawChartLine();
       }
     },
 
-    drawChart: function () {
+    drawChartBar: function () {
 
-        if (this.stateObj.attributes && this.stateObj.attributes.dataPoints)
+        if (this.stateObj.attributes && this.stateObj.attributes.dataPointsEnergy)
         {
-          let dataPoints = this.stateObj.attributes.dataPoints;
+          var dataPointsEnergy = this.stateObj.attributes.dataPointsEnergy;
 
           var data = new window.google.visualization.DataTable();
           data.addColumn('number', 'X');
           data.addColumn('number', 'Baseline');
           data.addColumn('number', 'Actual');
 
-          data.addRows(dataPoints);
+          data.addRows(dataPointsEnergy);
 
           var options = {
             series: {
@@ -72,14 +82,38 @@
           };
 
           if (!this.chartEngine) {
-            this.chartEngine = new window.google.visualization.LineChart(this);
+            this.chartEngine = new window.google.visualization.ColumnChart(this);
           }
 
           this.chartEngine.draw(data, options);
-        }
-        
+        }      
     },
-    
+    drawChartLine: function () {
+
+      if (this.stateObj.attributes && this.stateObj.attributes.dataPointsPower)
+          {
+            var dataPointsPower = this.stateObj.attributes.dataPointsPower;
+
+            var data = new window.google.visualization.DataTable();
+            data.addColumn('number', 'X');
+            data.addColumn('number', 'Baseline');
+            data.addColumn('number', 'Actual');
+
+            data.addRows(dataPointsPower);
+
+            var options = {
+              series: {
+                1: {curveType: 'function'}
+              }
+            };
+
+            if (!this.chartEngine) {
+              this.chartEngine = new window.google.visualization.LineChart(this);
+            }
+
+            this.chartEngine.draw(data, options);
+          }
+        },
   });
 }());
 </script>

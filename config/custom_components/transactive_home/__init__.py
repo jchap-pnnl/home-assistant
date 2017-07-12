@@ -58,7 +58,7 @@ class TransactiveComponent(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'Transactive Homey'
+        return 'Transactive Home'
 
     @property
     def state(self):
@@ -75,23 +75,47 @@ class TransactiveComponent(Entity):
         """Return the optional state attributes."""
 
         data = {
-            'measures': json.loads(
-                '[{\
-                    "label": "overall_reduction",\
-                    "value": "56",\
-                    "unit": "kw"\
-                },\
-                {\
-                    "label": "overall_power",\
-                    "value": "82",\
-                    "unit": "kw"\
-                },\
-                {\
-                    "label": "overall_energy",\
-                    "value": "86",\
-                    "unit": "kw-hr/24 hrs"\
-                }]'
-            )
+    "measures": [{
+            "label": "overall_reduction",
+            "value": 51,
+            "unit": "kw"
+        },
+        {
+            "label": "overall_energy",
+            "value": 80,
+            "unit": "kw-hr/24 hrs"
+        },
+        {
+            "label": "overall_power",
+            "value": 12,
+            "unit": "kw"
         }
+    ],
+    "dataPointsEnergy": [
+        [3, 4, 6]
+    ],
+    "dataPointsPower": [
+        [7, 8, 9]
+    ],
+    "device": [{
+            "name": "device1",
+            "participate": "true",
+            "efficiency": 30,
+            "zone_min": 35,
+            "zone_max": 90,
+            "power": 150,
+            "energy": 40
+        },
+        {
+            "name": "device2",
+            "participate": "true",
+            "efficiency": 60,
+            "zone_min": 35,
+            "zone_max": 90,
+            "power": 15,
+            "energy": 30
+        }
+    ]
+}
 
         return data

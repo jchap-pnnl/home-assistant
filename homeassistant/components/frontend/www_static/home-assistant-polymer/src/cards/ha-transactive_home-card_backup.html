@@ -124,15 +124,14 @@
             </tr>
           </thead>
           <tbody>
-            <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
-            <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
+            <template is='dom-repeat' items="[[getFakeDevices()]]">
               <tr>
                 <td class='indicator'>
                   <div class='cell'>
                     <div class$="[[getParticipation(item.participate)]]"></div>
                   </div>
                 </td>
-                <td>[[item.name]]</td>
+                <td>[[item.device]]</td>
                 <td>
                   <ha-slider
                     hass='[[hass]]'
@@ -149,6 +148,34 @@
           </tbody>
         </table>
       </div>
+<!--       <div class='data-table'>
+        <table>
+          <thead>
+            <tr>
+              <th>Participate</th>
+              <th>Device</th>
+              <th>Flexibility</th>
+              <th>Current Temperature</th>
+              <th>Operation Mode</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template is='dom-repeat' items="[[getThermostat(hass)]]">
+              <tr>
+                <td class='indicator'>
+                  <div class='cell'>
+                    <div class='green'></div>
+                  </div>
+                </td>
+                <td>[[item.friendly_name]]</td>
+                <td><paper-slider value=[[item.efficiency]]></paper-slider></td>
+                <td style='text-align: right'>[[item.current_temperature]]</td>
+                <td style='text-align: right'>[[item.operation_mode]]</td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div> -->
     </ha-card>
   </template>
 </dom-module>
@@ -171,28 +198,28 @@ Polymer({
     }
   },
 
-  // getFakeDevices: function () {
-  //     return [
-  //         {
-  //             device: 'HVAC',
-  //             power: 94,
-  //             energy: 65,
-  //             efficiency: 20,
-  //             participate: true,
-  //             zone_min: 32,
-  //             zone_max: 64
-  //         },
-  //         {
-  //             device: 'WH',
-  //             power: 98,
-  //             energy: 75,
-  //             efficiency: 18,
-  //             participate: false,
-  //             zone_min: 24,
-  //             zone_max: 58
-  //         }
-  //     ];
-  // },
+  getFakeDevices: function () {
+      return [
+          {
+              device: 'HVAC',
+              power: 94,
+              energy: 65,
+              efficiency: 20,
+              participate: true,
+              zone_min: 32,
+              zone_max: 64
+          },
+          {
+              device: 'WH',
+              power: 98,
+              energy: 75,
+              efficiency: 18,
+              participate: false,
+              zone_min: 24,
+              zone_max: 58
+          }
+      ];
+  },
 
   getParticipation: function (participate) {
       return (participate ? 'green' : 'red');
@@ -216,10 +243,6 @@ Polymer({
 
   getList: function (obj) {
     return obj.attributes.measures;
-  },
-
-  getDataDevices: function(obj){
-    return obj.attributes.device;
   },
 
   entityTapped: function (ev) {
