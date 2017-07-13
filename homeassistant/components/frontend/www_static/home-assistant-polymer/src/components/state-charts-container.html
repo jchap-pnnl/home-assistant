@@ -35,7 +35,7 @@
     <template is='dom-if' if='[[!_isLoading]]'>
       <template is='dom-repeat' items="[[getChartSeries(stateObj)]]">
         <state-quick-chart
-          chart-data="[[item.dataPoints]]"
+          chart-data="[[item.data]]"
           chart-type="[[item.type]]"
           chart-label="[[item.label]]"
           unit='s'>
