@@ -91,11 +91,17 @@ class TransactiveComponent(Entity):
             "unit": "kw"
         }
     ],
-    "dataPointsEnergy": [
-        [3, 4, 6]
-    ],
-    "dataPointsPower": [
-        [7, 8, 9]
+    "chartSeries": [
+        {
+            "data": [3, 4, 6],
+            "type": "bar",
+            "label": "energy"
+        },
+        {
+            "data": [7, 8, 9],
+            "type": "line",
+            "label": "power"
+        }
     ],
     "device": [{
             "name": "device1",

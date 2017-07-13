@@ -8,22 +8,18 @@
     is: 'state-quick-chart',
 
     properties: {
-      stateObj: {
-        type: Object,
-        observer: 'dataChangedBar',
+      chartType: {
+        type: String,
+        value: ""
       },
-      stateObj: {
-        type: Object,
-        observer: 'dataChangedLine',
+
+      chartLabel: {
+        type: String,
+        value: ""
       },
 
       unit: {
         type: String,
-      },
-
-      isSingleDevice: {
-        type: Boolean,
-        value: false,
       },
 
       isAttached: {
@@ -39,6 +35,12 @@
         type: Boolean,
         value: false,
       },
+
+      chartData: {
+        type: Array,
+        value: [],
+        observer: 'dataChanged'
+      },
     },
 
     created: function () {
@@ -49,71 +51,63 @@
       this.isAttached = true;
     },
 
-    dataChangedBar: function () {
-      if (this.stateObj)
+    dataChanged: function (chartData) {
+      if (chartData)
       {
-        this.drawChartBar();
-      }
-    },
-    dataChangedLine: function () {
-      if (this.stateObj)
-      {
-        this.drawChartLine();
-      }
-    },
+        console.log(this.chartType);
 
-    drawChartBar: function () {
-
-        if (this.stateObj.attributes && this.stateObj.attributes.dataPointsEnergy)
+        switch (this.chartType)
         {
-          var dataPointsEnergy = this.stateObj.attributes.dataPointsEnergy;
-
-          var data = new window.google.visualization.DataTable();
-          data.addColumn('number', 'X');
-          data.addColumn('number', 'Baseline');
-          data.addColumn('number', 'Actual');
-
-          data.addRows(dataPointsEnergy);
-
-          var options = {
-            series: {
-              1: {curveType: 'function'}
-            }
-          };
-
-          if (!this.chartEngine) {
-            this.chartEngine = new window.google.visualization.ColumnChart(this);
-          }
-
-          this.chartEngine.draw(data, options);
-        }      
+          case 'line':
+            this.drawChartLine(this.chartData);
+            break;
+          case 'bar':
+            this.drawChartBar(this.chartData);
+            break;
+        }
+      }
     },
-    drawChartLine: function () {
 
-      if (this.stateObj.attributes && this.stateObj.attributes.dataPointsPower)
-          {
-            var dataPointsPower = this.stateObj.attributes.dataPointsPower;
+    drawChartBar: function (dataPoints) {
+      var data = new window.google.visualization.DataTable();
+      data.addColumn('number', 'X');
+      data.addColumn('number', 'Baseline');
+      data.addColumn('number', 'Actual');
 
-            var data = new window.google.visualization.DataTable();
-            data.addColumn('number', 'X');
-            data.addColumn('number', 'Baseline');
-            data.addColumn('number', 'Actual');
+      data.addRows(dataPoints);
 
-            data.addRows(dataPointsPower);
+      var options = {
+        series: {
+          1: {curveType: 'function'}
+        }
+      };
 
-            var options = {
-              series: {
-                1: {curveType: 'function'}
-              }
-            };
+      if (!this.chartEngine) {
+        this.chartEngine = new window.google.visualization.ColumnChart(this);
+      }
 
-            if (!this.chartEngine) {
-              this.chartEngine = new window.google.visualization.LineChart(this);
-            }
+      this.chartEngine.draw(data, options);     
+    },
+    drawChartLine: function (dataPoints) {
+      var data = new window.google.visualization.DataTable();
+      data.addColumn('number', 'X');
+      data.addColumn('number', 'Baseline');
+      data.addColumn('number', 'Actual');
 
-            this.chartEngine.draw(data, options);
-          }
-        },
+      data.addRows(dataPoints);
+
+      var options = {
+        series: {
+          1: {curveType: 'function'}
+        }
+      };
+
+      if (!this.chartEngine) {
+        this.chartEngine = new window.google.visualization.LineChart(this);
+      }
+
+      this.chartEngine.draw(data, options);
+    },
   });
 }());
 </script>

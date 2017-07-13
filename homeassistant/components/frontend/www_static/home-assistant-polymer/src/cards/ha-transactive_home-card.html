@@ -5,7 +5,7 @@
 <link rel='import' href='../components/ha-card.html'>
 <link rel='import' href='../components/entity/ha-entity-toggle.html'>
 <link rel='import' href='../state-summary/state-card-content.html'>
-<link rel="import" href='../components/state-quick-chart-container.html'>
+<link rel="import" href='../components/state-charts-container.html'>
 <link rel="import" href='../controls/ha-slider.html'>
 
 <dom-module id='ha-transactive_home-card'>
@@ -101,16 +101,9 @@
         </tbody>
       </table>
       <div class='data-chart'>
-        <state-quick-chart-container
+        <state-charts-container
           state-obj="[[stateObj]]">
-        </state-quick-chart-container>
-        <div id="chart_div"></div>
-      </div>
-      <div class='data-chart2'>
-        <state-quick-chart-container
-          state-obj="[[stateObj]]">
-        </state-quick-chart-container>
-        <div id="chart_div2"></div>
+        </state-charts-container>
       </div>
       <div class='data-table'>
         <table>
@@ -170,29 +163,6 @@ Polymer({
       type: Object,
     }
   },
-
-  // getFakeDevices: function () {
-  //     return [
-  //         {
-  //             device: 'HVAC',
-  //             power: 94,
-  //             energy: 65,
-  //             efficiency: 20,
-  //             participate: true,
-  //             zone_min: 32,
-  //             zone_max: 64
-  //         },
-  //         {
-  //             device: 'WH',
-  //             power: 98,
-  //             energy: 75,
-  //             efficiency: 18,
-  //             participate: false,
-  //             zone_min: 24,
-  //             zone_max: 58
-  //         }
-  //     ];
-  // },
 
   getParticipation: function (participate) {
       return (participate ? 'green' : 'red');
