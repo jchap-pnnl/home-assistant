@@ -45,6 +45,8 @@
 
     created: function () {
       this.style.display = 'block';
+      // this.style.width = 'block';
+      // this.style.display = 'block';
     },
 
     attached: function () {
@@ -54,15 +56,13 @@
     dataChanged: function (chartData) {
       if (chartData)
       {
-        console.log(this.chartType);
-
         switch (this.chartType)
         {
           case 'line':
-            this.drawChartLine(chartData);
+            this.drawChartBar(chartData);
             break;
           case 'bar':
-            this.drawChartBar(chartData);
+            this.drawChartLine(chartData);
             break;
         }
       }
@@ -71,10 +71,12 @@
     drawChartBar: function (dataPoints) {
       var data = new window.google.visualization.DataTable();
       data.addColumn('number', 'X');
-      data.addColumn('number', 'Baseline');
-      data.addColumn('number', 'Actual');
+      data.addColumn('number', 'Device1');
+      data.addColumn('number', 'Device2');
+      data.addColumn('number', 'Device3');
 
-      data.addRows(dataPoints);
+
+      data.addRows([dataPoints]);
 
       var options = {
         series: {
@@ -91,19 +93,22 @@
     drawChartLine: function (dataPoints) {
       var data = new window.google.visualization.DataTable();
       data.addColumn('number', 'X');
-      data.addColumn('number', 'Baseline');
-      data.addColumn('number', 'Actual');
-
-      data.addRows(dataPoints);
+      data.addColumn('number', 'Device1');
+      data.addColumn('number', 'Device2');
+      data.addColumn('number', 'Device3');
+      data.addRows([dataPoints]);
 
       var options = {
+        legend: { position: 'right', maxLines: 3 },
+        bar: { groupWidth: '20%' },
+        isStacked: true,
         series: {
           1: {curveType: 'function'}
         }
       };
 
       if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.LineChart(this);
+        this.chartEngine = new window.google.visualization.ColumnChart(this);
       }
 
       this.chartEngine.draw(data, options);
