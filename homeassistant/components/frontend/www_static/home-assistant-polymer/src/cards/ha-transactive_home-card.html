@@ -1,5 +1,6 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../components/ha-card.html'>
@@ -59,7 +60,7 @@
       .data-table tbody {
         color: rgba(0, 0, 0, 0.87);
       }
-      .data-table .cell {
+      .data-table .reset {
         padding: 4px;
         position: relative;
         height: 4px;
@@ -67,12 +68,27 @@
         opacity: .7;
         border: 2px solid var(--paper-grey-400);
       }
-      .data-table .cell > * {
+      .data-table .reset > * {
         position: absolute;
         top: 0px;
         right: 0px;
         left: 0px;
         bottom: 0px;
+      }
+      .data-table .indicator .cell {
+        padding: 4px;
+        position: relative;
+        height: 8px;
+        width: 8px;
+        opacity: .7;
+      }
+      .data-table .indicator .cell > * {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        left: 0px;
+        bottom: 0px;
+        border-radius: 8px;
       }
       .indicator {
         margin: 0;
@@ -84,9 +100,14 @@
       .red {
         background-color: red;
       }
+      .more-choices,
+      .more-savings {
+        font-size: 8px;
+      }
+
     </style>
 
-    <ha-card on-tap='entityTapped'>
+    <ha-card class='transactive-home' on-tap='entityTapped'>
       <div class='header domain'>
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
       </div>
@@ -110,6 +131,8 @@
           <thead>
             <tr>
               <th>Participate</th>
+              <th></th>
+              <th></th>
               <th>Device</th>
               <th>Flexibility</th>
               <th>Power</th>
@@ -120,13 +143,26 @@
             <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
             <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
               <tr>
-                <td class='indicator'>
+                <td>
+                  <div>
+                    <paper-toggle-button>
+                    </paper-toggle-button>
+                  </div>
+                </td>
+                <td class='reset'>
                   <div class='cell'>
                     <div class$="[[getParticipation(item.participate)]]"></div>
                   </div>
                 </td>
+                <td class='indicator'>
+                  <div class='cell'>
+                    <div class$="[[getParticipation(item.participate)]]"></div>
+                    <paper-button raised>Reset</paper-button>
+                  </div>
+                </td>
                 <td>[[item.name]]</td>
                 <td>
+                  <div class='more-choices'>More Choices</div>
                   <ha-slider
                     hass='[[hass]]'
                     slider_index=[[index]]
@@ -134,6 +170,7 @@
                     zone_min=[[item.zone_min]]
                     zone_max=[[item.zone_max]]>
                   </ha-slider>
+                  <div class='more-savings'>More Savings</div>
                 </td>
                 <td style='text-align: right'>[[item.power]]</td>
                 <td style='text-align: right'>[[item.energy]]</td>
