@@ -60,20 +60,8 @@
       .data-table tbody {
         color: rgba(0, 0, 0, 0.87);
       }
-      .data-table .reset {
-        padding: 4px;
-        position: relative;
-        height: 4px;
-        width: 80%;
-        opacity: .7;
-        border: 2px solid var(--paper-grey-400);
-      }
-      .data-table .reset > * {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        left: 0px;
-        bottom: 0px;
+      .data-table th.reset {
+        width: 50px;
       }
       .data-table .indicator .cell {
         padding: 4px;
@@ -100,9 +88,36 @@
       .red {
         background-color: red;
       }
+      .slider-cell {
+        position: relative;
+      }
       .more-choices,
       .more-savings {
+        position: absolute;
+        z-index: 200;
         font-size: 8px;
+        top: -8px;
+        color: #4f4f52;        
+        line-height: 8px;
+        text-align: center;
+      }
+
+      .more-choices {
+        left: 0;
+      }
+
+      .more-savings {
+        right: 0;
+      }
+
+      .reset-button {
+        background-color: #c74507;
+        color: #ebf73c;
+        height: 30px;
+      }
+
+      paper-toggle-button {
+        cursor: pointer;
       }
 
     </style>
@@ -130,10 +145,9 @@
         <table>
           <thead>
             <tr>
-              <th>Participate</th>
               <th></th>
+              <th class='reset'></th>
               <th></th>
-              <th>Device</th>
               <th>Flexibility</th>
               <th>Power</th>
               <th>Energy</th>
@@ -143,26 +157,28 @@
             <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
             <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
               <tr>
+                <td colspan=6>[[item.name]]</td>
+              </tr>
+              <tr>
                 <td>
                   <div>
-                    <paper-toggle-button>
+                    <paper-toggle-button on-change="transactiveChanged">
                     </paper-toggle-button>
                   </div>
                 </td>
                 <td class='reset'>
                   <div class='cell'>
-                    <div class$="[[getParticipation(item.participate)]]"></div>
+                    <paper-button class='reset-button' raised>Reset</paper-button>
                   </div>
                 </td>
                 <td class='indicator'>
                   <div class='cell'>
                     <div class$="[[getParticipation(item.participate)]]"></div>
-                    <paper-button raised>Reset</paper-button>
                   </div>
                 </td>
-                <td>[[item.name]]</td>
-                <td>
+                <td class='slider-cell'>
                   <div class='more-choices'>More Choices</div>
+                  <div class='more-savings'>More Savings</div>
                   <ha-slider
                     hass='[[hass]]'
                     slider_index=[[index]]
@@ -170,7 +186,6 @@
                     zone_min=[[item.zone_min]]
                     zone_max=[[item.zone_max]]>
                   </ha-slider>
-                  <div class='more-savings'>More Savings</div>
                 </td>
                 <td style='text-align: right'>[[item.power]]</td>
                 <td style='text-align: right'>[[item.energy]]</td>
@@ -227,6 +242,16 @@ Polymer({
 
   getDataDevices: function(obj){
     return obj.attributes.device;
+  },
+
+  transactiveChanged: function (ev) {
+    var newVal = ev.target.checked;
+
+    // if (newVal && !this.isOn) {
+    //   this.callService(true);
+    // } else if (!newVal && this.isOn) {
+    //   this.callService(false);
+    // }
   },
 
   entityTapped: function (ev) {
