@@ -93,12 +93,12 @@ class TransactiveComponent(Entity):
     ],
     "chartSeries": [
         {
-            "data": [3, 4, 6],
+            "data": ['2017-07-17 23:36:58.368599Z', 4, 6,9],
             "type": "bar",
             "label": "energy"
         },
         {
-            "data": [7, 8, 9],
+            "data": ['2017-08-17 23:36:58.368599Z', 8, 9,10],
             "type": "line",
             "label": "power"
         }
