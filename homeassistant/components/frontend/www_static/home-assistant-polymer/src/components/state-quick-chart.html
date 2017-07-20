@@ -70,13 +70,25 @@
 
     drawChartBar: function (dataPoints) {
       var data = new window.google.visualization.DataTable();
-      data.addColumn('number', 'X');
+      data.addColumn('datetime', 'X');
       data.addColumn('number', 'Device1');
       data.addColumn('number', 'Device2');
       data.addColumn('number', 'Device3');
 
 
-      data.addRows([dataPoints]);
+      data.addRows([dataPoints].map(function (array) {
+        const newArray = array.map(function (item, index) {
+          if (index === 0)
+          {
+            return new Date(item);
+          }
+          else 
+          {
+            return item;
+          }
+        });
+        return newArray;
+      }));
 
       var options = {
         series: {
@@ -92,11 +104,23 @@
     },
     drawChartLine: function (dataPoints) {
       var data = new window.google.visualization.DataTable();
-      data.addColumn('number', 'X');
+      data.addColumn('datetime', 'X');
       data.addColumn('number', 'Device1');
       data.addColumn('number', 'Device2');
       data.addColumn('number', 'Device3');
-      data.addRows([dataPoints]);
+      data.addRows([dataPoints].map(function (array) {
+        const newArray = array.map(function (item, index) {
+          if (index === 0)
+          {
+            return new Date(item);
+          }
+          else 
+          {
+            return item;
+          }
+        });
+        return newArray;
+      }));
 
       var options = {
         legend: { position: 'right', maxLines: 3 },
@@ -104,6 +128,9 @@
         isStacked: true,
         series: {
           1: {curveType: 'function'}
+        },
+        hAxis: {
+          ticks: []
         }
       };
 
