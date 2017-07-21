@@ -34,3 +34,10 @@ class TransactivePlatform(TransactiveComponent):
         """Return the name of the sensor."""
         return 'Transactive Home'
 
+    def set_transactive_home(self, new_value):
+        _LOGGER.info("In component update_transactive_home method")
+        _LOGGER.info("slider value: %s", new_value)
+        # self._state = {'slider_value': new_value.slider_value}
+        # _LOGGER.info("state: %s", self._state)
+        _LOGGER.info("transactive component state_attributes: %s", TransactiveComponent.state_attributes)
+

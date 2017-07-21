@@ -33,6 +33,21 @@ def setup(hass, config):
     descriptions = load_yaml_config_file(
         os.path.join(os.path.dirname(__file__), 'services.yaml'))
 
+    def update_transactive_home(service):
+        """Do any update to the component."""
+        _LOGGER.info("A new transactive home value: %s", service.data.get('value'))
+        _LOGGER.info("what is in here?: %s", hass)
+        kwargs = {
+            'slider_value': service.data.get('value')
+        }
+
+        transactive_homes = component.extract_from_service(service)
+
+        for transactive_home in transactive_homes:
+            transactive_home.set_transactive_home(kwargs)
+
+        # hass.services.call(DOMAIN, 'update_transactive_home', kwargs)
+
     hass.services.register(
         DOMAIN,
         'update_transactive_home',
@@ -40,11 +55,6 @@ def setup(hass, config):
         descriptions['update_transactive_home'])
 
     return True
-
-
-def update_transactive_home(call):
-    """Do any update to the component."""
-    _LOGGER.info("A new transactive home value: %s", call.data.get('value'))
 
 
 class TransactiveComponent(Entity):
@@ -75,53 +85,53 @@ class TransactiveComponent(Entity):
         """Return the optional state attributes."""
 
         data = {
-    "measures": [{
-            "label": "overall_reduction",
-            "value": 51,
-            "unit": "kw"
-        },
-        {
-            "label": "overall_energy",
-            "value": 80,
-            "unit": "kw-hr/24 hrs"
-        },
-        {
-            "label": "overall_power",
-            "value": 12,
-            "unit": "kw"
+            "measures": [{
+                    "label": "overall_reduction",
+                    "value": 51,
+                    "unit": "kw"
+                },
+                {
+                    "label": "overall_energy",
+                    "value": 80,
+                    "unit": "kw-hr/24 hrs"
+                },
+                {
+                    "label": "overall_power",
+                    "value": 12,
+                    "unit": "kw"
+                }
+            ],
+            "chartSeries": [
+                {
+                    "data": ['2017-07-17 23:36:58.368599Z', 4, 6,9],
+                    "type": "bar",
+                    "label": "energy"
+                },
+                {
+                    "data": ['2017-08-17 23:36:58.368599Z', 8, 9,10],
+                    "type": "line",
+                    "label": "power"
+                }
+            ],
+            "device": [{
+                    "name": "device1",
+                    "participate": "true",
+                    "efficiency": 30,
+                    "zone_min": 35,
+                    "zone_max": 90,
+                    "power": 150,
+                    "energy": 40
+                },
+                {
+                    "name": "device2",
+                    "participate": "true",
+                    "efficiency": 60,
+                    "zone_min": 35,
+                    "zone_max": 90,
+                    "power": 15,
+                    "energy": 30
+                }
+            ]
         }
-    ],
-    "chartSeries": [
-        {
-            "data": ['2017-07-17 23:36:58.368599Z', 4, 6,9],
-            "type": "bar",
-            "label": "energy"
-        },
-        {
-            "data": ['2017-08-17 23:36:58.368599Z', 8, 9,10],
-            "type": "line",
-            "label": "power"
-        }
-    ],
-    "device": [{
-            "name": "device1",
-            "participate": "true",
-            "efficiency": 30,
-            "zone_min": 35,
-            "zone_max": 90,
-            "power": 150,
-            "energy": 40
-        },
-        {
-            "name": "device2",
-            "participate": "true",
-            "efficiency": 60,
-            "zone_min": 35,
-            "zone_max": 90,
-            "power": 15,
-            "energy": 30
-        }
-    ]
-}
 
         return data
