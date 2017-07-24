@@ -34,7 +34,7 @@
             width: [[computeWidth(zone_max, zone_min)]];
             top: 5px;
             bottom: 5px;'></div>
-        <paper-slider value=[[slider_value]] on-change="getSliderValue"></paper-slider>
+        <paper-slider value=[[slider_value]] on-change="updateSliderValue"></paper-slider>
       </div>
     </template>
     <slot></slot>
@@ -86,13 +86,20 @@ Polymer({
 
     return boxStatus;
   },
-  getSliderValue: function (evt) {
-    const newValue = evt.target.value;
-    this.slider_value = newValue;
-  },
-  updateSliderValue: function (slider_value) {
-    console.log('we are updating ' + slider_value);
-    this.doUpdateTransactiveHome(slider_value);
+  // getSliderValue: function (evt) {
+  //   const newValue = evt.target.value;
+  //   this.slider_value = newValue;
+  // },
+  updateSliderValue: function (evt) {
+    
+    if (evt.target)
+    {
+      const newValue = evt.target.value;
+
+      console.log('we are updating ' + newValue);
+
+      this.doUpdateTransactiveHome({ 'target': 'flexibility', 'value': newValue });
+    }
   },
 
   doUpdateTransactiveHome: function (value) {

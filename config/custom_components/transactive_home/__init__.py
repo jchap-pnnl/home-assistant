@@ -11,13 +11,14 @@ from datetime import timedelta
 from homeassistant.config import load_yaml_config_file
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
+from homeassistant.core import State
 
 
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "transactive_home"
 FROM = "from"
-SCAN_INTERVAL = timedelta(seconds=30)
+SCAN_INTERVAL = timedelta(3600)
 
 DEPENDENCIES = []
 
@@ -35,16 +36,29 @@ def setup(hass, config):
 
     def update_transactive_home(service):
         """Do any update to the component."""
-        _LOGGER.info("A new transactive home value: %s", service.data.get('value'))
-        _LOGGER.info("what is in here?: %s", hass)
-        kwargs = {
-            'slider_value': service.data.get('value')
-        }
+        # _LOGGER.info("transactive home service object: %s", service)
+        # _LOGGER.info("what is in here?: %s", hass)
+        
+        update_obj = service.data.get('value')
 
-        transactive_homes = component.extract_from_service(service)
+        # _LOGGER.info("state attributes: %s", hass.states.get('transactive_home.transactive_home'))
 
-        for transactive_home in transactive_homes:
-            transactive_home.set_transactive_home(kwargs)
+        transactive_home = hass.states.get('transactive_home.transactive_home').as_dict()
+        attributes = transactive_home["attributes"]
+
+        # _LOGGER.info("writing value: %s", update_obj)
+
+        attributes["device"][0][update_obj["target"]] = update_obj["value"]
+
+        hass.states.set('transactive_home.transactive_home', State.from_dict(transactive_home), attributes, True)
+
+        # _LOGGER.info("state attributes after update: %s", hass.states.get('transactive_home.transactive_home'))
+
+
+        # transactive_homes = component.extract_from_service(service)
+
+        # for transactive_home in transactive_homes:
+        #     transactive_home.set_transactive_home(kwargs)
 
         # hass.services.call(DOMAIN, 'update_transactive_home', kwargs)
 
@@ -116,7 +130,7 @@ class TransactiveComponent(Entity):
             "device": [{
                     "name": "device1",
                     "participate": "true",
-                    "efficiency": 30,
+                    "flexibility": 30,
                     "zone_min": 35,
                     "zone_max": 90,
                     "power": 150,
@@ -125,7 +139,7 @@ class TransactiveComponent(Entity):
                 {
                     "name": "device2",
                     "participate": "true",
-                    "efficiency": 60,
+                    "flexibility": 60,
                     "zone_min": 35,
                     "zone_max": 90,
                     "power": 15,
