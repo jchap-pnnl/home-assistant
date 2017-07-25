@@ -106,11 +106,14 @@
       }
 
       .more-choices {
-        left: 15px;
+        left: 22px;
+        top: 0px;
       }
 
       .more-savings {
-        right: 15px;
+      position: absolute;
+      left: 14em;
+      top: 0px;
       }
 
       .reset-button {
@@ -126,7 +129,19 @@
       .participating {
         display: none;
       }
-
+      .flexibility{
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.54);
+        padding-left: 18px;
+        margin-top: 5px;
+      }
+      .flexibility_value{
+        display: inline-block;
+        position: relative;
+        top: -6px;
+        left: 52%;
+        font-weight: bold;
+      }
     </style>
 
     <ha-card class='transactive-home'>
@@ -143,17 +158,19 @@
           </template>
         </tbody>
       </table>
-         <h1 class='header domain'>Overall Flexibility</h1>
+         <p class='flexibility'>Overall Flexibility</p>
          <template is='dom-repeat' items="[[getOverallFlexibility(stateObj)]]">
           <div class='slider-cell'>
             <div class='more-choices'>More Choices</div>
             <div class='more-savings'>More Savings</div>
+            <div class ='flexibility_value'>[[item.flexibility]]</div>
             <ha-slider class='flexibility-container'
               hass='[[hass]]'
               slider_value=[[item.flexibility]]
               zone_min=[[item.zone_min]]
               zone_max=[[item.zone_max]]>
             </ha-slider>
+
           </div>
         </template>
       <div class='data-chart'>

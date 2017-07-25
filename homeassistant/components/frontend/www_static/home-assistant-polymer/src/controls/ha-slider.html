@@ -29,7 +29,7 @@
     <template is='dom-if' if='[[slider_value]]'>
       <div class='ha-slider'>
         <div 
-          class$='normal-range [[box_class]]'
+          class$='normal-range'
           style$='left: [[computeLeft(zone_min)]];
             width: [[computeWidth(zone_max, zone_min)]];
             top: 5px;
@@ -58,11 +58,11 @@ Polymer({
     },
     zone_max: {
       type: Number
-    },
-    box_class: {
-      type: String,
-      computed: 'getBoxClass(slider_value, zone_min, zone_max)'
     }
+    // box_class: {
+    //   type: String,
+    //   computed: 'getBoxClass(slider_value, zone_min, zone_max)'
+    // }
   },
   computeLeft: function (min) {
     const componentWidth = 168;
@@ -74,18 +74,18 @@ Polymer({
     const width = (max - min) * componentWidth / 100;
     return `${width}px`;
   },
-  getBoxClass: function (sliderValue, zoneMin, zoneMax) {
-    let boxStatus = '';
+  // getBoxClass: function (sliderValue, zoneMin, zoneMax) {
+  //   let boxStatus = '';
 
-    if (typeof this.slider_value !== 'undefined' &&
-      typeof this.zone_min !== 'undefined' &&
-      typeof this.zone_max !== 'undefined')
-    {
-      boxStatus = (sliderValue >= zoneMin && sliderValue <= zoneMax ? 'box-happy' : 'box-sad');
-    }
+  //   if (typeof this.slider_value !== 'undefined' &&
+  //     typeof this.zone_min !== 'undefined' &&
+  //     typeof this.zone_max !== 'undefined')
+  //   {
+  //     boxStatus = (sliderValue >= zoneMin && sliderValue <= zoneMax ? 'box-happy' : 'box-sad');
+  //   }
 
-    return boxStatus;
-  },
+  //   return boxStatus;
+  // },
   // getSliderValue: function (evt) {
   //   const newValue = evt.target.value;
   //   this.slider_value = newValue;

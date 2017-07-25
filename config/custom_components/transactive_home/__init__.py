@@ -134,17 +134,17 @@ class TransactiveComponent(Entity):
                     "zone_max": 100
                 }],
             "measures": [{
-                    "label": "overall_reduction",
+                    "label": "Overall Reduction",
                     "value": 51,
                     "unit": "kw"
                 },
                 {
-                    "label": "overall_energy",
+                    "label": "Overall Energy",
                     "value": 80,
                     "unit": "kw-hr/24 hrs"
                 },
                 {
-                    "label": "overall_power",
+                    "label": "Overall Power",
                     "value": 12,
                     "unit": "kw"
                 }
@@ -156,7 +156,7 @@ class TransactiveComponent(Entity):
                     "label": "energy"
                 },
                 {
-                    "data": ['2017-08-17 23:36:58.368599Z', 8, 9,10],
+                    "data": [['2017-08-17 23:36:58.368599Z', 8, 9,10]],
                     "type": "line",
                     "label": "power"
                 }
