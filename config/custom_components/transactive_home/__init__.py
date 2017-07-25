@@ -52,7 +52,7 @@ def setup(hass, config):
 
         hass.states.set('transactive_home.transactive_home', State.from_dict(transactive_home), attributes, True)
 
-        # _LOGGER.info("state attributes after update: %s", hass.states.get('transactive_home.transactive_home'))
+        _LOGGER.info("transactive home after update: %s", hass.states.get('transactive_home.transactive_home'))
 
 
         # transactive_homes = component.extract_from_service(service)
@@ -67,6 +67,35 @@ def setup(hass, config):
         'update_transactive_home',
         update_transactive_home,
         descriptions['update_transactive_home'])
+
+    def update_transactive_home_device(service):
+        """Update a transactive home device."""
+        
+        update_obj = service.data.get('value')
+
+        transactive_home = hass.states.get('transactive_home.transactive_home').as_dict()
+        
+        attributes = transactive_home["attributes"]
+
+        _LOGGER.info("damn devices: %s", attributes["device"])
+
+        _LOGGER.info("update value: %s", update_obj["value"])
+        
+        for dev in attributes["device"]:
+            if (dev["name"] == update_obj["device"]):
+                dev[update_obj["target"]] = update_obj["value"]
+
+        transactive_home["attributes"] = attributes
+
+        hass.states.set('transactive_home.transactive_home', 'On', attributes, True)
+
+        _LOGGER.info("device after update: %s", hass.states.get('transactive_home.transactive_home'))
+
+    hass.services.register(
+        DOMAIN,
+        'update_transactive_home_device',
+        update_transactive_home_device,
+        descriptions['update_transactive_home_device'])
 
     return True
 
