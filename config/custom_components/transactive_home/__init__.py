@@ -48,7 +48,7 @@ def setup(hass, config):
 
         # _LOGGER.info("writing value: %s", update_obj)
 
-        attributes["device"][0][update_obj["target"]] = update_obj["value"]
+        attributes["overallflexibility"][0][update_obj["target"]] = update_obj["value"]
 
         hass.states.set('transactive_home.transactive_home', State.from_dict(transactive_home), attributes, True)
 
@@ -99,6 +99,11 @@ class TransactiveComponent(Entity):
         """Return the optional state attributes."""
 
         data = {
+            "overallflexibility":[{
+                    "flexibility": 10,
+                    "zone_min": 0,
+                    "zone_max": 100
+                }],
             "measures": [{
                     "label": "overall_reduction",
                     "value": 51,
@@ -130,18 +135,16 @@ class TransactiveComponent(Entity):
             "device": [{
                     "name": "device1",
                     "participate": "true",
-                    "flexibility": 30,
-                    "zone_min": 35,
-                    "zone_max": 90,
+                    "zone_min": 0,
+                    "zone_max": 1,
                     "power": 150,
                     "energy": 40
                 },
                 {
                     "name": "device2",
                     "participate": "true",
-                    "flexibility": 60,
-                    "zone_min": 35,
-                    "zone_max": 90,
+                    "zone_min": 0,
+                    "zone_max": 1,
                     "power": 15,
                     "energy": 30
                 }

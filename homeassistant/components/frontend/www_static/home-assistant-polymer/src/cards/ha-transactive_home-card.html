@@ -95,7 +95,7 @@
       .more-savings {
         position: absolute;
         z-index: 200;
-        font-size: 8px;
+        font-size: 10px;
         top: -8px;
         color: #4f4f52;        
         line-height: 8px;
@@ -103,11 +103,11 @@
       }
 
       .more-choices {
-        left: 0;
+        left: 15px;
       }
 
       .more-savings {
-        right: 0;
+        right: 15px;
       }
 
       .reset-button {
@@ -136,6 +136,19 @@
           </template>
         </tbody>
       </table>
+         <h1 class='header domain'>Overall Flexibility</h1>
+         <template is='dom-repeat' items="[[getOverallFlexibility(stateObj)]]">
+          <div class='slider-cell'>
+            <div class='more-choices'>More Choices</div>
+            <div class='more-savings'>More Savings</div>
+            <ha-slider class='flexibility-container'
+              hass='[[hass]]'
+              slider_value=[[item.flexibility]]
+              zone_min=[[item.zone_min]]
+              zone_max=[[item.zone_max]]>
+            </ha-slider>
+          </div>
+        </template>
       <div class='data-chart'>
         <state-charts-container
           state-obj="[[stateObj]]">
@@ -148,8 +161,8 @@
               <th></th>
               <th class='reset'></th>
               <th></th>
-              <th>Flexibility</th>
-              <th>Power</th>
+<!--               <th>Flexibility</th>
+ -->              <th>Power</th>
               <th>Energy</th>
             </tr>
           </thead>
@@ -176,7 +189,7 @@
                     <div class$="[[getParticipation(item.participate)]]"></div>
                   </div>
                 </td>
-                <td class='slider-cell'>
+ <!--                <td class='slider-cell'>
                   <div class='more-choices'>More Choices</div>
                   <div class='more-savings'>More Savings</div>
                   <ha-slider
@@ -186,7 +199,7 @@
                     zone_min=[[item.zone_min]]
                     zone_max=[[item.zone_max]]>
                   </ha-slider>
-                </td>
+                </td> -->
                 <td style='text-align: right'>[[item.power]]</td>
                 <td style='text-align: right'>[[item.energy]]</td>
               </tr>
@@ -242,6 +255,10 @@ Polymer({
 
   getDataDevices: function(obj){
     return obj.attributes.device;
+  },
+
+  getOverallFlexibility: function(obj){
+    return obj.attributes.overallflexibility;
   },
 
   transactiveChanged: function (ev) {

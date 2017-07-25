@@ -92,6 +92,7 @@
       }));
 
       var options = {
+        title:'Overall Power for individual devices',
         series: {
           1: {curveType: 'function'}
         }
@@ -128,12 +129,13 @@
         legend: { position: 'right', maxLines: 3 },
         bar: { groupWidth: '20%' },
         isStacked: true,
+        title:'Overall Energy for individual devices',
         series: {
           1: {curveType: 'function'}
-        },
-        hAxis: {
-          ticks: []
         }
+        // hAxis: {
+        //   ticks: [2,4,6,8,10,12,14,16,18,20,22,24]
+        // }
       };
 
       if (!this.chartEngine) {

@@ -4,8 +4,9 @@ update_transactive_home:
 
   fields:
     obj:
+    entity_id:
       description: An object containing the value
-      example: 'obj.value'
+      example: 'transactive_home.transactive_home'
 
 set_aux_heat:
   description: Turn auxillary heater on/off for climate device
