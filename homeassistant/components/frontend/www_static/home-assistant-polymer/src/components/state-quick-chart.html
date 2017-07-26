@@ -45,8 +45,6 @@
 
     created: function () {
       this.style.display = 'block';
-      // this.style.width = 'block';
-      // this.style.display = 'block';
     },
 
     attached: function () {
@@ -54,8 +52,6 @@
     },
 
     dataChanged: function (chartData) {
-      // console.log(chartData)
-      // console.log(this.chartType)
       if (chartData)
       {
         switch (this.chartType)
@@ -100,7 +96,7 @@
 
       var options = {
         legend: { position: 'top'},
-        bar: { groupWidth: "100%"},
+        bar: { groupWidth: "60%"},
         isStacked: true,
         title:'Overall Energy for individual devices',
         series: {
@@ -121,9 +117,7 @@
       var data = new window.google.visualization.DataTable();
 
       data.addColumn('datetime', 'X');
-      data.addColumn('number', 'Device1');
-      data.addColumn('number', 'Device2');
-      data.addColumn('number', 'Device3');
+      data.addColumn('number', this.chartLabel);
 
       const dataRows = dataPoints.map(function (array) {
 
@@ -144,9 +138,6 @@
       data.addRows(dataRows);
 
       var options = {
-        // legend: { position: 'right', maxLines: 3 },
-        // bar: { groupWidth: '20%' },
-        // isStacked: true,
         legend: { position: 'top'},
         lineWidth: 2,
         title:'Overall Power for individual devices',

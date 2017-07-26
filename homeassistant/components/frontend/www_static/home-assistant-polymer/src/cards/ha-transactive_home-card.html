@@ -63,7 +63,7 @@
       .data-table tbody {
         color: rgba(0, 0, 0, 0.87);
       }
-      .data-table th.reset {
+      .data-table td.reset, td.participation {
         width: 50px;
       }
       .data-table .indicator .cell {
@@ -126,7 +126,7 @@
         cursor: pointer;
       }
 
-      .participating {
+      .display-none {
         display: none;
       }
       .flexibility{
@@ -141,6 +141,10 @@
         top: -6px;
         left: 52%;
         font-weight: bold;
+      }
+
+      .floated-label-placeholder {
+        display: none;
       }
     </style>
 
@@ -170,7 +174,6 @@
               zone_min=[[item.zone_min]]
               zone_max=[[item.zone_max]]>
             </ha-slider>
-
           </div>
         </template>
       <div class='data-chart'>
@@ -180,16 +183,6 @@
       </div>
       <div class='data-table'>
         <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th class='reset'></th>
-              <th></th>
-<!--               <th>Flexibility</th>
- -->              <th>Power</th>
-              <th>Energy</th>
-            </tr>
-          </thead>
           <tbody>
             <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
             <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
@@ -197,6 +190,25 @@
                 <td colspan=6>[[item.name]]</td>
               </tr>
               <tr>
+                <td class='participation'></td>
+                <td>Power</td>
+                <td>Energy</td>
+                <td></td>
+                <td class='slider-cell'>
+                  <div class$="[[getDropdown(item.participate)]]">
+                    Flexibility
+                  </div>
+                </td>
+                <td class$="reset [[getReset(item.participate)]]"></td>
+              </tr>
+              <tr>
+                <td class='indicator'>
+                  <div class='cell'>
+                    <div class$="[[getParticipation(item.participate)]]"></div>
+                  </div>
+                </td>
+                <td style='text-align: right'>[[item.power]]</td>
+                <td style='text-align: right'>[[item.energy]]</td>
                 <td>
                   <div>
                     <paper-toggle-button
@@ -206,37 +218,30 @@
                     </paper-toggle-button>
                   </div>
                 </td>
-                <td class='reset'>
-                  <div class='cell'>
-                    <div class$="[[getReset(item.participate)]]">
-                      <paper-button 
-                        class='reset-button'
-                        data-device="[[item.name]]"
-                        on-click="doReset" 
-                        raised
-                      >Reset</paper-button>
-                    </div>
+                <td class="slider-cell">
+                  <div class$="[[getDropdown(item.participate)]]">
+                    <paper-dropdown-menu>
+                      <paper-listbox 
+                        slot="dropdown-content" 
+                        class="dropdown-content"
+                        selected="0">
+                        <paper-item>high</paper-item>
+                        <paper-item>medium</paper-item>
+                        <paper-item>low</paper-item>
+                      </paper-listbox>
+                    </paper-dropdown-menu>
                   </div>
                 </td>
-                <td class='indicator'>
+                <td class$="reset [[getReset(item.participate)]]">
                   <div class='cell'>
-                    <div class$="[[getParticipation(item.participate)]]"></div>
+                    <paper-button 
+                      class='reset-button'
+                      data-device="[[item.name]]"
+                      on-click="doReset" 
+                      raised
+                    >Reset</paper-button>
                   </div>
                 </td>
-                <td class='slider-cell'>
-                  <paper-dropdown-menu>
-                    <paper-listbox 
-                      slot="dropdown-content" 
-                      class="dropdown-content"
-                      selected="0">
-                      <paper-item>high</paper-item>
-                      <paper-item>medium</paper-item>
-                      <paper-item>low</paper-item>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
-                </td>
-                <td style='text-align: right'>[[item.power]]</td>
-                <td style='text-align: right'>[[item.energy]]</td>
               </tr>
             </template>
           </tbody>
@@ -269,7 +274,11 @@ Polymer({
   },
 
   getReset: function (participate) {
-      return (participate ? 'participating' : 'not-participating');
+      return (participate ? 'display-none' : '');
+  },
+
+  getDropdown: function (participate) {
+      return (participate ? '' : 'display-none');
   },
 
   getThermostat: function (hass) {
@@ -337,20 +346,11 @@ Polymer({
     }
   },
   callServiceHelper: function (service, data) {
-    // We call stateChanged after a successful call to re-sync the inputs
-    // with the state. It will be out of sync if our service call did not
-    // result in the entity to be turned on. Since the state is not changing,
-    // the resync is not called automatic.
-    /* eslint-disable no-param-reassign */
-    // data.entity_id = this.stateObj.entity_id;
-    /* eslint-enable no-param-reassign */
-    console.log('in call service helper');
     if (this.hass)
     {      
       this.hass.callService('transactive_home', service, { value: data})
         .then(function () {
-          // this.stateObjChanged(this.stateObj);
-          console.log('successful service call');
+          // console.log('successful service call');
         }.bind(this));
     }
   },
