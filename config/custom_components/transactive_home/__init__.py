@@ -38,9 +38,10 @@ def setup(hass, config):
         """Do any update to the component."""
         # _LOGGER.info("transactive home service object: %s", service)
         # _LOGGER.info("what is in here?: %s", hass)
-        
+        _LOGGER.info(service)
+        _LOGGER.info("------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         update_obj = service.data.get('value')
-
+        _LOGGER.info(update_obj)
         # _LOGGER.info("state attributes: %s", hass.states.get('transactive_home.transactive_home'))
 
         transactive_home = hass.states.get('transactive_home.transactive_home').as_dict()
@@ -150,6 +151,7 @@ class TransactiveComponent(Entity):
                 }
             ],
             "chartSeries": [
+
                 {
                     "data": [
                         ['2017-07-17 23:36:58.368599Z', 4],
@@ -162,8 +164,8 @@ class TransactiveComponent(Entity):
                 {
                     "data": [
                         ['2017-08-17 23:36:58.368595Z', 8, 9,10],
-                        ['2017-08-17 23:36:58.368597Z', 7, 7,9],
-                        ['2017-08-17 23:36:58.368599Z', 6, 5,8],
+                        ['2017-08-17 23:40:58.368597Z', 7, 7,9],
+                        ['2017-08-17 23:50:58.368599Z', 6, 5,8],
                     ],
                     "type": "bar",
                     "label": "power"

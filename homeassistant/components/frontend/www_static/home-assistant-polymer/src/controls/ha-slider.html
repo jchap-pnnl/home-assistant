@@ -103,6 +103,7 @@ Polymer({
   },
 
   doUpdateTransactiveHome: function (value) {
+    console.log(value);
     this.callServiceHelper('update_transactive_home', value);
   },
 
@@ -116,7 +117,8 @@ Polymer({
     /* eslint-enable no-param-reassign */
     console.log('in call service helper');
     if (this.hass)
-    {      
+    { console.log(service);
+      console.log(data);     
       this.hass.callService('transactive_home', service, { value: data})
         .then(function () {
           // this.stateObjChanged(this.stateObj);

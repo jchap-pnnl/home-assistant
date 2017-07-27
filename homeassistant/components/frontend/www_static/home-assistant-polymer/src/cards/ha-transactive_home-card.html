@@ -347,7 +347,8 @@ Polymer({
   },
   callServiceHelper: function (service, data) {
     if (this.hass)
-    {      
+    { 
+      
       this.hass.callService('transactive_home', service, { value: data})
         .then(function () {
           // console.log('successful service call');
