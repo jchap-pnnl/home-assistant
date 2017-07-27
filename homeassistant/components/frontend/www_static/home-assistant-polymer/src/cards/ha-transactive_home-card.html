@@ -63,8 +63,11 @@
       .data-table tbody {
         color: rgba(0, 0, 0, 0.87);
       }
-      .data-table td.reset, td.participation {
+      .data-table td.participation {
         width: 50px;
+      }
+      .data-table td.reset {
+        width: 90px;
       }
       .data-table td.slider-cell {
         width: 100px;
@@ -86,6 +89,7 @@
       }
       .data-table table {
         margin-bottom: 20px;
+        width: 100%;
       }
       .indicator {
         margin: 0;
@@ -249,7 +253,7 @@
                     Flexibility
                   </div>
                 </td>
-                <td class$="reset [[getReset(item.participate)]]"></td>
+                <td class='reset'></td>
               </tr>
               <tr>
                 <td class='indicator'>
@@ -282,8 +286,8 @@
                     </paper-dropdown-menu>
                   </div>
                 </td>
-                <td class$="reset [[getReset(item.participate)]]">
-                  <div class='cell'>
+                <td class='reset'>
+                  <div class$="cell [[getReset(item.participate)]]">
                     <paper-button 
                       class='reset-button'
                       data-device="[[item.name]]"
