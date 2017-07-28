@@ -331,7 +331,7 @@ Polymer({
   },
 
   getReset: function (participate) {
-      return (participate ? 'display-none' : '');
+      return (participate ? '' : 'display-none');
   },
 
   getDropdown: function (participate) {
@@ -368,7 +368,7 @@ Polymer({
   doReset: function (ev) {
     if (ev.target)
     {
-      const newValue = true;
+      const newValue = false;
       const device = ev.target.dataDevice;
 
       console.log('transactive changed: ' + newValue);
