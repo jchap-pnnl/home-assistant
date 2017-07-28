@@ -63,8 +63,14 @@
       .data-table tbody {
         color: rgba(0, 0, 0, 0.87);
       }
-      .data-table td.reset, td.participation {
+      .data-table td.participation {
         width: 50px;
+      }
+      .data-table td.reset {
+        width: 90px;
+      }
+      .data-table td.slider-cell {
+        width: 100px;
       }
       .data-table .indicator .cell {
         padding: 4px;
@@ -80,6 +86,10 @@
         left: 0px;
         bottom: 0px;
         border-radius: 8px;
+      }
+      .data-table table {
+        margin-bottom: 20px;
+        width: 100%;
       }
       .indicator {
         margin: 0;
@@ -143,9 +153,47 @@
         font-weight: bold;
       }
 
-      .floated-label-placeholder {
+      paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container::shadow .floated-label-placeholder {
         display: none;
       }
+
+      paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container {
+        padding: 0;
+      }
+
+      paper-listbox {
+        padding: 0;
+      }
+
+      paper-listbox paper-item {
+        min-height: 0;
+      }
+
+      .transactive-home {
+        margin-bottom: 100px;
+      }
+
+      .device-name-row {
+        margin-top: 20px;
+      }
+
+      .device-name-cell {
+        background-color: gainsboro;
+      }
+
+      .device-name {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .column-name {
+        font-size: 10px;
+      }
+
+      .space-row {
+        height: 10px;
+      }
+
     </style>
 
     <ha-card class='transactive-home'>
@@ -157,7 +205,7 @@
           <template is='dom-repeat' items="[[getList(stateObj)]]">
             <tr>
               <td class='label'>[[item.label]]</td>
-              <td class='value'>[[item.value]] [[item.unit]]</td>
+              <td class='value'><b>[[item.value]][[item.unit]]</b></td>
             </tr>
           </template>
         </tbody>
@@ -186,20 +234,26 @@
           <tbody>
             <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
             <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
-              <tr>
-                <td colspan=6>[[item.name]]</td>
+              <tr class='device-name-row'>
+                <td class='device-name-cell' colspan=6>
+                  <div class='device-name'><i>[[item.name]]</i></div>
+                </td>
               </tr>
               <tr>
                 <td class='participation'></td>
-                <td>Power</td>
-                <td>Energy</td>
+                <td>
+                  <div class='column-name'>Power</div>
+                </td>
+                <td>
+                  <div class='column-name'>Energy</div>
+                </td>
                 <td></td>
                 <td class='slider-cell'>
-                  <div class$="[[getDropdown(item.participate)]]">
+                  <div class$="column-name [[getDropdown(item.participate)]]">
                     Flexibility
                   </div>
                 </td>
-                <td class$="reset [[getReset(item.participate)]]"></td>
+                <td class='reset'></td>
               </tr>
               <tr>
                 <td class='indicator'>
@@ -220,7 +274,7 @@
                 </td>
                 <td class="slider-cell">
                   <div class$="[[getDropdown(item.participate)]]">
-                    <paper-dropdown-menu>
+                    <paper-dropdown-menu noLabelFloat>
                       <paper-listbox 
                         slot="dropdown-content" 
                         class="dropdown-content"
@@ -232,8 +286,8 @@
                     </paper-dropdown-menu>
                   </div>
                 </td>
-                <td class$="reset [[getReset(item.participate)]]">
-                  <div class='cell'>
+                <td class='reset'>
+                  <div class$="cell [[getReset(item.participate)]]">
                     <paper-button 
                       class='reset-button'
                       data-device="[[item.name]]"
@@ -242,6 +296,9 @@
                     >Reset</paper-button>
                   </div>
                 </td>
+              </tr>
+              <tr class='space-row'>
+                <td colspan=6></td>
               </tr>
             </template>
           </tbody>

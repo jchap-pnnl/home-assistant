@@ -35,7 +35,10 @@
         type: Boolean,
         value: false,
       },
-
+      deviceName:{
+        type: String,
+        value: ""
+      },
       chartData: {
         type: Array,
         value: [],
@@ -52,6 +55,7 @@
     },
 
     dataChanged: function (chartData) {
+      console.log(this.deviceName)
       if (chartData)
       {
         switch (this.chartType)
@@ -71,9 +75,9 @@
       var data = new window.google.visualization.DataTable();
 
       data.addColumn('datetime', 'X');
-      data.addColumn('number', 'Device1');
-      data.addColumn('number', 'Device2');
-      data.addColumn('number', 'Device3');
+      data.addColumn('number', this.deviceName);
+      data.addColumn('number', this.deviceName);
+      data.addColumn('number', this.deviceName);
 
       const dataRows = dataPoints.map(function (array) {
 
@@ -101,7 +105,8 @@
         title:'Overall Power for individual devices',
         series: {
           1: {curveType: 'function'}
-        }
+        },
+        hAxis: {showTextEvery: 2}
       };
 
       if (!this.chartEngine) {
@@ -143,7 +148,8 @@
         title:'Overall Energy for all devices',
         series: {
           1: {curveType: 'function'}
-        }
+        },
+        hAxis: {showTextEvery: 2}
       };
 
       if (!this.chartEngine) {
