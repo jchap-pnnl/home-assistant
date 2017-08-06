@@ -128,6 +128,12 @@ class TransactiveComponent(Entity):
         """Return the optional state attributes."""
 
         data = {
+            "progress_bar": {
+                "message": "Half-way through, keep up the good work!",
+                "value": 55,
+                "starting_point": 0,
+                "end_point": 80
+            },
             "overallflexibility":[{
                     "flexibility": 10,
                     "zone_min": 0,

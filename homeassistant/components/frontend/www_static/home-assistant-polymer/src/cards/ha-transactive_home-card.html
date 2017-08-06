@@ -1,6 +1,8 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
@@ -11,6 +13,10 @@
 <link rel='import' href='../state-summary/state-card-content.html'>
 <link rel="import" href='../components/state-charts-container.html'>
 <link rel="import" href='../controls/ha-slider.html'>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<link href="../../bower_components/toastr/toastr.css" rel="stylesheet"/>
+<script src="../../bower_components/toastr/toastr.js"></script>
 
 <dom-module id='ha-transactive_home-card'>
   <template>
@@ -121,9 +127,35 @@
       }
 
       .more-savings {
-      position: absolute;
-      left: 14em;
-      top: 0px;
+        position: absolute;
+        left: 14em;
+        top: 0px;
+      }
+
+      .progress-container {
+        position: relative;
+        padding: 40px;
+        display: block;
+      }
+
+      .progress-bar {
+        display: inline-block;
+        margin: 0 10px;
+      }
+
+      .progress-start,
+      .progress-end {
+        z-index: 200;
+        font-size: 12px;
+        color: #4f4f52;        
+        line-height: 12px;
+        text-align: center;
+        display: inline-block;
+      }
+
+      .progress-message {
+        --paper-tooltip-background: cadetblue;
+        --paper-tooltip-opacity: 1;
       }
 
       .reset-button {
@@ -194,6 +226,10 @@
         height: 10px;
       }
 
+      #toast-container > .toast {
+        background-image: none !important;
+      }
+
     </style>
 
     <ha-card class='transactive-home'>
@@ -210,20 +246,40 @@
           </template>
         </tbody>
       </table>
-         <p class='flexibility'>Overall Flexibility</p>
-         <template is='dom-repeat' items="[[getOverallFlexibility(stateObj)]]">
-          <div class='slider-cell'>
-            <div class='more-choices'>More Choices</div>
-            <div class='more-savings'>More Savings</div>
-            <div class ='flexibility_value'>[[item.flexibility]]</div>
-            <ha-slider class='flexibility-container'
-              hass='[[hass]]'
-              slider_value=[[item.flexibility]]
-              zone_min=[[item.zone_min]]
-              zone_max=[[item.zone_max]]>
-            </ha-slider>
+      <div class='progress-container'>
+          <paper-tooltip
+            class="progress-message"
+            for="overall-progress" 
+            position="top"
+            animation-delay="0"
+          >[[getProgressMessage(stateObj)]]</paper-tooltip>
+          <div class='progress-start'>$[[getProgressStart(stateObj)]]</div>
+          <div class='progress-bar'>
+            <paper-progress 
+              id="overall-progress" 
+              value="[[getProgressValue(stateObj)]]" 
+              secondary-progress="80"
+            ></paper-progress>
           </div>
-        </template>
+          <div class='progress-end'>$[[getProgressEnd(stateObj)]]</div>
+          <paper-tooltip 
+            for="overall-progress"
+          >[[getProgressValue(stateObj)]]%</paper-tooltip>
+      </div>
+      <p class='flexibility'>Overall Flexibility</p>
+      <template is='dom-repeat' items="[[getOverallFlexibility(stateObj)]]">
+        <div class='slider-cell'>
+          <div class='more-choices'>More Choices</div>
+          <div class='more-savings'>More Savings</div>
+          <div class ='flexibility_value'>[[item.flexibility]]</div>
+          <ha-slider class='flexibility-container'
+            hass='[[hass]]'
+            slider_value=[[item.flexibility]]
+            zone_min=[[item.zone_min]]
+            zone_max=[[item.zone_max]]>
+          </ha-slider>
+        </div>
+      </template>
       <div class='data-chart'>
         <state-charts-container
           state-obj="[[stateObj]]">
@@ -355,6 +411,9 @@ Polymer({
   },
 
   getList: function (obj) {
+    this.showToastMessage("Hi, your HVAC isn't in transactive mode for 10 days. Simply turn it back on and start saving energy and money again.");
+    this.showToastMessage("Hi, you'll be on vacation next week. It's a good time to maximize savings. Want to set your house to minimum energy mode?");
+    this.showToastMessage("Hi, we just found a new device that can be part of your home transactive energy network. Want to add it in and start saving energy and money now?");
     return obj.attributes.measures;
   },
 
@@ -363,6 +422,70 @@ Polymer({
   },
   getOverallFlexibility: function(obj){
     return obj.attributes.overallflexibility;
+  },
+
+  getProgressStart: function(obj){
+    return obj.attributes.progress_bar.starting_point;
+  },
+
+  getProgressEnd: function(obj){
+    return obj.attributes.progress_bar.end_point;
+  },
+
+  getProgressValue: function(obj) {
+    return obj.attributes.progress_bar.value;
+  },
+
+  getProgressMessage: function(obj) {
+    const value = obj.attributes.progress_bar.value;
+
+    let message = '';
+
+    if (value <= 25)
+    { 
+      message = "You're off to a good start.";
+    }
+    else if (value <= 50)
+    {
+      message = "You're making good progress.";
+    }
+    else if (value <= 75)
+    {
+      message = "Halfway through, keep up the good work.";
+    }
+    else if (value == 100)
+    {
+      message = "Congratulations! You reached your goal."
+    }
+    else 
+    {
+      message = "Look at that, you're almost there!"
+    }
+
+    return message;
+  },
+
+  showToastMessage: function (message) {
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": true,
+      "progressBar": false,
+      "positionClass": "toast-bottom-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "0",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
+    // toastr.info(message);
+
+    toastr["info"]("<div>" + message + "</div>");
   },
 
   doReset: function (ev) {

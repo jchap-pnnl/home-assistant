@@ -26,5 +26,8 @@
   },
   "resolutions": {
     "paper-slider": "1.0.13"
+  },
+  "dependencies": {
+    "toastr": "^2.1.3"
   }
 }
