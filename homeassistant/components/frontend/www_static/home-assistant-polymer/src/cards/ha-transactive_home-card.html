@@ -136,6 +136,7 @@
         position: relative;
         padding: 40px;
         display: block;
+        text-align: right;
       }
 
       .progress-bar {
@@ -266,20 +267,6 @@
             for="overall-progress"
           >[[getProgressValue(stateObj)]]%</paper-tooltip>
       </div>
-      <p class='flexibility'>Overall Flexibility</p>
-      <template is='dom-repeat' items="[[getOverallFlexibility(stateObj)]]">
-        <div class='slider-cell'>
-          <div class='more-choices'>More Choices</div>
-          <div class='more-savings'>More Savings</div>
-          <div class ='flexibility_value'>[[item.flexibility]]</div>
-          <ha-slider class='flexibility-container'
-            hass='[[hass]]'
-            slider_value=[[item.flexibility]]
-            zone_min=[[item.zone_min]]
-            zone_max=[[item.zone_max]]>
-          </ha-slider>
-        </div>
-      </template>
       <div class='data-chart'>
         <state-charts-container
           state-obj="[[stateObj]]">
