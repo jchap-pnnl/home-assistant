@@ -78,7 +78,7 @@ Polymer({
     return obj.attributes.chartSeries;
   },
   getDeviceData: function (obj) {
-    return obj.attributes.device;
+    return Object.keys(obj.attributes.device).map((key) => obj.attributes.device[key]);
   },
   _googleApiLoaded: function () {
     window.google.load('visualization', '1', {

@@ -11,7 +11,6 @@
 <link rel='import' href='../state-summary/state-card-content.html'>
 <link rel="import" href='../components/state-charts-container.html'>
 <link rel="import" href='../controls/ha-slider.html'>
-
 <dom-module id='ha-transactive_home-card'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
@@ -114,28 +113,23 @@
         line-height: 8px;
         text-align: center;
       }
-
       .more-choices {
         left: 22px;
         top: 0px;
       }
-
       .more-savings {
       position: absolute;
       left: 14em;
       top: 0px;
       }
-
       .reset-button {
         background-color: #c74507;
         color: #ebf73c;
         height: 30px;
       }
-
       paper-toggle-button {
         cursor: pointer;
       }
-
       .display-none {
         display: none;
       }
@@ -152,48 +146,40 @@
         left: 52%;
         font-weight: bold;
       }
-
       paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container::shadow .floated-label-placeholder {
         display: none;
       }
-
       paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container {
         padding: 0;
       }
-
       paper-listbox {
         padding: 0;
       }
-
       paper-listbox paper-item {
         min-height: 0;
       }
-
       .transactive-home {
         margin-bottom: 100px;
       }
-
       .device-name-row {
         margin-top: 20px;
       }
-
       .device-name-cell {
         background-color: gainsboro;
       }
-
       .device-name {
         font-size: 14px;
         font-weight: bold;
       }
-
       .column-name {
         font-size: 10px;
       }
-
       .space-row {
         height: 10px;
       }
-
+      .popup {
+        max-width:600px !important;
+      }
     </style>
 
     <ha-card class='transactive-home'>
@@ -205,7 +191,7 @@
           <template is='dom-repeat' items="[[getList(stateObj)]]">
             <tr>
               <td class='label'>[[item.label]]</td>
-              <td class='value'><b>[[item.value]][[item.unit]]</b></td>
+              <td class='value'><b>[[item.value]] [[item.unit]]</b></td>
             </tr>
           </template>
         </tbody>
@@ -253,7 +239,6 @@
                     Flexibility
                   </div>
                 </td>
-                <td class='reset'></td>
               </tr>
               <tr>
                 <td class='indicator'>
@@ -265,7 +250,7 @@
                 <td style='text-align: right'>[[item.energy]]</td>
                 <td>
                   <div>
-                    <paper-toggle-button
+                    <paper-toggle-button raised on-click="openDialogSwitch"
                       data-device="[[item.name]]"
                       on-change="transactiveChanged"
                       checked="[[item.participate]]">
@@ -288,11 +273,11 @@
                 </td>
                 <td class='reset'>
                   <div class$="cell [[getReset(item.participate)]]">
-                    <paper-button 
+                    <paper-button raised on-click="openDialogReset"
                       class='reset-button'
                       data-device="[[item.name]]"
-                      on-click="doReset" 
                       raised
+                      disabled
                     >Reset</paper-button>
                   </div>
                 </td>
@@ -304,89 +289,96 @@
           </tbody>
         </table>
       </div>
+      <paper-dialog id="actions" class="popup">
+      <h2>Reset Transactive Mode</h2>
+      <p>This [[item.name]] will be temporarily removed from the transactive control network. It will automatically add back in when the next peak period occurs, which is usually next afternoon or early evening. Are you sure ?</p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>No</paper-button>
+        <paper-button dialog-confirm autofocus>Yes</paper-button>
+      </div>
+    </paper-dialog>
+    <paper-dialog id="animated" class="popup">
+      <h2>End Transactive Mode</h2>
+      <p>This device will be removed from the transactive control network. Are you sure ?</p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>No</paper-button>
+        <paper-button dialog-confirm autofocus>Yes</paper-button>
+      </div>
+    </paper-dialog>
     </ha-card>
   </template>
 </dom-module>
-
 <script>
 Polymer({
   is: 'ha-transactive_home-card',
-
   properties: {
     hass: {
       type: Object,
     },
-
     stateObj: {
       type: Object,
     },
-
     groupEntity: {
       type: Object,
     }
   },
-
+  openDialogReset: function () {
+  this.$.actions.open();
+  },
+  openDialogSwitch: function () {
+  this.$.animated.open();
+  },
   getParticipation: function (participate) {
       return (participate ? 'green' : 'red');
   },
-
   getReset: function (participate) {
-      return (participate ? 'display-none' : '');
+      return (participate ? 'display-block' : '');
   },
-
   getDropdown: function (participate) {
       return (participate ? '' : 'display-none');
   },
-
   getThermostat: function (hass) {
       var thermostat = Object.keys(hass.states).find(function (key) {
           return hass.states[key]._domain === 'climate';
       });
-
       var thermostats = [];
-
       if (thermostat)
       {
           var preppedThermostat = hass.states[thermostat].attributes;
           thermostats.push(preppedThermostat);
       }
-
       return thermostats;
   },
-
   getList: function (obj) {
     return obj.attributes.measures;
   },
-
   getDataDevices: function(obj){
-    return obj.attributes.device;
+    return Object.keys(obj.attributes.device).map((key) => {
+      const device = obj.attributes.device[key];
+      device.name = key;
+
+      return device;
+    });
   },
   getOverallFlexibility: function(obj){
     return obj.attributes.overallflexibility;
   },
-
   doReset: function (ev) {
     if (ev.target)
     {
       const newValue = true;
       const device = ev.target.dataDevice;
-
       console.log('transactive changed: ' + newValue);
-
-
       const updateObj = { 'device': device, 'target': 'participate', 'value': newValue };
       this.callServiceHelper('update_transactive_home_device', updateObj);
     }
   },
-
   transactiveChanged: function (ev) {
     if (ev.target)
     {
       const newValue = ev.target.checked;
       const device = ev.target.dataDevice;
-
       console.log('transactive changed: ' + newValue);
-
       const updateObj = { 'device': device, 'target': 'participate', 'value': newValue };
       this.callServiceHelper('update_transactive_home_device', updateObj);
     }
@@ -395,17 +387,14 @@ Polymer({
     if (evt.target)
     {
       const newValue = evt.target.value;
-
       console.log('updating ' + newValue);
-
       const updateObj = { 'target': 'flexibility', 'value': newValue };
       this.callServiceHelper('update_transactive_home', updateObj);
     }
   },
   callServiceHelper: function (service, data) {
     if (this.hass)
-    { 
-      
+    {      
       this.hass.callService('transactive_home', service, { value: data})
         .then(function () {
           // console.log('successful service call');

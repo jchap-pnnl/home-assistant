@@ -82,9 +82,11 @@ def setup(hass, config):
 
         _LOGGER.info("update value: %s", update_obj["value"])
         
-        for dev in attributes["device"]:
-            if (dev["name"] == update_obj["device"]):
-                dev[update_obj["target"]] = update_obj["value"]
+        # for dev in attributes["device"]:
+        #     if (dev["name"] == update_obj["device"]):
+        #         dev[update_obj["target"]] = update_obj["value"]
+
+        attributes["device"][update_obj["device"]][update_obj["target"]] = update_obj["value"]
 
         transactive_home["attributes"] = attributes
 
@@ -166,7 +168,6 @@ class TransactiveComponent(Entity):
                         ['2017-08-17 23:36:58.368595Z', 8, 9,10],
                         ['2017-08-17 23:40:58.368597Z', 7, 7,9],
                         ['2017-08-17 23:50:58.368599Z', 6, 5,8],
-
                         ['2017-08-17 23:36:58.368599Z', 8, 9,10],
                         ['2017-08-17 23:37:08.368599Z', 7, 7,9],
                         ['2017-08-17 23:37:18.368599Z', 6, 5,8],
@@ -176,23 +177,22 @@ class TransactiveComponent(Entity):
                     "label": "power"
                 }
             ],
-            "device": [{
-                    "name": "device1",
+            "device": {
+                "device1": {
                     "participate": "true",
                     "zone_min": 0,
                     "zone_max": 1,
                     "power": 150,
                     "energy": 40
                 },
-                {
-                    "name": "device2",
+                "device2": {
                     "participate": "true",
                     "zone_min": 0,
                     "zone_max": 1,
                     "power": 15,
                     "energy": 30
                 }
-            ]
+            }
         }
 
         return data
