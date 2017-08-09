@@ -400,9 +400,9 @@ Polymer({
       return thermostats;
   },
   getList: function (obj) {
-    this.showToastMessage("Hi, your HVAC isn't in transactive mode for 10 days. Simply turn it back on and start saving energy and money again.");
-    this.showToastMessage("Hi, you'll be on vacation next week. It's a good time to maximize savings. Want to set your house to minimum energy mode?");
-    this.showToastMessage("Hi, we just found a new device that can be part of your home transactive energy network. Want to add it in and start saving energy and money now?");
+    // this.showToastMessage("Hi, your HVAC isn't in transactive mode for 10 days. Simply turn it back on and start saving energy and money again.");
+    // this.showToastMessage("Hi, you'll be on vacation next week. It's a good time to maximize savings. Want to set your house to minimum energy mode?");
+    // this.showToastMessage("Hi, we just found a new device that can be part of your home transactive energy network. Want to add it in and start saving energy and money now?");
     return obj.attributes.measures;
   },
   getDataDevices: function(obj){
@@ -418,41 +418,66 @@ Polymer({
   },
 
   getProgressStart: function(obj){
-    return obj.attributes.progress_bar.starting_point;
+
+    let progressStart = null;
+
+    if (obj.attributes.hasOwnProperty('progress_bar'))
+    {
+        progressStart = obj.attributes.progress_bar.starting_point;
+    }
+
+    return progressStart;
   },
 
   getProgressEnd: function(obj){
-    return obj.attributes.progress_bar.end_point;
+    let progressEnd = null;
+
+    if (obj.attributes.hasOwnProperty('progress_bar'))
+    {
+        progressEnd = obj.attributes.progress_bar.end_point;
+    }
+
+    return progressEnd;
   },
 
   getProgressValue: function(obj) {
-    return obj.attributes.progress_bar.value;
+    let progressValue = null;
+
+    if (obj.attributes.hasOwnProperty('progress_bar'))
+    {
+        progressValue = obj.attributes.progress_bar.value;
+    }
+
+    return progressValue;
   },
 
   getProgressMessage: function(obj) {
-    const value = obj.attributes.progress_bar.value;
 
     let message = '';
 
-    if (value <= 25)
-    { 
-      message = "You're off to a good start.";
-    }
-    else if (value <= 50)
-    {
-      message = "You're making good progress.";
-    }
-    else if (value <= 75)
-    {
-      message = "Halfway through, keep up the good work.";
-    }
-    else if (value == 100)
-    {
-      message = "Congratulations! You reached your goal."
-    }
-    else 
-    {
-      message = "Look at that, you're almost there!"
+    if (obj.attributes.hasOwnProperty('progress_bar')){
+      const value = obj.attributes.progress_bar.value;
+
+      if (value <= 25)
+      { 
+        message = "You're off to a good start.";
+      }
+      else if (value <= 50)
+      {
+        message = "You're making good progress.";
+      }
+      else if (value <= 75)
+      {
+        message = "Halfway through, keep up the good work.";
+      }
+      else if (value == 100)
+      {
+        message = "Congratulations! You reached your goal."
+      }
+      else 
+      {
+        message = "Look at that, you're almost there!"
+      }
     }
 
     return message;
