@@ -120,12 +120,10 @@
         line-height: 8px;
         text-align: center;
       }
-
       .more-choices {
         left: 22px;
         top: 0px;
       }
-
       .more-savings {
         position: absolute;
         left: 14em;
@@ -158,17 +156,14 @@
         --paper-tooltip-background: cadetblue;
         --paper-tooltip-opacity: 1;
       }
-
       .reset-button {
         background-color: #c74507;
         color: #ebf73c;
         height: 30px;
       }
-
       paper-toggle-button {
         cursor: pointer;
       }
-
       .display-none {
         display: none;
       }
@@ -185,44 +180,34 @@
         left: 52%;
         font-weight: bold;
       }
-
       paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container::shadow .floated-label-placeholder {
         display: none;
       }
-
       paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container {
         padding: 0;
       }
-
       paper-listbox {
         padding: 0;
       }
-
       paper-listbox paper-item {
         min-height: 0;
       }
-
       .transactive-home {
         margin-bottom: 100px;
       }
-
       .device-name-row {
         margin-top: 20px;
       }
-
       .device-name-cell {
         background-color: gainsboro;
       }
-
       .device-name {
         font-size: 14px;
         font-weight: bold;
       }
-
       .column-name {
         font-size: 10px;
       }
-
       .space-row {
         height: 10px;
       }
@@ -231,6 +216,9 @@
         background-image: none !important;
       }
 
+      .popup {
+        max-width:600px !important;
+      }
     </style>
 
     <ha-card class='transactive-home'>
@@ -242,7 +230,7 @@
           <template is='dom-repeat' items="[[getList(stateObj)]]">
             <tr>
               <td class='label'>[[item.label]]</td>
-              <td class='value'>[[item.value]] [[item.unit]]</td>
+              <td class='value'><b>[[item.value]] [[item.unit]]</b></td>
             </tr>
           </template>
         </tbody>
@@ -292,31 +280,44 @@
                 </td>
                 <td></td>
                 <td class='slider-cell'>
-                  <div class$="column-name [[getDropdown(item.participate)]]">
+                  <div class$="column-name [[getDropdown(item.participate, item.reset)]]">
                     Flexibility
                   </div>
                 </td>
-                <td class='reset'></td>
               </tr>
               <tr>
                 <td class='indicator'>
                   <div class='cell'>
-                    <div class$="[[getParticipation(item.participate)]]"></div>
+                    <div class$="[[getParticipation(item.participate, item.reset)]]"></div>
                   </div>
                 </td>
                 <td style='text-align: right'>[[item.power]]</td>
                 <td style='text-align: right'>[[item.energy]]</td>
                 <td>
                   <div>
-                    <paper-toggle-button
+                    <paper-toggle-button raised
                       data-device="[[item.name]]"
-                      on-change="transactiveChanged"
+                      on-click="transactiveChanged"
                       checked="[[item.participate]]">
                     </paper-toggle-button>
                   </div>
+                  <paper-dialog id="toggle-[[item.name]]" class="popup">
+                    <h2>Turn Off Transactive Mode</h2>
+                    <p>Device <b>[[item.name]]</b> will be removed from the transactive control network until you reactivate its transactive mode.
+                    </p> 
+                    <p>Deactive its transactive mode now?</p>
+                    <div class="buttons">
+                      <paper-button dialog-dismiss>No</paper-button>
+                      <paper-button 
+                        data-device="[[item.name]]"
+                        dialog-confirm 
+                        autofocus
+                        on-click="turnTransactiveOff">Yes</paper-button>
+                    </div>
+                  </paper-dialog>
                 </td>
                 <td class="slider-cell">
-                  <div class$="[[getDropdown(item.participate)]]">
+                  <div class$="[[getDropdown(item.participate, item.reset)]]">
                     <paper-dropdown-menu noLabelFloat>
                       <paper-listbox 
                         slot="dropdown-content" 
@@ -330,14 +331,27 @@
                   </div>
                 </td>
                 <td class='reset'>
-                  <div class$="cell [[getReset(item.participate)]]">
-                    <paper-button 
+                  <div class$="cell [[getReset(item.participate, item.reset)]]">
+                    <paper-button raised on-click="confirmReset"
                       class='reset-button'
                       data-device="[[item.name]]"
-                      on-click="doReset" 
                       raised
                     >Reset</paper-button>
                   </div>
+                  <paper-dialog id="reset-[[item.name]]" class="popup">
+                    <h2>Reset Device</h2>
+                    <p>Device <b>[[item.name]]</b> will be temporarily removed from the transactive control network. It will be automatically added back in when the next peak period occurs, which is usually next afternoon or early evening.</p>
+                    <p>Proceed with the temporary reset?</p>
+                    <div class="buttons">
+                      <paper-button dialog-dismiss>No</paper-button>
+                      <paper-button 
+                        dialog-confirm 
+                        autofocus
+                        data-device="[[item.name]]"
+                        on-click="doReset"
+                      >Yes</paper-button>
+                    </div>
+                  </paper-dialog>
                 </td>
               </tr>
               <tr class='space-row'>
@@ -350,62 +364,54 @@
     </ha-card>
   </template>
 </dom-module>
-
 <script>
 Polymer({
   is: 'ha-transactive_home-card',
-
   properties: {
     hass: {
       type: Object,
     },
-
     stateObj: {
       type: Object,
     },
-
     groupEntity: {
       type: Object,
     }
   },
-
-  getParticipation: function (participate) {
-      return (participate ? 'green' : 'red');
+  getParticipation: function (participate, reset) {
+      return (participate && !reset ? 'green' : 'red');
   },
-
-  getReset: function (participate) {
-      return (participate ? '' : 'display-none');
+  getReset: function (participate, reset) {
+      return (participate && !reset ? '' : 'display-none');
   },
-
-  getDropdown: function (participate) {
-      return (participate ? '' : 'display-none');
+  getDropdown: function (participate, reset) {
+      return (participate && !reset ? '' : 'display-none');
   },
-
   getThermostat: function (hass) {
       var thermostat = Object.keys(hass.states).find(function (key) {
           return hass.states[key]._domain === 'climate';
       });
-
       var thermostats = [];
-
       if (thermostat)
       {
           var preppedThermostat = hass.states[thermostat].attributes;
           thermostats.push(preppedThermostat);
       }
-
       return thermostats;
   },
-
   getList: function (obj) {
     this.showToastMessage("Hi, your HVAC isn't in transactive mode for 10 days. Simply turn it back on and start saving energy and money again.");
     this.showToastMessage("Hi, you'll be on vacation next week. It's a good time to maximize savings. Want to set your house to minimum energy mode?");
     this.showToastMessage("Hi, we just found a new device that can be part of your home transactive energy network. Want to add it in and start saving energy and money now?");
     return obj.attributes.measures;
   },
-
   getDataDevices: function(obj){
-    return obj.attributes.device;
+    return Object.keys(obj.attributes.device).map((key) => {
+      const device = obj.attributes.device[key];
+      device.name = key;
+
+      return device;
+    });
   },
   getOverallFlexibility: function(obj){
     return obj.attributes.overallflexibility;
@@ -481,43 +487,65 @@ Polymer({
       const newValue = false;
       const device = ev.target.dataDevice;
 
-      console.log('transactive changed: ' + newValue);
+      const updateObj = { 
+        'device': device, 
+        'target': 'participate', 
+        'value': newValue 
+      };
 
-
-      const updateObj = { 'device': device, 'target': 'participate', 'value': newValue };
       this.callServiceHelper('update_transactive_home_device', updateObj);
     }
   },
-
+  confirmReset: function (ev) {
+    if (ev.target)
+    {
+      const device = ev.target.dataDevice;
+      const dialogName = `#reset-${device}`;
+      this.$$(dialogName).open();
+    }
+  },
   transactiveChanged: function (ev) {
     if (ev.target)
     {
       const newValue = ev.target.checked;
       const device = ev.target.dataDevice;
 
-      console.log('transactive changed: ' + newValue);
+      if (newValue)
+      { 
+        console.log('transactive changed: ' + newValue);
+        
+        const updateObj = { 
+          'device': device,
+          'target': 'participate',
+          'value': newValue 
+        };
 
-      const updateObj = { 'device': device, 'target': 'participate', 'value': newValue };
-      this.callServiceHelper('update_transactive_home_device', updateObj);
+        this.callServiceHelper('update_transactive_home_device', updateObj);
+      }
+      else
+      {
+        ev.target.checked = true;
+        this.$$(`#toggle-${device}`).open();
+      }
     }
   },
-  updateSliderValue: function (evt) {
-    if (evt.target)
-    {
-      const newValue = evt.target.value;
+  turnTransactiveOff: function (ev) {
+    const newValue = false;
+    const device = ev.target.dataDevice;
 
-      console.log('updating ' + newValue);
-
-      const updateObj = { 'target': 'flexibility', 'value': newValue };
-      this.callServiceHelper('update_transactive_home', updateObj);
-    }
+    const updateObj = { 
+      'device': device,
+      'target': 'participate',
+      'value': newValue 
+    };
+    
+    this.callServiceHelper('update_transactive_home_device', updateObj);
   },
   callServiceHelper: function (service, data) {
     if (this.hass)
     {      
       this.hass.callService('transactive_home', service, { value: data})
         .then(function () {
-          // console.log('successful service call');
         }.bind(this));
     }
   },

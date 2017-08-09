@@ -1,0 +1,92 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel='import' href='../components/ha-card.html'>
+<link rel='import' href='../components/entity/ha-entity-toggle.html'>
+<link rel='import' href='../state-summary/state-card-content.html'>
+
+
+<dom-module id='ha-whole_house_energy-card'>
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .states {
+        padding-bottom: 16px;
+      }
+      .state {
+        padding: 4px 16px;
+      }
+      td, th {
+        padding-right: 8px;
+      }
+      .state .label {
+        color: rgba(0, 0, 0, 0.54);
+        font-weight: bold;
+        text-transform: capitalize;
+      }
+      .state .value {
+        color: rgba(0, 0, 0, 0.87);
+      }
+      .header {
+        @apply(--paper-font-headline);
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 20px 16px 12px;
+      }
+      .header .name {
+        @apply(--paper-font-common-nowrap);
+      }
+      .header.domain .name {
+        /* Capitalize cards titles for default domain groups. */
+        text-transform: capitalize;
+      }
+      ha-entity-toggle {
+        margin-left: 16px;
+      }
+      .header-more-info {
+        cursor: pointer;
+      }
+
+    </style>
+
+    <ha-card class='whole-house-energy'>
+      <div class='header domain'>
+        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-whole_house_energy-card',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+
+    groupEntity: {
+      type: Object,
+    }
+  },
+
+  
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService('transactive_home', service, { value: data})
+        .then(function () {
+          // console.log('successful service call');
+        }.bind(this));
+    }
+  },
+});
+</script>

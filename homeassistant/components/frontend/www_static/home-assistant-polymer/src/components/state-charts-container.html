@@ -40,6 +40,11 @@
           chart-label="[[item.label]]">
         </state-quick-chart>
       </template>
+      <template is='dom-repeat' items="[[getDeviceData(stateObj)]]">
+        <state-quick-chart
+          device-name="[[item.name]]">
+        </state-quick-chart>
+      </template>
     </template>
   </template>
 </dom-module>
@@ -72,7 +77,9 @@ Polymer({
   getChartSeries: function (obj) {
     return obj.attributes.chartSeries;
   },
-
+  getDeviceData: function (obj) {
+    return Object.keys(obj.attributes.device).map((key) => obj.attributes.device[key]);
+  },
   _googleApiLoaded: function () {
     window.google.load('visualization', '1', {
       packages: ['timeline', 'corechart'],

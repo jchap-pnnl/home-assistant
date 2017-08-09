@@ -54,6 +54,7 @@
     dataChanged: function (chartData) {
       if (chartData)
       {
+        // this.drawChart();
         switch (this.chartType)
         {
           case 'bar':
@@ -112,27 +113,29 @@
       this.chartEngine.draw(data, options);     
     },
 
-
-
     drawChartLine: function (dataPoints) {
       var data = new window.google.visualization.DataTable();
 
       data.addColumn('datetime', 'X');
       data.addColumn('number', this.chartLabel);
-
+      data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
+      var d;
       const dataRows = dataPoints.map(function (array) {
 
         const newArray = array.map(function (item, index) {
 
           if (index === 0)
-          {
-            return new Date(item);
+          { d = new Date(item);
+            // alert(d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear());
+            // console.log(datevalue);
+            return d;
           }
           else 
           {
             return item;
           }
         });
+        newArray.push('<div style="background-color:#1E90FF ; padding:5px 10px 5px 15px;border:0; color:#fff;"><div>What happened on May 01?<li stype="padding:0px">Parents night out on '+d.getDate()+'/' +(d.getMonth()+1)+'/'+d.getFullYear()+ '?</li></div><div><div>Received incentives: $5</div><div>Power use: '+newArray[1] + ' Kw </div><div>Outdoor Temp: 65-75 F</div><div style="font-size:11px">Last year this date: <li>Energy use: 7.2 KWh</li><li>Outdoor Temp: 55-68 F</li></div>');
         return newArray;
       });
 
@@ -145,7 +148,8 @@
         series: {
           1: {curveType: 'function'}
         },
-        hAxis: {showTextEvery: 2}
+        hAxis: {showTextEvery: 2},
+        tooltip: { isHtml: true }
       };
 
       if (!this.chartEngine) {

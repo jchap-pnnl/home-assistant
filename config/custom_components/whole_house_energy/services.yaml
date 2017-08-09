@@ -1,0 +1,9 @@
+
+update_whole_house_energy:
+  description: Update values in whole house energy 
+
+  fields:
+    obj:
+    entity_id:
+      description: An object containing the value
+      example: 'whole_house_energy.whole_house_energy'

@@ -27,23 +27,34 @@
     </style>
 
     <template is='dom-if' if='[[slider_value]]'>
-      <div class='ha-slider'>
-        <div 
-          class$='normal-range'
-          style$='left: [[computeLeft(zone_min)]];
-            width: [[computeWidth(zone_max, zone_min)]];
-            top: 5px;
-            bottom: 5px;'></div>
-        <paper-slider value=[[slider_value]] on-change="updateSliderValue"></paper-slider>
+      <div class$="cell [[getReset(item.participate)]]">
+        <paper-button raised on-click="confirmReset"
+          class='reset-button'
+          data-device="[[item.name]]"
+          raised
+        >Reset</paper-button>
       </div>
+      <paper-dialog id="reset-[[item.name]]" class="popup">
+        <h2>Reset Device</h2>
+        <p>Device [[item.name]] will be temporarily removed from the transactive control network. It will automatically be added back in when the next peak period occurs, which is usually next afternoon or early evening.</p>
+        <p>Proceed with the temporary reset?</p>
+        <div class="buttons">
+          <paper-button dialog-dismiss>No</paper-button>
+          <paper-button 
+            dialog-confirm 
+            autofocus
+            data-device="[[item.name]]"
+            on-click="doReset"
+          >Yes</paper-button>
+        </div>
+      </paper-dialog>
     </template>
-    <slot></slot>
   </template>
 </dom-module>
 
 <script>
 Polymer({
-  is: 'ha-slider',
+  is: 'ha-reset-device',
 
   properties: {
     hass: {
@@ -59,10 +70,6 @@ Polymer({
     zone_max: {
       type: Number
     }
-    // box_class: {
-    //   type: String,
-    //   computed: 'getBoxClass(slider_value, zone_min, zone_max)'
-    // }
   },
   computeLeft: function (min) {
     const componentWidth = 168;
@@ -74,22 +81,6 @@ Polymer({
     const width = (max - min) * componentWidth / 100;
     return `${width}px`;
   },
-  // getBoxClass: function (sliderValue, zoneMin, zoneMax) {
-  //   let boxStatus = '';
-
-  //   if (typeof this.slider_value !== 'undefined' &&
-  //     typeof this.zone_min !== 'undefined' &&
-  //     typeof this.zone_max !== 'undefined')
-  //   {
-  //     boxStatus = (sliderValue >= zoneMin && sliderValue <= zoneMax ? 'box-happy' : 'box-sad');
-  //   }
-
-  //   return boxStatus;
-  // },
-  // getSliderValue: function (evt) {
-  //   const newValue = evt.target.value;
-  //   this.slider_value = newValue;
-  // },
   updateSliderValue: function (evt) {
     
     if (evt.target)

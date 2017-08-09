@@ -38,9 +38,10 @@ def setup(hass, config):
         """Do any update to the component."""
         # _LOGGER.info("transactive home service object: %s", service)
         # _LOGGER.info("what is in here?: %s", hass)
-        
+        _LOGGER.info(service)
+        _LOGGER.info("------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         update_obj = service.data.get('value')
-
+        _LOGGER.info(update_obj)
         # _LOGGER.info("state attributes: %s", hass.states.get('transactive_home.transactive_home'))
 
         transactive_home = hass.states.get('transactive_home.transactive_home').as_dict()
@@ -81,9 +82,11 @@ def setup(hass, config):
 
         _LOGGER.info("update value: %s", update_obj["value"])
         
-        for dev in attributes["device"]:
-            if (dev["name"] == update_obj["device"]):
-                dev[update_obj["target"]] = update_obj["value"]
+        # for dev in attributes["device"]:
+        #     if (dev["name"] == update_obj["device"]):
+        #         dev[update_obj["target"]] = update_obj["value"]
+
+        attributes["device"][update_obj["device"]][update_obj["target"]] = update_obj["value"]
 
         transactive_home["attributes"] = attributes
 
@@ -156,6 +159,7 @@ class TransactiveComponent(Entity):
                 }
             ],
             "chartSeries": [
+
                 {
                     "data": [
                         ['2017-07-17 23:36:58.368599Z', 4],
@@ -174,31 +178,36 @@ class TransactiveComponent(Entity):
                 },
                 {
                     "data": [
+                        ['2017-08-17 23:36:58.368595Z', 8, 9,10],
+                        ['2017-08-17 23:40:58.368597Z', 7, 7,9],
+                        ['2017-08-17 23:50:58.368599Z', 6, 5,8],
                         ['2017-08-17 23:36:58.368599Z', 8, 9,10],
                         ['2017-08-17 23:37:08.368599Z', 7, 7,9],
                         ['2017-08-17 23:37:18.368599Z', 6, 5,8],
+
                     ],
                     "type": "bar",
                     "label": "power"
                 }
             ],
-            "device": [{
-                    "name": "device1",
+            "device": {
+                "device1": {
                     "participate": "true",
+                    "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,
                     "power": 150,
                     "energy": 40
                 },
-                {
-                    "name": "device2",
+                "device2": {
                     "participate": "true",
+                    "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,
                     "power": 15,
                     "energy": 30
                 }
-            ]
+            }
         }
 
         return data
