@@ -136,17 +136,17 @@
           {
             return item;
           }
+        
         });
 
-        if (newArray[1])
+        if (newArray[3])
         {
-          newArray.push('<div style="background-color:#1E90FF ; padding:5px 10px 5px 15px;border:0; color:#fff;"><div>What happened on May 01?<li stype="padding:0px">Parents night out on ' + d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear() + '?</li></div><div><div>Received incentives: $5</div><div>Power use: '+ newArray[1] + ' Kw </div><div>Outdoor Temp: 65-75 F</div><div style="font-size:11px">Ten minutes ago: <li>Energy use: ' + newArray[2] + ' KWh</li><li>Outdoor Temp: 55-68 F</li></div>');
+          newArray.push('<div style="background-color:#1E90FF ; padding:5px 10px 5px 15px;border:0; color:#fff;"><div>What happened at ' + d.toLocaleTimeString() + '?</div><div><div>Received incentives: $5</div><div>Power use: '+ newArray[3] + ' Kw </div><div>Outdoor Temp: 65-75 F</div><div style="font-size:11px">Ten minutes ago:<li>Energy use: ' + newArray[1] + ' KWh</li><li>Outdoor Temp: 55-68 F</li></div></div></div>');
         }
         else
         {
-          newArray.push('<div style="background-color:#1E90FF ; padding:5px 10px 5px 15px;border:0; color:#fff;"><div>What happened on May 01?<li stype="padding:0px">Parents night out on ' + d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear() + '?</li></div><div><div>Received incentives: $5</div><div style="font-size:11px">Ten minutes ago: <li>Energy use: ' + newArray[2] + ' KWh</li><li>Outdoor Temp: 55-68 F</li></div>');
+          newArray.push('<div></div>');
         }
-
         return newArray;
       });
 
@@ -157,7 +157,9 @@
         lineWidth: 2,
         title:'Overall Power for individual devices',
         series: {
-          1: {curveType: 'function'}
+          0: {tooltip: false},
+          1: {tooltip: false},
+          2: {tooltip: true}
         },
         hAxis: {showTextEvery: 2},
         tooltip: { isHtml: true }
