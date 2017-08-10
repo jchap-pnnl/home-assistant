@@ -1,7 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 
-<dom-module id='ha-slider'>
+<dom-module id='ha-scale-indicator'>
   <template>
     <style include="paper-material">
       :host {
@@ -11,64 +11,101 @@
         padding:0 6px 0 6px;
         background-color: white;
       }
-      .ha-slider {
+      .scale-indicator {
+        width: 100%;
+        height: 100px;
         position: relative;
       }
-      .normal-range {
-        height: 20px;
+      .left-end,
+      .right-end {
         position: absolute;
+        font-size: 12px;
+        bottom: 0;
       }
-      .box-happy {
-        background-color: #87c1af;
+      .left-end,
+      .left-icon {
+        left: 0;
       }
-      .box-sad {
-        background-color: #f1b2b2;
+      .right-end,
+      .right-icon {
+        right: 0;
+      }
+      .left-icon,
+      .right-icon {
+        position: absolute;
+        font-size: 12px;
+        top: 0;
+        color: darkgray;
+      }
+      .actual-value,
+      .pointer-marker {
+        text-align: center;
+        font-size: 14px;
+        color: forestgreen;
+      }
+      .description {
+        font-size: 12px;
+        color: forestgreen;
+      }
+      .indicator-line {
+        margin: 10px 0;
+        height: 2px;
+        width: 100%;
+        border: solid gray 1px;
+        box-sizing: border-box;
       }
     </style>
-
-    <template is='dom-if' if='[[slider_value]]'>
-      <div class$="cell [[getReset(item.participate)]]">
-        <paper-button raised on-click="confirmReset"
-          class='reset-button'
-          data-device="[[item.name]]"
-          raised
-        >Reset</paper-button>
+    <div class='description'>[[description]]</div>
+    <div class='scale-indicator'>
+      <div class='left-icon'>
+        <iron-icon icon="[[left_icon]]"></iron-icon>
       </div>
-      <paper-dialog id="reset-[[item.name]]" class="popup">
-        <h2>Reset Device</h2>
-        <p>Device [[item.name]] will be temporarily removed from the transactive control network. It will automatically be added back in when the next peak period occurs, which is usually next afternoon or early evening.</p>
-        <p>Proceed with the temporary reset?</p>
-        <div class="buttons">
-          <paper-button dialog-dismiss>No</paper-button>
-          <paper-button 
-            dialog-confirm 
-            autofocus
-            data-device="[[item.name]]"
-            on-click="doReset"
-          >Yes</paper-button>
-        </div>
-      </paper-dialog>
-    </template>
+      <div class='right-icon'>
+        <iron-icon icon="[[right_icon]]"></iron-icon>
+      </div>
+      <div class='left-end'>[[left_label]]</div>
+      <div class='right-end'>[[right_label]]</div>
+      <div class='actual-value'>[[actual_label]]</div>
+      <div class='indicator-line'></div>
+      <div class='pointer-marker'><iron-icon icon="mdi:triangle"></iron-icon></div>
+    </div>
   </template>
 </dom-module>
 
 <script>
 Polymer({
-  is: 'ha-reset-device',
+  is: 'ha-scale-indicator',
 
   properties: {
     hass: {
       type: Object,
     },
-    slider_value: {
-      type: Number,
-      observer: 'updateSliderValue'
+    left_icon: {
+      type: String
     },
-    zone_min: {
+    right_icon: {
+      type: String
+    },
+    left_end: {
       type: Number
     },
-    zone_max: {
+    left_label: {
+      type: String
+    },
+    right_end: {
       type: Number
+    },
+    right_label: {
+      type: String
+    },
+    actual_value: {
+      type: Number
+    },
+    actual_label: {
+      type: String
+    },
+    description: {
+      type: String
     }
   },
   computeLeft: function (min) {

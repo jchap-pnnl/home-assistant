@@ -3,8 +3,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../components/entity/ha-entity-toggle.html'>
-<link rel='import' href='../state-summary/state-card-content.html'>
+<link rel='import' href='../controls/ha-scale-indicator.html'>
 
 
 <dom-module id='ha-whole_house_energy-card'>
@@ -55,6 +54,17 @@
     <ha-card class='whole-house-energy'>
       <div class='header domain'>
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
+        <ha-scale-indicator 
+          left_icon='mdi:battery'
+          right_icon='mdi:battery-30'
+          left_label='250 kWh'
+          left_value='250'
+          right_label='50 kWh'
+          right_value='50'
+          actual_value='125'
+          actual_label='125 kWh'
+          description='Estimated energy use this week (based on your settings)'
+        ></ha-scale-indicator>
       </div>
     </ha-card>
   </template>
