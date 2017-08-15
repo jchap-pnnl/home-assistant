@@ -1,0 +1,334 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel='import' href='../components/ha-card.html'>
+
+<dom-module id='ha-connected_devices-card'>
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      
+      td, th {
+        padding-right: 8px;
+      }
+      
+      .header {
+        @apply(--paper-font-headline);
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 20px 16px 12px;
+      }
+      .header .name {
+        @apply(--paper-font-common-nowrap);
+      }
+      .header.domain .name {
+        /* Capitalize cards titles for default domain groups. */
+        text-transform: capitalize;
+      }
+      .data-table {
+        padding: 4px 16px;
+      }
+      .data-table thead {
+        color: rgba(0, 0, 0, 0.54);
+      }
+      .data-table tbody {
+        color: rgba(0, 0, 0, 0.87);
+      }
+      .data-table td.participation {
+        width: 50px;
+      }
+      .data-table td.reset {
+        width: 90px;
+      }
+      .data-table td.slider-cell {
+        width: 100px;
+      }
+      .data-table .indicator .cell {
+        padding: 4px;
+        position: relative;
+        height: 8px;
+        width: 8px;
+        opacity: .7;
+      }
+      .data-table .indicator .cell > * {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        left: 0px;
+        bottom: 0px;
+        border-radius: 8px;
+      }
+      .data-table table {
+        margin-bottom: 20px;
+        width: 100%;
+      }
+      .indicator {
+        margin: 0;
+        padding: 0;
+      }
+      .green {
+        background-color: green;
+      }
+      .red {
+        background-color: red;
+      }
+      .slider-cell {
+        position: relative;
+      }
+      .reset-button {
+        background-color: #c74507;
+        color: #ebf73c;
+        height: 30px;
+      }
+      paper-toggle-button {
+        cursor: pointer;
+      }
+      .display-none {
+        display: none;
+      }
+      paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container::shadow .floated-label-placeholder {
+        display: none;
+      }
+      paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container {
+        padding: 0;
+      }
+      paper-listbox {
+        padding: 0;
+      }
+      paper-listbox paper-item {
+        min-height: 0;
+      }
+      .device-name-row {
+        margin-top: 20px;
+      }
+      .device-name-cell {
+        background-color: gainsboro;
+      }
+      .device-name {
+        font-size: 14px;
+        font-weight: bold;
+      }
+      .column-name {
+        font-size: 10px;
+      }
+      .space-row {
+        height: 10px;
+      }
+    </style>
+
+    <ha-card class='connected-devices'>
+      <div class='header domain'>
+        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
+      </div>
+      <div class='data-table'>
+        <table>
+          <tbody>
+            <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
+            <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
+              <tr class='device-name-row'>
+                <td class='device-name-cell' colspan=6>
+                  <div class='device-name'><i>[[item.name]]</i></div>
+                </td>
+              </tr>
+              <tr>
+                <td class='participation'></td>
+                <td>
+                  <div class='column-name'>Power</div>
+                </td>
+                <td>
+                  <div class='column-name'>Energy</div>
+                </td>
+                <td></td>
+                <td class='slider-cell'>
+                  <div class$="column-name [[getDropdown(item.participate, item.reset)]]">
+                    Flexibility
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class='indicator'>
+                  <div class='cell'>
+                    <div class$="[[getParticipation(item.participate, item.reset)]]"></div>
+                  </div>
+                </td>
+                <td style='text-align: right'>[[item.power]]</td>
+                <td style='text-align: right'>[[item.energy]]</td>
+                <td>
+                  <div>
+                    <paper-toggle-button raised
+                      data-device="[[item.name]]"
+                      on-click="transactiveChanged"
+                      checked="[[item.participate]]">
+                    </paper-toggle-button>
+                  </div>
+                  <paper-dialog id="toggle-[[item.name]]" class="popup">
+                    <h2>Turn Off Transactive Mode</h2>
+                    <p>Device <b>[[item.name]]</b> will be removed from the transactive control network until you reactivate its transactive mode.
+                    </p> 
+                    <p>Deactive its transactive mode now?</p>
+                    <div class="buttons">
+                      <paper-button dialog-dismiss>No</paper-button>
+                      <paper-button 
+                        data-device="[[item.name]]"
+                        dialog-confirm 
+                        autofocus
+                        on-click="turnTransactiveOff">Yes</paper-button>
+                    </div>
+                  </paper-dialog>
+                </td>
+                <td class="slider-cell">
+                  <div class$="[[getDropdown(item.participate, item.reset)]]">
+                    <paper-dropdown-menu noLabelFloat>
+                      <paper-listbox 
+                        slot="dropdown-content" 
+                        class="dropdown-content"
+                        selected="0">
+                        <paper-item>high</paper-item>
+                        <paper-item>medium</paper-item>
+                        <paper-item>low</paper-item>
+                      </paper-listbox>
+                    </paper-dropdown-menu>
+                  </div>
+                </td>
+                <td class='reset'>
+                  <div class$="cell [[getReset(item.participate, item.reset)]]">
+                    <paper-button raised on-click="confirmReset"
+                      class='reset-button'
+                      data-device="[[item.name]]"
+                      raised
+                    >Reset</paper-button>
+                  </div>
+                  <paper-dialog id="reset-[[item.name]]" class="popup">
+                    <h2>Reset Device</h2>
+                    <p>Device <b>[[item.name]]</b> will be temporarily removed from the transactive control network. It will be automatically added back in when the next peak period occurs, which is usually next afternoon or early evening.</p>
+                    <p>Proceed with the temporary reset?</p>
+                    <div class="buttons">
+                      <paper-button dialog-dismiss>No</paper-button>
+                      <paper-button 
+                        dialog-confirm 
+                        autofocus
+                        data-device="[[item.name]]"
+                        on-click="doReset"
+                      >Yes</paper-button>
+                    </div>
+                  </paper-dialog>
+                </td>
+              </tr>
+              <tr class='space-row'>
+                <td colspan=6></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'ha-connected_devices-card',
+  properties: {
+    hass: {
+      type: Object,
+    },
+    stateObj: {
+      type: Object,
+    },
+    groupEntity: {
+      type: Object,
+    }
+  },
+  getParticipation: function (participate, reset) {
+      return (participate && !reset ? 'green' : 'red');
+  },
+  getReset: function (participate, reset) {
+      return (participate && !reset ? '' : 'display-none');
+  },
+  getDropdown: function (participate, reset) {
+      return (participate && !reset ? '' : 'display-none');
+  },
+  getDataDevices: function(obj){
+    return Object.keys(obj.attributes.devices).map((key) => {
+      const device = obj.attributes.devices[key];
+      device.name = key;
+
+      return device;
+    });
+  },
+  doReset: function (ev) {
+    if (ev.target)
+    {
+      const newValue = false;
+      const device = ev.target.dataDevice;
+
+      const updateObj = { 
+        'device': device, 
+        'target': 'participate', 
+        'value': newValue 
+      };
+
+      this.callServiceHelper('update_connected_device', updateObj);
+    }
+  },
+  confirmReset: function (ev) {
+    if (ev.target)
+    {
+      const device = ev.target.dataDevice;
+      const dialogName = `#reset-${device}`;
+      this.$$(dialogName).open();
+    }
+  },
+  transactiveChanged: function (ev) {
+    if (ev.target)
+    {
+      const newValue = ev.target.checked;
+      const device = ev.target.dataDevice;
+
+      if (newValue)
+      { 
+        console.log('transactive changed: ' + newValue);
+        
+        const updateObj = { 
+          'device': device,
+          'target': 'participate',
+          'value': newValue 
+        };
+
+        this.callServiceHelper('update_connected_device', updateObj);
+      }
+      else
+      {
+        ev.target.checked = true;
+        this.$$(`#toggle-${device}`).open();
+      }
+    }
+  },
+  turnTransactiveOff: function (ev) {
+    const newValue = false;
+    const device = ev.target.dataDevice;
+
+    const updateObj = { 
+      'device': device,
+      'target': 'participate',
+      'value': newValue 
+    };
+    
+    this.callServiceHelper('update_connected_device', updateObj);
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService('connected_devices', service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
+  },
+});
+</script>

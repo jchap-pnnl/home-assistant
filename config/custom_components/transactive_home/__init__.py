@@ -69,37 +69,6 @@ def setup(hass, config):
         update_transactive_home,
         descriptions['update_transactive_home'])
 
-    def update_transactive_home_device(service):
-        """Update a transactive home device."""
-        
-        update_obj = service.data.get('value')
-
-        transactive_home = hass.states.get('transactive_home.transactive_home').as_dict()
-        
-        attributes = transactive_home["attributes"]
-
-        _LOGGER.info("damn devices: %s", attributes["device"])
-
-        _LOGGER.info("update value: %s", update_obj["value"])
-        
-        # for dev in attributes["device"]:
-        #     if (dev["name"] == update_obj["device"]):
-        #         dev[update_obj["target"]] = update_obj["value"]
-
-        attributes["device"][update_obj["device"]][update_obj["target"]] = update_obj["value"]
-
-        transactive_home["attributes"] = attributes
-
-        hass.states.set('transactive_home.transactive_home', 'On', attributes, True)
-
-        _LOGGER.info("device after update: %s", hass.states.get('transactive_home.transactive_home'))
-
-    hass.services.register(
-        DOMAIN,
-        'update_transactive_home_device',
-        update_transactive_home_device,
-        descriptions['update_transactive_home_device'])
-
     return True
 
 
@@ -178,35 +147,17 @@ class TransactiveComponent(Entity):
                 {
                     "data": [
                         ['2017-08-17 23:36:58.368595Z', 8, 9,10],
-                        ['2017-08-17 23:40:58.368597Z', 7, 7,9],
-                        ['2017-08-17 23:50:58.368599Z', 6, 5,8],
-                        ['2017-08-17 23:36:58.368599Z', 8, 9,10],
-                        ['2017-08-17 23:37:08.368599Z', 7, 7,9],
-                        ['2017-08-17 23:37:18.368599Z', 6, 5,8],
+                        ['2017-08-17 23:37:58.368597Z', 7, 7,9],
+                        ['2017-08-17 23:38:58.368599Z', 6, 5,8],
+                        ['2017-08-17 23:39:58.368599Z', 8, 9,10],
+                        ['2017-08-17 23:40:08.368599Z', 7, 7,9],
+                        ['2017-08-17 23:41:18.368599Z', 6, 5,8],
 
                     ],
                     "type": "bar",
                     "label": "power"
                 }
-            ],
-            "device": {
-                "device1": {
-                    "participate": "true",
-                    "reset": False,
-                    "zone_min": 0,
-                    "zone_max": 1,
-                    "power": 150,
-                    "energy": 40
-                },
-                "device2": {
-                    "participate": "true",
-                    "reset": False,
-                    "zone_min": 0,
-                    "zone_max": 1,
-                    "power": 15,
-                    "energy": 30
-                }
-            }
+            ]
         }
 
         return data

@@ -7,15 +7,3 @@ update_transactive_home:
     entity_id:
       description: An object containing the value
       example: 'transactive_home.transactive_home'
-
-update_transactive_home_device:
-  description: Update a transactive home device 
-
-  fields:
-    device:
-      description: Name of device to change
-      example: 'device1'
-
-    obj:
-      description: An object containing the value
-      example: 'obj.value'

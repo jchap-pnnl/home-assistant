@@ -58,7 +58,7 @@
         switch (this.chartType)
         {
           case 'bar':
-            this.drawChartBar(chartData);
+            // this.drawChartBar(chartData);
             break;
           case 'line':
             this.drawChartLine(chartData);
@@ -97,9 +97,9 @@
 
       var options = {
         legend: { position: 'right'},
-        bar: { groupWidth: "60%"},
+        bar: { groupWidth: "100%"},
         isStacked: true,
-        title:'Overall Energy for individual devices',
+        title:'Overall power for individual devices',
         series: {
           1: {curveType: 'function'}
         },
@@ -154,11 +154,12 @@
 
       var options = {
         legend: { position: 'right'},
+        colors: ['#808080', '#FF8C00', '#FF8C00'],
         lineWidth: 2,
-        title:'Overall Power for individual devices',
+        title:'Overall energy for all devices',
         series: {
           0: {tooltip: false},
-          1: {tooltip: false},
+          1: {tooltip: false, lineDashStyle: [4, 1]},
           2: {tooltip: true}
         },
         hAxis: {showTextEvery: 2},
