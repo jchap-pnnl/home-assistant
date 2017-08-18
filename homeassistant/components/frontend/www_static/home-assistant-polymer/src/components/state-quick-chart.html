@@ -1,4 +1,23 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<script src="../../bower_components/chart.js/dist/Chart.js"></script>
+<script src="../../bower_components/moment/min/moment.min.js"></script>
+
+
+<dom-module id="state-quick-chart">
+
+  <template>
+    <style>
+        .chart-container {
+          padding: 20px;
+        }
+    </style>
+    <div class="chart-container">
+      <canvas id="canvas" width="600" height="400"></canvas>
+    </div>
+
+  </template>
+
+</dom-module>
 
 <script>
 (function () {
@@ -37,8 +56,8 @@
       },
 
       chartData: {
-        type: Array,
-        value: [],
+        type: Object,
+        value: {},
         observer: 'dataChanged'
       },
     },
@@ -57,9 +76,6 @@
         // this.drawChart();
         switch (this.chartType)
         {
-          case 'bar':
-            // this.drawChartBar(chartData);
-            break;
           case 'line':
             this.drawChartLine(chartData);
             break;
@@ -67,110 +83,55 @@
       }
     },
 
-    drawChartBar: function (dataPoints) {
-
-      var data = new window.google.visualization.DataTable();
-
-      data.addColumn('datetime', 'X');
-      data.addColumn('number', 'Device1');
-      data.addColumn('number', 'Device2');
-      data.addColumn('number', 'Device3');
-
-      const dataRows = dataPoints.map(function (array) {
-
-        const newArray = array.map(function (item, index) {
-
-          if (index === 0)
-          {
-            return new Date(item);
+    drawChartLine: function (data) {
+      var ctx = this.$.canvas.getContext('2d');
+      var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: data.times.map(function (timeStamp, index) {
+                let timeLabel = '';
+                if (index % 2 === 0)
+                {
+                  timeLabel = moment(timeStamp).format('h:mm a');
+                }
+                return timeLabel;
+              }),
+              datasets: [
+                {
+                    label: 'historical',
+                    data: data.historical,
+                    backgroundColor: 'gray',
+                    borderColor: 'gray',
+                    lineTension: 0,
+                    fill: false
+                },{
+                    label: 'actual',
+                    data: data.actual,
+                    backgroundColor: 'orange',
+                    borderColor: 'orange',
+                    lineTension: 0,
+                    fill: false
+                },{
+                    label: 'transactive',
+                    data: data.transactive,
+                    backgroundColor: 'orange',
+                    borderColor: 'orange',
+                    lineTension: 0,
+                    borderDash: [5, 5],
+                    fill: false
+                }
+              ]
+          },
+          options: {
+              scales: {
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero:true
+                      }
+                  }]
+              }
           }
-          else 
-          {
-            return item;
-          }
-        });
-        return newArray;
       });
-
-      data.addRows(dataRows);
-
-
-      var options = {
-        legend: { position: 'right'},
-        bar: { groupWidth: "100%"},
-        isStacked: true,
-        title:'Overall power for individual devices',
-        series: {
-          1: {curveType: 'function'}
-        },
-        hAxis: {showTextEvery: 2}
-      };
-
-      if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.ColumnChart(this);
-      }
-
-      this.chartEngine.draw(data, options);     
-    },
-
-    drawChartLine: function (dataPoints) {
-      var data = new window.google.visualization.DataTable();
-
-      data.addColumn('datetime', 'X');
-      data.addColumn('number', 'historical');
-      data.addColumn('number', 'transactive');
-      data.addColumn('number', this.chartLabel);
-      data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
-      
-      var d;
-      const dataRows = dataPoints.map(function (array) {
-
-        const newArray = array.map(function (item, index) {
-
-          if (index === 0)
-          { 
-            d = new Date(item);
-            return d;
-          }
-          else 
-          {
-            return item;
-          }
-        
-        });
-
-        if (newArray[3])
-        {
-          newArray.push('<div style="background-color:#1E90FF ; padding:5px 10px 5px 15px;border:0; color:#fff;"><div>What happened at ' + d.toLocaleTimeString() + '?</div><div><div>Received incentives: $5</div><div>Power use: '+ newArray[3] + ' Kw </div><div>Outdoor Temp: 65-75 F</div><div style="font-size:11px">Ten minutes ago:<li>Energy use: ' + newArray[1] + ' KWh</li><li>Outdoor Temp: 55-68 F</li></div></div></div>');
-        }
-        else
-        {
-          newArray.push('<div></div>');
-        }
-        return newArray;
-      });
-
-      data.addRows(dataRows);
-
-      var options = {
-        legend: { position: 'right'},
-        colors: ['#808080', '#FF8C00', '#FF8C00'],
-        lineWidth: 2,
-        title:'Overall energy for all devices',
-        series: {
-          0: {tooltip: false},
-          1: {tooltip: false, lineDashStyle: [4, 1]},
-          2: {tooltip: true}
-        },
-        hAxis: {showTextEvery: 2},
-        tooltip: { isHtml: true }
-      };
-
-      if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.LineChart(this);
-      }
-
-      this.chartEngine.draw(data, options);
     },
 
 

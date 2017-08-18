@@ -1,13 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
-<link rel="import" href="../../bower_components/google-apis/google-legacy-loader.html">
-
 <link rel="import" href="./state-quick-chart.html">
 
 <dom-module id="state-charts-container">
   <template>
-    <link href="https://ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css" rel="stylesheet" type="text/css">
     <style>
     :host {
       display: block;
@@ -24,8 +21,6 @@
     }
     </style>
 
-    <google-legacy-loader on-api-load="_googleApiLoaded"></google-legacy-loader>
-
     <template is='dom-if' if='[[_isLoading]]'>
       <div class='loading-container'>
         <paper-spinner active alt='Updating history data'></paper-spinner>
@@ -35,7 +30,7 @@
     <template is='dom-if' if='[[!_isLoading]]'>
       <template is='dom-repeat' items="[[getChartSeries(stateObj)]]">
         <state-quick-chart
-          chart-data="[[item.data]]"
+          chart-data="[[item]]"
           chart-type="[[item.type]]"
           chart-label="[[item.label]]">
         </state-quick-chart>
@@ -60,29 +55,30 @@ Polymer({
 
     _apiLoaded: {
       type: Boolean,
-      value: false,
+      value: true,
     },
 
     _isLoading: {
       type: Boolean,
-      computed: '_computeIsLoading(isLoadingData, _apiLoaded)',
+      value: false
+      // computed: '_computeIsLoading(isLoadingData, _apiLoaded)',
     },
   },
 
   getChartSeries: function (obj) {
     return obj.attributes.chartSeries;
   },
-  _googleApiLoaded: function () {
-    window.google.load('visualization', '1', {
-      packages: ['timeline', 'corechart'],
-      callback: function () {
-        this._apiLoaded = true;
-      }.bind(this),
-    });
-  },
+  // _googleApiLoaded: function () {
+  //   window.google.load('visualization', '1', {
+  //     packages: ['timeline', 'corechart'],
+  //     callback: function () {
+  //       this._apiLoaded = true;
+  //     }.bind(this),
+  //   });
+  // },
 
-  _computeIsLoading: function (_isLoadingData, _apiLoaded) {
-    return _isLoadingData || !_apiLoaded;
-  },
+  // _computeIsLoading: function (_isLoadingData, _apiLoaded) {
+  //   return _isLoadingData || !_apiLoaded;
+  // },
 });
 </script>
