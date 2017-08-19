@@ -89,12 +89,13 @@
           type: 'line',
           data: {
               labels: data.times.map(function (timeStamp, index) {
-                let timeLabel = '';
-                if (index % 2 === 0)
-                {
-                  timeLabel = moment(timeStamp).format('h:mm a');
-                }
-                return timeLabel;
+                // let timeLabel = '';
+                // if (index % 2 === 0)
+                // {
+                //   timeLabel = moment(timeStamp).format('h:mm a');
+                // }
+                // return timeLabel;
+                return moment(timeStamp).format('h:mm a');
               }),
               datasets: [
                 {
@@ -129,11 +130,96 @@
                           beginAtZero:true
                       }
                   }]
+              },
+              tooltips: {
+
+                enabled: false,
+                mode: 'index',
+                position: 'nearest',
+                custom: this.customTooltips
               }
           }
       });
     },
+    customTooltips: function(tooltip) {
+      // remove previous tooltip if no tooltip
+      if (tooltip.opacity === 0) {
+        const divs = this._chart.canvas.parentNode.getElementsByTagName("div");
+        
+        let i = divs.length;
 
+        for (i = divs.length - 1; i >= 0; i--)
+        {
+            divs[i].remove();
+        }
+
+        return;
+      }
+
+      const tooltipEl = document.createElement('div');
+      tooltipEl.id = 'chartjs-tooltip';
+      tooltipEl.innerHTML = "<div></div>";
+      this._chart.canvas.parentNode.appendChild(tooltipEl);
+
+      // Set caret Position
+      tooltipEl.classList.remove('above', 'below', 'no-transform');
+      
+      if (tooltip.yAlign) 
+      {
+        tooltipEl.classList.add(tooltip.yAlign);
+      } 
+      else 
+      {
+        tooltipEl.classList.add('no-transform');
+      }
+
+      function getBody(bodyItem) {
+        return bodyItem.lines;
+      }
+
+      // Set Text
+      if (tooltip.body) {
+        var titleLines = tooltip.title || [];
+        var bodyLines = tooltip.body.map(getBody);
+
+        const values = {};
+
+        // for example, bodyLines[0] might be:
+        //    ["historical: 6"]
+        bodyLines.forEach(function (bodyLine) {
+          const bodyParts = bodyLine[0].split(":");
+          values[bodyParts[0]] = Number(bodyParts[1]);
+        });
+
+        let innerHtml = '<div>What happened at ' + titleLines + '?</div><div><div>Received incentives: $5</div>';
+
+        if (values.actual)
+        {
+            innerHtml = innerHtml + '<div>Energy use: ' + values.actual + ' Kw </div><div>Outdoor Temp: 65-75 F</div>';
+        }
+
+        innerHtml = innerHtml + '<div style="font-size:11px">Ten minutes ago:<li>Energy use: ' + values.historical + ' Kw</li><li>Outdoor Temp: 55-68 F</li></div></div>';
+
+        var bodyRoot = tooltipEl.querySelector('div');
+        bodyRoot.innerHTML = innerHtml;
+      }
+
+      var positionY = this._chart.canvas.offsetTop;
+      var positionX = this._chart.canvas.offsetLeft;
+
+      // Display, position, and set styles for font
+      tooltipEl.style.position = 'absolute';
+      tooltipEl.style.background = '#1E90FF';
+      tooltipEl.style.color = 'white';
+      tooltipEl.style.padding = '5px 10px 5px 15px';
+      tooltipEl.style.opacity = 1;
+      tooltipEl.style.left = positionX + tooltip.caretX + 'px';
+      tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+      // tooltipEl.style.fontFamily = tooltip._fontFamily;
+      tooltipEl.style.fontSize = tooltip.fontSize;
+      tooltipEl.style.fontStyle = tooltip._fontStyle;
+      tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+    }
 
   });
 }());
