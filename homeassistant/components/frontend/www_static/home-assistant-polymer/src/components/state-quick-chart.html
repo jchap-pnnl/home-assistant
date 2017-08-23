@@ -102,51 +102,63 @@
                     label: 'historical',
                     data: data.historical,
                     pointRadius: 1,
+                    pointHoverRadius: 2,
                     pointBorderWidth: 0,
                     borderWidth: 2,
-                    backgroundColor: 'gray',
-                    borderColor: 'gray',
+                    backgroundColor: '#696969',
+                    borderColor: '#696969',
+                    borderDash: [3,2],
+                    pointStyle:'circle',
                     lineTension: 0,
                     fill: false
                 },{
                     label: 'actual',
                     data: data.actual,
                     pointRadius: 1,
+                    pointHoverRadius: 2,
                     pointBorderWidth: 0,
                     borderWidth: 2,
-                    backgroundColor: 'orange',
-                    borderColor: 'orange',
+                    backgroundColor: '#FF7F50',
+                    borderColor: '#FF7F50',
+                    pointStyle:'circle',
                     lineTension: 0,
                     fill: false
                 },{
                     label: 'transactive',
                     data: data.transactive,
                     pointRadius: 1,
+                    pointHoverRadius: 2,
                     pointBorderWidth: 0,
                     borderWidth: 2,
-                    backgroundColor: 'orange',
-                    borderColor: 'orange',
+                    backgroundColor: '#FF7F50',
+                    borderColor: '#FF7F50',
+                    pointStyle:'circle',
                     lineTension: 0,
-                    borderDash: [5, 5],
+                    borderDash: [3, 2],
                     fill: false
                 }
               ]
           },
           options: {
-              scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero:true
-                      }
-                  }]
-              },
+            scaleShowVerticalLines: false,
+              scales : {
+                    xAxes : [ {
+                        gridLines : {
+                            display : false
+                        }
+                    } ]
+                },
               tooltips: {
-
+                yAlign:'top',
+                xAlign:'right',
                 enabled: false,
                 mode: 'index',
                 position: 'nearest',
                 custom: this.customTooltips
-              }
+              },
+               animation: {
+                duration: 0
+             }
           }
       });
     },
@@ -222,8 +234,8 @@
       tooltipEl.style.color = 'white';
       tooltipEl.style.padding = '5px 10px 5px 15px';
       tooltipEl.style.opacity = 1;
-      tooltipEl.style.left = positionX + tooltip.caretX + 'px';
-      tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+      tooltipEl.style.left = positionX + tooltip.caretX - 185 +'px';
+      tooltipEl.style.top = positionY + tooltip.caretY - 100 + 'px';
       // tooltipEl.style.fontFamily = tooltip._fontFamily;
       tooltipEl.style.fontSize = tooltip.fontSize;
       tooltipEl.style.fontStyle = tooltip._fontStyle;
