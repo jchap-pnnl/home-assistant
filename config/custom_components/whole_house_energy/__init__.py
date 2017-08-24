@@ -93,13 +93,13 @@ class WholeHouseEnergyComponent(Entity):
         data = {
             "energyUse":{
                 "maximum": "250",
-                "minimum": "50",
-                "transactive": "125"
+                "minimum": "75",
+                "transactive": "100"
             },
             "energyCost":{
                 "maximum": "$37.50",
                 "minimum": "$7.50",
-                "transactive": "$18.75"
+                "transactive": "$8.75"
             }
         }
 

@@ -13,14 +13,19 @@
       }
       .scale-indicator {
         width: 100%;
-        height: 100px;
+        height: 50px;
         position: relative;
+        padding-top: 30px;
       }
       .left-end,
       .right-end {
         position: absolute;
         font-size: 12px;
         bottom: 0;
+        color: dimgray;
+        font-weight: bold;
+        z-index: 2;
+        opacity: .8;
       }
       .left-end,
       .left-icon {
@@ -36,15 +41,32 @@
         font-size: 12px;
         top: 0;
       }
-      .actual-value,
-      .pointer-marker {
+      .actual-value {
+        font-size: 14px;
+        color: black;
+        z-index: 2;
+      }
+      .pointer-outer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .pointer-inner {
         text-align: center;
+        display: inline-block;
+      }
+      .pointer-marker {
         font-size: 14px;
         color: forestgreen;
+        opacity: .5;
       }
       .description {
         font-size: 12px;
         color: forestgreen;
+        line-height: 12px;
+        margin-top: 20px;
       }
       .indicator-line {
         margin: 10px 0;
@@ -64,9 +86,19 @@
       </div>
       <div class='left-end'>[[left_value]]&nbsp;[[units_label]]</div>
       <div class='right-end'>[[right_value]]&nbsp;[[units_label]]</div>
-      <div class='actual-value'>[[actual_value]]&nbsp;[[units_label]]</div>
       <div class='indicator-line'></div>
-      <div class='pointer-marker'><iron-icon icon="mdi:triangle"></iron-icon></div>
+      <div class='pointer-outer' 
+        style="[[getPointerStyle(actual_value, left_value, right_value)]]"
+      >
+        <div class='pointer-inner'>
+          <div class='actual-value'>
+            [[actual_value]]&nbsp;[[units_label]]
+          </div>
+          <div class='pointer-marker'>
+            <iron-icon icon="mdi:triangle"></iron-icon>
+          </div>
+        </div>
+      </div>
     </div>
   </template>
 </dom-module>
@@ -106,52 +138,96 @@ Polymer({
       type: String
     }
   },
-  computeLeft: function (min) {
-    const componentWidth = 168;
-    const left = min * componentWidth / 100 + 15;
-    return `${left}px`;
-  },
-  computeWidth: function (max, min) {
-    const componentWidth = 168;
-    const width = (max - min) * componentWidth / 100;
-    return `${width}px`;
-  },
-  updateSliderValue: function (evt) {
-    
-    if (evt.target)
+  getPointerStyle: function (valueLabel, maxLabel, minLabel) {
+    let style = "";
+
+    let valueString = this.trimStringForNumber(valueLabel, "$");
+    let maxString = this.trimStringForNumber(maxLabel, "$");
+    let minString = this.trimStringForNumber(minLabel, "$");
+
+    const valueNum = Number(valueString);
+    let maxNum = Number(maxString);
+    let minNum = Number(minString);
+
+    if (minNum > maxNum)
     {
-      const newValue = evt.target.value;
-
-      console.log('we are updating ' + newValue);
-
-      this.doUpdateTransactiveHome({ 'target': 'flexibility', 'value': newValue });
+      const tmp = minNum;
+      minNum = maxNum;
+      maxNum = tmp;
     }
-  },
 
-  doUpdateTransactiveHome: function (value) {
-    console.log(value);
-    this.callServiceHelper('update_transactive_home', value);
-  },
+    const midWay = ((maxNum - minNum) / 2);
 
-  callServiceHelper: function (service, data) {
-    // We call stateChanged after a successful call to re-sync the inputs
-    // with the state. It will be out of sync if our service call did not
-    // result in the entity to be turned on. Since the state is not changing,
-    // the resync is not called automatic.
-    /* eslint-disable no-param-reassign */
-    // data.entity_id = this.stateObj.entity_id;
-    /* eslint-enable no-param-reassign */
-    console.log('in call service helper');
-    if (this.hass)
-    { console.log(service);
-      console.log(data);     
-      this.hass.callService('transactive_home', service, { value: data})
-        .then(function () {
-          // this.stateObjChanged(this.stateObj);
-          console.log('successful service call');
-        }.bind(this));
+    if (valueNum < midWay)
+    {
+      const ratio = valueNum / midWay;
+
+      if ( (1 - ratio) < .1)
+      {
+        style = "text-align: center";
+      }
+      else
+      {
+        let lowValue;
+
+        if ((valueNum - minNum) !== 0)
+        {
+          lowValue = (valueNum - minNum) / maxNum * 100;
+        }
+        else
+        {
+          lowValue = 0;
+        }
+
+        const paddingString = (lowValue ? lowValue + "%" : lowValue);
+        
+        style = "text-align: right; padding-right: " + paddingString;
+      }
     }
+    else if (valueNum > midWay)
+    { 
+      const ratio = midWay / valueNum;
+
+      if ( (1 - ratio) < .1)
+      {
+        style = "text-align: center";
+      }
+      else
+      {
+        let highValue;
+
+        if ((maxNum - valueNum) !== 0)
+        {
+          highValue = (maxNum - valueNum) / maxNum * 100;
+        }
+        else
+        {
+          highValue = 0;
+        }
+
+        const paddingString = (highValue ? highValue + "%" : highValue);
+        
+        style = "text-align: left; padding-left: " + paddingString;
+      }
+    }
+    else
+    {
+      style = "text-align: center";
+    }
+
+    return style;
   },
+  trimStringForNumber: function (str, chr) {
+    let prepString = str;
+
+    if (prepString.charAt(0) === chr)
+    {
+      prepString = prepString.substring(1);
+    }
+
+    return prepString;
+  }
+
 });
 
 
