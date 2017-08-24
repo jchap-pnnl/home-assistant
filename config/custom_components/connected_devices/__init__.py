@@ -94,7 +94,8 @@ class ConnectedDevicesComponent(Entity):
                     "zone_min": 0,
                     "zone_max": 1,
                     "power": 150,
-                    "energy": 40
+                    "energy": 40,
+                    "flexibility": "high"
                 },
                 "device2": {
                     "participate": True,
@@ -102,7 +103,8 @@ class ConnectedDevicesComponent(Entity):
                     "zone_min": 0,
                     "zone_max": 1,
                     "power": 15,
-                    "energy": 30
+                    "energy": 30,
+                    "flexibility": "low"
                 }
             }
         }

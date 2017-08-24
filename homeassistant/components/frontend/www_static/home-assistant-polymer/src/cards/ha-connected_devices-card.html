@@ -47,7 +47,7 @@
       .data-table td.reset {
         width: 90px;
       }
-      .data-table td.slider-cell {
+      .data-table td.flexibility-cell {
         width: 100px;
       }
       .data-table .indicator .cell {
@@ -79,7 +79,7 @@
       .red {
         background-color: red;
       }
-      .slider-cell {
+      .flexibility-cell {
         position: relative;
       }
       .reset-button {
@@ -149,7 +149,7 @@
                   <div class='column-name'>Energy</div>
                 </td>
                 <td></td>
-                <td class='slider-cell'>
+                <td class='flexibility-cell'>
                   <div class$="column-name [[getDropdown(item.participate)]]">
                     Flexibility
                   </div>
@@ -186,13 +186,16 @@
                     </div>
                   </paper-dialog>
                 </td>
-                <td class="slider-cell">
+                <td class="flexibility-cell">
                   <div class$="[[getDropdown(item.participate)]]">
-                    <paper-dropdown-menu noLabelFloat>
+                    <paper-dropdown-menu 
+                      noLabelFloat
+                      data-device="[[item.name]]"
+                      on-iron-select="changeFlexibility">
                       <paper-listbox 
                         slot="dropdown-content" 
                         class="dropdown-content"
-                        selected="0">
+                        selected="[[convertFlexibility(item)]]">
                         <paper-item>high</paper-item>
                         <paper-item>medium</paper-item>
                         <paper-item>low</paper-item>
@@ -268,6 +271,32 @@ Polymer({
       return device;
     });
   },
+  convertFlexibility: function (item) {
+    let selection = 0; // high
+
+    if (item.hasOwnProperty('flexibility'))
+    {
+      switch (item.flexibility)
+      {
+        case 'low':
+        {
+          selection = 2;
+          break;
+        }
+        case 'medium':
+        {
+          selection = 1;
+          break;
+        }
+        default:
+        {
+          // selection already is 0
+        }
+      }
+    }
+
+    return selection;
+  },
   doReset: function (ev) {
     if (ev.target)
     {
@@ -338,6 +367,24 @@ Polymer({
     }];
     
     this.callServiceHelper('update_connected_device', updateObj);
+  },
+  changeFlexibility: function (ev) {
+    const device = ev.currentTarget.dataDevice;
+
+    const stateDevice = this.stateObj.attributes.devices[device];
+
+    const value = ev.currentTarget.value;
+
+    if (value && value !== stateDevice.flexibility)
+    {
+      const updateObj = [{ 
+        'device': device,
+        'target': 'flexibility',
+        'value': value 
+      }];
+      
+      this.callServiceHelper('update_connected_device', updateObj);
+    }
   },
   callServiceHelper: function (service, data) {
     if (this.hass)

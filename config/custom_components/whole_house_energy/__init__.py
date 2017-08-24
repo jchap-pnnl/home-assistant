@@ -91,10 +91,15 @@ class WholeHouseEnergyComponent(Entity):
         """Return the optional state attributes."""
 
         data = {
-            "energyUseCost":{
-                "maximumEnergyConsumption":250,
-                "minimumEnergyConsumption":50,
-                "transactiveEnergyConsumption":125
+            "energyUse":{
+                "maximum": 250,
+                "minimum": 50,
+                "transactive": 125
+            },
+            "energyCost":{
+                "maximum": 37.5,
+                "minimum": 7.5,
+                "transactive": 18.75
             }
         }
 

@@ -65,6 +65,17 @@
           actual_label="[[getTransactiveEnergy(stateObj)]]"
           description='Estimated energy use this week (based on your settings)'
         ></ha-scale-indicator>
+        <ha-scale-indicator 
+          left_icon='mdi:battery'
+          right_icon='mdi:battery-30'
+          left_label="$[[getMaximumCost(stateObj)]]"
+          left_value="[[getMaximumCost(stateObj)]]"
+          right_label="$[[getMinimumCost(stateObj)]]"
+          right_value="[[getMinimumCost(stateObj)]]"
+          actual_value="$[[getTransactiveCost(stateObj)]]"
+          actual_label="[[getTransactiveCost(stateObj)]]"
+          description='Estimated energy cost this week'
+        ></ha-scale-indicator>
       </div>
     </ha-card>
   </template>
@@ -89,14 +100,23 @@ Polymer({
   },
 
   getMaximumEnergy(obj){
-    return obj.attributes.energyUseCost.maximumEnergyConsumption;
-  }
+    return obj.attributes.energyUse.maximum;
+  },
   getMinimumEnergy(obj){
-    return obj.attributes.energyUseCost.minimumEnergyConsumption;
-  }
+    return obj.attributes.energyUse.minimum;
+  },
   getTransactiveEnergy(obj){
-    return obj.attributes.energyUseCost.transactiveEnergyConsumption;
-  }
+    return obj.attributes.energyUse.transactive;
+  },
+  getMaximumCost(obj){
+    return obj.attributes.energyCost.maximum;
+  },
+  getMinimumCost(obj){
+    return obj.attributes.energyCost.minimum;
+  },
+  getTransactiveCost(obj){
+    return obj.attributes.energyCost.transactive;
+  },
   callServiceHelper: function (service, data) {
     if (this.hass)
     {      
