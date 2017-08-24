@@ -35,7 +35,6 @@
         position: absolute;
         font-size: 12px;
         top: 0;
-        color: darkgray;
       }
       .actual-value,
       .pointer-marker {
@@ -57,15 +56,15 @@
     </style>
     <div class='description'>[[description]]</div>
     <div class='scale-indicator'>
-      <div class='left-icon'>
+      <div class='left-icon' style='color: [[icon_color]]'>
         <iron-icon icon="[[left_icon]]"></iron-icon>
       </div>
-      <div class='right-icon'>
+      <div class='right-icon' style='color: [[icon_color]]'>
         <iron-icon icon="[[right_icon]]"></iron-icon>
       </div>
-      <div class='left-end'>[[left_label]]</div>
-      <div class='right-end'>[[right_label]]</div>
-      <div class='actual-value'>[[actual_label]]</div>
+      <div class='left-end'>[[left_value]]&nbsp;[[units_label]]</div>
+      <div class='right-end'>[[right_value]]&nbsp;[[units_label]]</div>
+      <div class='actual-value'>[[actual_value]]&nbsp;[[units_label]]</div>
       <div class='indicator-line'></div>
       <div class='pointer-marker'><iron-icon icon="mdi:triangle"></iron-icon></div>
     </div>
@@ -86,23 +85,22 @@ Polymer({
     right_icon: {
       type: String
     },
-    left_end: {
-      type: Number
+    icon_color: {
+      type: String,
+      value: 'darkgray'
     },
-    left_label: {
+    left_value: {
       type: String
     },
-    right_end: {
-      type: Number
-    },
-    right_label: {
+    right_value: {
       type: String
     },
     actual_value: {
-      type: Number
-    },
-    actual_label: {
       type: String
+    },
+    units_label: {
+      type: String,
+      value: ''
     },
     description: {
       type: String
