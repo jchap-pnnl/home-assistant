@@ -36,28 +36,19 @@ def setup(hass, config):
 
     def update_connected_device(service):
         """Update a transactive home device."""
-        
+
         update_obj = service.data.get('value')
 
         connected_devices = hass.states.get('connected_devices.connected_devices').as_dict()
         
         attributes = connected_devices["attributes"]
 
-        _LOGGER.info("damn devices: %s", attributes["devices"])
-
-        _LOGGER.info("update value: %s", update_obj["value"])
-        
-        # for dev in attributes["device"]:
-        #     if (dev["name"] == update_obj["device"]):
-        #         dev[update_obj["target"]] = update_obj["value"]
-
-        attributes["devices"][update_obj["device"]][update_obj["target"]] = update_obj["value"]
+        for obj in update_obj:
+            attributes["devices"][obj["device"]][obj["target"]] = obj["value"]
 
         connected_devices["attributes"] = attributes
 
         hass.states.set('connected_devices.connected_devices', 'On', attributes, True)
-
-        _LOGGER.info("device after update: %s", hass.states.get('connected_devices.connected_devices'))
 
     hass.services.register(
         DOMAIN,
@@ -98,7 +89,7 @@ class ConnectedDevicesComponent(Entity):
         data = {
             "devices": {
                 "device1": {
-                    "participate": "true",
+                    "participate": True,
                     "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,
@@ -106,7 +97,7 @@ class ConnectedDevicesComponent(Entity):
                     "energy": 40
                 },
                 "device2": {
-                    "participate": "true",
+                    "participate": True,
                     "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,

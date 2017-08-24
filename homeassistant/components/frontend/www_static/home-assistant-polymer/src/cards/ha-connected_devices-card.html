@@ -87,6 +87,9 @@
         color: #ebf73c;
         height: 30px;
       }
+      .reset-mode {
+        opacity: .3;
+      }
       paper-toggle-button {
         cursor: pointer;
       }
@@ -147,7 +150,7 @@
                 </td>
                 <td></td>
                 <td class='slider-cell'>
-                  <div class$="column-name [[getDropdown(item.participate, item.reset)]]">
+                  <div class$="column-name [[getDropdown(item.participate)]]">
                     Flexibility
                   </div>
                 </td>
@@ -155,7 +158,7 @@
               <tr>
                 <td class='indicator'>
                   <div class='cell'>
-                    <div class$="[[getParticipation(item.participate, item.reset)]]"></div>
+                    <div class$="[[getParticipation(item.participate)]]"></div>
                   </div>
                 </td>
                 <td style='text-align: right'>[[item.power]]</td>
@@ -184,7 +187,7 @@
                   </paper-dialog>
                 </td>
                 <td class="slider-cell">
-                  <div class$="[[getDropdown(item.participate, item.reset)]]">
+                  <div class$="[[getDropdown(item.participate)]]">
                     <paper-dropdown-menu noLabelFloat>
                       <paper-listbox 
                         slot="dropdown-content" 
@@ -199,10 +202,13 @@
                 </td>
                 <td class='reset'>
                   <div class$="cell [[getReset(item.participate, item.reset)]]">
-                    <paper-button raised on-click="confirmReset"
+                    <paper-button
+                      on-click="confirmReset"
                       class='reset-button'
                       data-device="[[item.name]]"
+                      data-reset="[[item.reset]]"
                       raised
+                      disabled="[[item.reset]]"
                     >Reset</paper-button>
                   </div>
                   <paper-dialog id="reset-[[item.name]]" class="popup">
@@ -245,14 +251,14 @@ Polymer({
       type: Object,
     }
   },
-  getParticipation: function (participate, reset) {
-      return (participate && !reset ? 'green' : 'red');
+  getParticipation: function (participate) {
+      return (participate ? 'green' : 'red');
   },
   getReset: function (participate, reset) {
-      return (participate && !reset ? '' : 'display-none');
+      return (reset ? 'reset-mode' : (participate ? '' : 'display-none'));
   },
-  getDropdown: function (participate, reset) {
-      return (participate && !reset ? '' : 'display-none');
+  getDropdown: function (participate) {
+      return (participate ? '' : 'display-none');
   },
   getDataDevices: function(obj){
     return Object.keys(obj.attributes.devices).map((key) => {
@@ -265,14 +271,18 @@ Polymer({
   doReset: function (ev) {
     if (ev.target)
     {
-      const newValue = false;
       const device = ev.target.dataDevice;
 
-      const updateObj = { 
+      const updateObj = [{ 
         'device': device, 
         'target': 'participate', 
-        'value': newValue 
-      };
+        'value': false 
+      },
+      { 
+        'device': device, 
+        'target': 'reset', 
+        'value': true 
+      }];
 
       this.callServiceHelper('update_connected_device', updateObj);
     }
@@ -280,9 +290,12 @@ Polymer({
   confirmReset: function (ev) {
     if (ev.target)
     {
-      const device = ev.target.dataDevice;
-      const dialogName = `#reset-${device}`;
-      this.$$(dialogName).open();
+      if (!ev.target.dataReset)
+      {
+        const device = ev.target.dataDevice;
+        const dialogName = `#reset-${device}`;
+        this.$$(dialogName).open();
+      }
     }
   },
   transactiveChanged: function (ev) {
@@ -295,11 +308,16 @@ Polymer({
       { 
         console.log('transactive changed: ' + newValue);
         
-        const updateObj = { 
+        const updateObj = [{ 
           'device': device,
           'target': 'participate',
           'value': newValue 
-        };
+        },
+        { 
+          'device': device,
+          'target': 'reset',
+          'value': false 
+        }];
 
         this.callServiceHelper('update_connected_device', updateObj);
       }
@@ -311,14 +329,13 @@ Polymer({
     }
   },
   turnTransactiveOff: function (ev) {
-    const newValue = false;
     const device = ev.target.dataDevice;
 
-    const updateObj = { 
+    const updateObj = [{ 
       'device': device,
       'target': 'participate',
-      'value': newValue 
-    };
+      'value': false 
+    }];
     
     this.callServiceHelper('update_connected_device', updateObj);
   },
