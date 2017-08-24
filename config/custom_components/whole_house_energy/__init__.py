@@ -91,22 +91,11 @@ class WholeHouseEnergyComponent(Entity):
         """Return the optional state attributes."""
 
         data = {
-            "measures": [{
-                    "label": "Overall Reduction",
-                    "value": 51,
-                    "unit": "kw"
-                },
-                {
-                    "label": "Overall Energy",
-                    "value": 80,
-                    "unit": "kw-hr/24 hrs"
-                },
-                {
-                    "label": "Overall Power",
-                    "value": 12,
-                    "unit": "kw"
-                }
-            ],
+            "energyUseCost":{
+                "maximumEnergyConsumption":250,
+                "minimumEnergyConsumption":50,
+                "transactiveEnergyConsumption":125
+            }
         }
 
         return data

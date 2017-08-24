@@ -57,12 +57,12 @@
         <ha-scale-indicator 
           left_icon='mdi:battery'
           right_icon='mdi:battery-30'
-          left_label='250 kWh'
-          left_value='250'
-          right_label='50 kWh'
-          right_value='50'
-          actual_value='125'
-          actual_label='125 kWh'
+          left_label="[[getMaximumEnergy(stateObj)]] Kwh"
+          left_value="[[getMaximumEnergy(stateObj)]]"
+          right_label="[[getMinimumEnergy(stateObj)]] Kwh"
+          right_value="[[getMinimumEnergy(stateObj)]]"
+          actual_value="[[getTransactiveEnergy(stateObj)]] Kwh"
+          actual_label="[[getTransactiveEnergy(stateObj)]]"
           description='Estimated energy use this week (based on your settings)'
         ></ha-scale-indicator>
       </div>
@@ -88,7 +88,15 @@ Polymer({
     }
   },
 
-  
+  getMaximumEnergy(obj){
+    return obj.attributes.energyUseCost.maximumEnergyConsumption;
+  }
+  getMinimumEnergy(obj){
+    return obj.attributes.energyUseCost.minimumEnergyConsumption;
+  }
+  getTransactiveEnergy(obj){
+    return obj.attributes.energyUseCost.transactiveEnergyConsumption;
+  }
   callServiceHelper: function (service, data) {
     if (this.hass)
     {      
