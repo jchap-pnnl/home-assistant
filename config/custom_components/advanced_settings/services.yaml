@@ -1,0 +1,12 @@
+
+update_advanced_settings:
+  description: Update values in advanced settings 
+
+  fields:
+    obj:
+      description: An object containing the value
+      example: 'obj.value'
+
+    entity_id:
+      description: An object containing the value
+      example: 'advanced_settings.advanced_settings'

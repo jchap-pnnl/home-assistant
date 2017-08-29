@@ -6,25 +6,25 @@
 <link rel='import' href='../controls/ha-scale-indicator.html'>
 
 
-<dom-module id='ha-whole_house_energy-card'>
+<dom-module id='ha-advanced_settings-card'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
       .states {
         padding-bottom: 16px;
       }
-      .state {
+      .content {
         padding: 4px 16px;
       }
       td, th {
         padding-right: 8px;
       }
-      .state .label {
+      .content .label {
         color: rgba(0, 0, 0, 0.54);
         font-weight: bold;
         text-transform: capitalize;
       }
-      .state .value {
+      .content .value {
         color: rgba(0, 0, 0, 0.87);
       }
       .header {
@@ -51,27 +51,39 @@
 
     </style>
 
-    <ha-card class='whole-house-energy'>
+    <ha-card class='advanced-settings'>
       <div class='header domain'>
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
-        <ha-scale-indicator 
-          left_icon='mdi:battery'
-          right_icon='mdi:battery-30'
-          left_value="[[getAttributes(stateObj, 'energyUse', 'maximum')]]"
-          right_value="[[getAttributes(stateObj, 'energyUse', 'minimum')]]"
-          actual_value="[[getAttributes(stateObj, 'energyUse', 'transactive')]]"
-          description='Estimated energy use this week (based on your settings)'
-          units_label="Kwh"
-        ></ha-scale-indicator>
-        <ha-scale-indicator 
-          left_icon='mdi:coins'
-          right_icon='mdi:coin'
-          icon_color='#f4b400'
-          left_value="[[getAttributes(stateObj, 'energyCost', 'maximum')]]"
-          right_value="[[getAttributes(stateObj, 'energyCost', 'minimum')]]"
-          actual_value="[[getAttributes(stateObj, 'energyCost', 'transactive')]]"
-          description='Estimated energy cost this week'
-        ></ha-scale-indicator>
+      </div>
+      <div class='content'>
+        <div>
+          <paper-input 
+            label="Energy Savings Goal ([[stateObj.attributes.energySavings.unit]])"
+            data-prop="energySavings"
+            data-subprop="goal"
+            value="[[stateObj.attributes.energySavings.goal]]"
+            on-keyup="onKeyUp"
+          > 
+          </paper-input>
+        </div>
+        <div>
+          <paper-input 
+            label="Savings Start Time"
+            data-prop="savingsStartTime"
+            value="[[stateObj.attributes.savingsStartTime]]"
+            on-keyup="onKeyUp"
+          > 
+          </paper-input>
+        </div>
+        <div>
+          <paper-input 
+            label="Savings End Time"
+            data-prop="savingsEndTime"
+            value="[[stateObj.attributes.savingsEndTime]]"
+            on-keyup="onKeyUp"
+          > 
+          </paper-input>
+        </div>
       </div>
     </ha-card>
   </template>
@@ -79,7 +91,7 @@
 
 <script>
 Polymer({
-  is: 'ha-whole_house_energy-card',
+  is: 'ha-advanced_settings-card',
 
   properties: {
     hass: {
@@ -94,13 +106,29 @@ Polymer({
       type: Object,
     }
   },
-  getAttributes(obj, attr, subattr) {
-    return obj.attributes[attr][subattr];
+  onKeyUp(evt) {
+    console.log(evt);
+
+    if (evt.which === 13) // Enter key
+    {
+      const newValue = evt.currentTarget.value;
+      const attribute = evt.currentTarget.dataset.prop;
+
+      const subprop = evt.currentTarget.dataset.subprop;
+
+      const updateObj = { 
+        'target': attribute,
+        'subtarget': (subprop ? subprop : null),
+        'value': newValue 
+      };
+        
+      this.callServiceHelper('update_advanced_settings', updateObj);
+    }
   },
   callServiceHelper: function (service, data) {
     if (this.hass)
     {      
-      this.hass.callService('whole_house_energy', service, { value: data})
+      this.hass.callService('advanced_settings', service, { value: data})
         .then(function () {
           // console.log('successful service call');
         }.bind(this));
