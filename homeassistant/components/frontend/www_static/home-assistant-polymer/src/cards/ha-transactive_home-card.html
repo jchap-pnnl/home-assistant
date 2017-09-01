@@ -22,7 +22,6 @@
       }
       .state .label {
         color: rgba(0, 0, 0, 0.54);
-        font-weight: bold;
         text-transform: capitalize;
       }
       .state .value {
@@ -88,7 +87,7 @@
           <template is='dom-repeat' items="[[getList(stateObj)]]">
             <tr>
               <td class='label'>[[item.label]]</td>
-              <td class='value'><b>[[item.value]] [[item.unit]]</b></td>
+              <td class='value'>[[item.value]] [[item.unit]]</td>
             </tr>
           </template>
         </tbody>

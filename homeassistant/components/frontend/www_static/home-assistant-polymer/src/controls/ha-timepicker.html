@@ -60,12 +60,13 @@ Polymer({
     }
   },
   updateTime: function(value) {
+    const newValue = moment(value).format('h:mm p');
     const timepicker = Polymer.dom(this.root).querySelector('.timepicker');
 
     $(timepicker).timepicker({
       timeFormat: 'h:mm p',
-      defaultTime: value,
-      startTime: value,
+      defaultTime: newValue,
+      startTime: newValue,
       dropdown: false,
       change: this.onChangeTime.bind(this)
     });
@@ -79,7 +80,7 @@ Polymer({
       const attribute = this.data_prop;
 
       console.log(newValue);
-      
+
       const updateObj = { 
         'target': attribute,
         'subtarget': null,

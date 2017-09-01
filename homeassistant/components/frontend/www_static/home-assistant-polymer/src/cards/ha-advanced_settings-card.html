@@ -54,6 +54,10 @@
         text-align: center;
       }
 
+      .save-button > * {
+        color: dimgray;
+      }
+
       .energy-selector {
         display: block;
       }
@@ -62,6 +66,13 @@
         display: inline-block;
         vertical-align: middle;
       }
+
+      /*.energy-slider {
+        width: 70%;
+      }
+      paper-slider {
+        width: 100%;
+      }*/
 
     </style>
 
@@ -88,34 +99,43 @@
             <div class="energy-goal">[[stateObj.attributes.energySavings.goal]] [[stateObj.attributes.energySavings.unit]]</div>
           </div>
         </div>
-        <div>
-          <label>
-            Savings Start Time
-          </label>
-          <ha-timepicker
-            hass="[[hass]]"
-            picker_label="Savings Start Time"
-            set_time="[[stateObj.attributes.savingsStartTime]]"
-            data_prop="savingsStartTime"
-            event_name="update_advanced_settings"
-            platform_name="advanced_settings">
-          </ha-timepicker>
-        </div>
-        <div>
-          <label>
-            Savings End Time
-          </label>
-          <ha-timepicker
-            hass="[[hass]]"
-            picker_label="Savings End Time"
-            set_time="[[stateObj.attributes.savingsEndTime]]"
-            data_prop="savingsEndTime"
-            event_name="update_advanced_settings"
-            platform_name="advanced_settings">
-          </ha-timepicker>
+        <div class="transactive-period">
+          <div class="daily-period">Daily Transactive Period</div>
+          <table>
+            <tr>
+              <td>
+                Start:
+              </td>
+              <td>
+                <ha-timepicker
+                  hass="[[hass]]"
+                  picker_label="Savings Start Time"
+                  set_time="[[stateObj.attributes.savingsStartTime]]"
+                  data_prop="savingsStartTime"
+                  event_name="update_advanced_settings"
+                  platform_name="advanced_settings">
+                </ha-timepicker>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                End:
+              </td>
+              <td>
+                <ha-timepicker
+                  hass="[[hass]]"
+                  picker_label="Savings End Time"
+                  set_time="[[stateObj.attributes.savingsEndTime]]"
+                  data_prop="savingsEndTime"
+                  event_name="update_advanced_settings"
+                  platform_name="advanced_settings">
+                </ha-timepicker>
+              </td>
+            </tr>
+          </table>
         </div>
         <div class="save-button">
-          <paper-button>Save</paper-button>
+          <paper-button>Update</paper-button>
         </div>
       </div>
     </ha-card>
