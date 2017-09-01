@@ -88,22 +88,31 @@ class ConnectedDevicesComponent(Entity):
 
         data = {
             "devices": {
-                "device1": {
+                "AC1":  {
                     "participate": True,
                     "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,
-                    "power": 150,
-                    "energy": 40,
+                    "power": 0,
+                    "energy": 0,
                     "flexibility": "high"
                 },
-                "device2": {
+                "AC2": {
                     "participate": True,
                     "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,
-                    "power": 15,
-                    "energy": 30,
+                    "power": 0,
+                    "energy": 0,
+                    "flexibility": "low"
+                },
+                "WH1": {
+                    "participate": True,
+                    "reset": False,
+                    "zone_min": 0,
+                    "zone_max": 1,
+                    "power": 0,
+                    "energy": 0,
                     "flexibility": "low"
                 }
             }

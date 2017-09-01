@@ -78,8 +78,8 @@ class RadioThermostat(ClimateDevice):
         """Initialize the thermostat."""
         self.device = device
         self.set_time()
-        self._target_temperature = None
-        self._current_temperature = None
+        self._target_temperature = 0
+        self._current_temperature = 0
         self._current_operation = STATE_IDLE
         self._name = None
         self._fmode = None

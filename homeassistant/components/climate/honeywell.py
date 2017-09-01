@@ -89,9 +89,14 @@ def _setup_round(username, password, config, add_devices):
 def _setup_us(username, password, config, add_devices):
     """Setup user."""
     import somecomfort
-
+    print("--------------------------------------------------------------------------------")
+    print(username)
+    print(password)
+    print(config)
     try:
         client = somecomfort.SomeComfort(username, password)
+        print("Authentication")
+        print(client)
     except somecomfort.AuthError:
         _LOGGER.error('Failed to login to honeywell account %s', username)
         return False
