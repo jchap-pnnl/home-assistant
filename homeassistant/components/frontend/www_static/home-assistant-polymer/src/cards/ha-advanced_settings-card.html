@@ -1,9 +1,9 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../controls/ha-scale-indicator.html'>
+<link rel='import' href='../controls/ha-timepicker.html'>
 
 
 <dom-module id='ha-advanced_settings-card'>
@@ -49,6 +49,20 @@
         cursor: pointer;
       }
 
+      .save-button {
+        width: 100%;
+        text-align: center;
+      }
+
+      .energy-selector {
+        display: block;
+      }
+      .energy-slider,
+      .energy-goal {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
     </style>
 
     <ha-card class='advanced-settings'>
@@ -57,32 +71,51 @@
       </div>
       <div class='content'>
         <div>
-          <paper-input 
-            label="Energy Savings Goal ([[stateObj.attributes.energySavings.unit]])"
-            data-prop="energySavings"
-            data-subprop="goal"
-            value="[[stateObj.attributes.energySavings.goal]]"
-            on-keyup="onKeyUp"
-          > 
-          </paper-input>
+          <label>
+            Energy Savings Goal
+          </label>
+          <div class="energy-selector">
+            <div class="energy-slider">
+              <paper-slider 
+                min="2"
+                max="5"
+                step="1"
+                pin="true"
+                value="[[stateObj.attributes.energySavings.goal]]"
+                on-change="updateEnergySavings"
+              ></paper-slider>
+            </div>
+            <div class="energy-goal">[[stateObj.attributes.energySavings.goal]] [[stateObj.attributes.energySavings.unit]]</div>
+          </div>
         </div>
         <div>
-          <paper-input 
-            label="Savings Start Time"
-            data-prop="savingsStartTime"
-            value="[[stateObj.attributes.savingsStartTime]]"
-            on-keyup="onKeyUp"
-          > 
-          </paper-input>
+          <label>
+            Savings Start Time
+          </label>
+          <ha-timepicker
+            hass="[[hass]]"
+            picker_label="Savings Start Time"
+            set_time="[[stateObj.attributes.savingsStartTime]]"
+            data_prop="savingsStartTime"
+            event_name="update_advanced_settings"
+            platform_name="advanced_settings">
+          </ha-timepicker>
         </div>
         <div>
-          <paper-input 
-            label="Savings End Time"
-            data-prop="savingsEndTime"
-            value="[[stateObj.attributes.savingsEndTime]]"
-            on-keyup="onKeyUp"
-          > 
-          </paper-input>
+          <label>
+            Savings End Time
+          </label>
+          <ha-timepicker
+            hass="[[hass]]"
+            picker_label="Savings End Time"
+            set_time="[[stateObj.attributes.savingsEndTime]]"
+            data_prop="savingsEndTime"
+            event_name="update_advanced_settings"
+            platform_name="advanced_settings">
+          </ha-timepicker>
+        </div>
+        <div class="save-button">
+          <paper-button>Save</paper-button>
         </div>
       </div>
     </ha-card>
@@ -106,24 +139,18 @@ Polymer({
       type: Object,
     }
   },
-  onKeyUp(evt) {
-    console.log(evt);
+  updateEnergySavings: function (evt) {
+      console.log(evt.currentTarget.value);
 
-    if (evt.which === 13) // Enter key
-    {
       const newValue = evt.currentTarget.value;
-      const attribute = evt.currentTarget.dataset.prop;
-
-      const subprop = evt.currentTarget.dataset.subprop;
 
       const updateObj = { 
-        'target': attribute,
-        'subtarget': (subprop ? subprop : null),
+        'target': 'energySavings',
+        'subtarget': 'goal',
         'value': newValue 
       };
         
       this.callServiceHelper('update_advanced_settings', updateObj);
-    }
   },
   callServiceHelper: function (service, data) {
     if (this.hass)

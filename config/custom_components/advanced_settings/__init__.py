@@ -86,11 +86,11 @@ class AdvancedSettingsComponent(Entity):
 
         data = {
             "energySavings":{
-                "goal": "250",
+                "goal": "2",
                 "unit": "Kw"
             },
-            "savingsStartTime": "10:00 a.m.",
-            "savingsEndTime": "5:00 p.m."
+            "savingsStartTime": "10:00am",
+            "savingsEndTime": "5:00pm"
         }
 
         return data
