@@ -79,10 +79,12 @@
           case 'line':
             this.drawChartLine(chartData);
             break;
+          case 'bar':
+            this.drawChartBar(chartData);
+            break;
         }
       }
     },
-
     drawChartLine: function (data) {
       var ctx = this.$.canvas.getContext('2d');
       var myChart = new Chart(ctx, {
@@ -156,6 +158,73 @@
                 position: 'nearest',
                 custom: this.customTooltips
               },
+               animation: {
+                duration: 0
+             }
+          }
+      });
+    },
+    drawChartBar: function (data) {
+      var ctx = this.$.canvas.getContext('2d');
+      var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: data.times.map(function (timeStamp, index) {
+                return moment(timeStamp).format('h:mm a');
+              }),
+              datasets: [
+                {
+                    label: 'AC1',
+                    data: data.AC1,
+                    pointRadius: 1,
+                    pointHoverRadius: 2,
+                    pointBorderWidth: 0,
+                    borderWidth: 2,
+                    backgroundColor: 'blue',
+                    borderColor: 'blue',
+                    pointStyle:'circle',
+                    lineTension: 0,
+                    fill: false
+                },{
+                    label: 'AC2',
+                    data: data.AC2,
+                    pointRadius: 1,
+                    pointHoverRadius: 2,
+                    pointBorderWidth: 0,
+                    borderWidth: 2,
+                    backgroundColor: 'orange',
+                    borderColor: 'orange',
+                    pointStyle:'circle',
+                    lineTension: 0,
+                    fill: false
+                },{
+                    label: 'WH1',
+                    data: data.WH1,
+                    pointRadius: 1,
+                    pointHoverRadius: 2,
+                    pointBorderWidth: 0,
+                    borderWidth: 2,
+                    backgroundColor: 'green',
+                    borderColor: 'green',
+                    pointStyle:'circle',
+                    lineTension: 0,
+                    fill: false
+                }
+              ]
+          },
+          options: {
+            scaleShowVerticalLines: false,
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                        gridLines : {
+                            display : false
+                        }
+                    }],
+                    yAxes: [{
+                        stacked: true
+                    }]
+                },
                animation: {
                 duration: 0
              }

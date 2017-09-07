@@ -1,5 +1,5 @@
 """
-The "devices list" component.
+The "connected devices" component.
 
 """
 
@@ -35,7 +35,7 @@ def setup(hass, config):
         os.path.join(os.path.dirname(__file__), 'services.yaml'))
 
     def update_connected_device(service):
-        """Update a transactive home device."""
+        """Update a connected device."""
 
         update_obj = service.data.get('value')
 
@@ -93,8 +93,6 @@ class ConnectedDevicesComponent(Entity):
                     "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,
-                    "power": 0,
-                    "energy": 0,
                     "flexibility": "high"
                 },
                 "AC2": {
@@ -102,8 +100,6 @@ class ConnectedDevicesComponent(Entity):
                     "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,
-                    "power": 0,
-                    "energy": 0,
                     "flexibility": "low"
                 },
                 "WH1": {
@@ -111,8 +107,6 @@ class ConnectedDevicesComponent(Entity):
                     "reset": False,
                     "zone_min": 0,
                     "zone_max": 1,
-                    "power": 0,
-                    "energy": 0,
                     "flexibility": "low"
                 }
             }

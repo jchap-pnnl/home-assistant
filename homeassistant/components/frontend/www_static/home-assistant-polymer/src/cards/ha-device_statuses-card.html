@@ -1,0 +1,70 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href='../components/state-charts-container.html'>
+<link rel='import' href='../components/ha-card.html'>
+
+<dom-module id='ha-device_statuses-card'>
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      
+      td, th {
+        padding-right: 8px;
+      }
+      
+      .header {
+        @apply(--paper-font-headline);
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 20px 16px 12px;
+      }
+      .header .name {
+        @apply(--paper-font-common-nowrap);
+      }
+      .header.domain .name {
+        /* Capitalize cards titles for default domain groups. */
+        text-transform: capitalize;
+      }
+      .display-none {
+        display: none;
+      }
+    </style>
+
+    <ha-card class='device-statuses'>
+      <div class='header domain'>
+        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
+      </div>
+      <div class='data-chart'>
+        <state-charts-container
+          state-obj="[[stateObj]]">
+        </state-charts-container>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'ha-device_statuses-card',
+  properties: {
+    hass: {
+      type: Object,
+    },
+    stateObj: {
+      type: Object,
+    },
+    groupEntity: {
+      type: Object,
+    }
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService('device_statuses', service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
+  },
+});
+</script>

@@ -47,9 +47,6 @@
       .data-table td.reset {
         width: 90px;
       }
-      .data-table td.flexibility-cell {
-        width: 100px;
-      }
       .data-table .indicator .cell {
         padding: 4px;
         position: relative;
@@ -142,12 +139,6 @@
               </tr>
               <tr>
                 <td class='participation'></td>
-                <td>
-                  <div class='column-name'>Power</div>
-                </td>
-                <td>
-                  <div class='column-name'>Energy</div>
-                </td>
                 <td></td>
                 <td class='flexibility-cell'>
                   <div class$="column-name [[getDropdown(item.participate)]]">
@@ -161,8 +152,6 @@
                     <div class$="[[getParticipation(item.participate)]]"></div>
                   </div>
                 </td>
-                <td style='text-align: right'>[[item.power]]&nbsp;Kw</td>
-                <td style='text-align: right'>[[item.energy]]&nbsp;Kwh</td>
                 <td>
                   <div>
                     <paper-toggle-button raised

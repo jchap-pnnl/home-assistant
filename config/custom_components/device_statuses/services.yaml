@@ -1,0 +1,12 @@
+
+update_device_statuses:
+  description: Update device statuses 
+
+  fields:
+    device:
+      description: Name of device to change
+      example: 'device1'
+
+    obj:
+      description: An object containing the value
+      example: 'obj.value'

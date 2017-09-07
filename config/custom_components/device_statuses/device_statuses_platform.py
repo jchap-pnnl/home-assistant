@@ -1,10 +1,10 @@
 """
-The "connected devices platform" platform.
+The "device statuses platform" platform.
 
 """
 
 import logging
-from custom_components.connected_devices import ConnectedDevicesComponent
+from custom_components.device_statuses import DeviceStatusesComponent
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -12,13 +12,13 @@ _LOGGER = logging.getLogger(__name__)
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Setup the sensor platform."""
 
-    _LOGGER.info("Setting up ConnectedDevicesPlatform.")
+    _LOGGER.info("Setting up DeviceStatusesPlatform.")
 
-    add_devices([ConnectedDevicesPlatform()])
+    add_devices([DeviceStatusesPlatform()])
 
 
-class ConnectedDevicesPlatform(ConnectedDevicesComponent):
-    """Representation of connected device."""
+class DeviceStatusesPlatform(DeviceStatusesComponent):
+    """Representation of device statuses."""
 
     def __init__(self):
         """Initialize the climate device."""
@@ -32,5 +32,5 @@ class ConnectedDevicesPlatform(ConnectedDevicesComponent):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'Connected Devices'
+        return 'Device Statuses'
 

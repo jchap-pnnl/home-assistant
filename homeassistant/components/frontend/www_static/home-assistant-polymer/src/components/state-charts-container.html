@@ -15,9 +15,12 @@
       padding: 8px;
     }
 
-    .loading {
-      height: 0px;
-      overflow: hidden;
+    .chart-title {
+      text-align: center;
+      transform: translateY(10px);
+      font-size: 18px;
+      color: rgba(0, 0, 0, 0.54);
+      text-transform: capitalize;
     }
     </style>
 
@@ -29,6 +32,7 @@
 
     <template is='dom-if' if='[[!_isLoading]]'>
       <template is='dom-repeat' items="[[getChartSeries(stateObj)]]">
+        <div class="chart-title">[[getChartTitle(item)]]</div>
         <state-quick-chart
           chart-data="[[item]]"
           chart-type="[[item.type]]"
@@ -48,16 +52,6 @@ Polymer({
       type: Object
     },
 
-    isLoadingData: {
-      type: Boolean,
-      value: false,
-    },
-
-    _apiLoaded: {
-      type: Boolean,
-      value: true,
-    },
-
     _isLoading: {
       type: Boolean,
       value: false
@@ -68,17 +62,16 @@ Polymer({
   getChartSeries: function (obj) {
     return obj.attributes.chartSeries;
   },
-  // _googleApiLoaded: function () {
-  //   window.google.load('visualization', '1', {
-  //     packages: ['timeline', 'corechart'],
-  //     callback: function () {
-  //       this._apiLoaded = true;
-  //     }.bind(this),
-  //   });
-  // },
 
-  // _computeIsLoading: function (_isLoadingData, _apiLoaded) {
-  //   return _isLoadingData || !_apiLoaded;
-  // },
+  getChartTitle: function (series) {
+    let title = '';
+
+    if (series.type === 'bar')
+    {
+      title = series.label;
+    }
+
+    return title;
+  },
 });
 </script>
