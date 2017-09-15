@@ -360,7 +360,9 @@
       '#BF2A75', // Tourmaline
     ];
 
-    return colors[index];
+    const safeIndex = (colors.length - 1) % (index + 1);
+
+    return colors[safeIndex];
   },
   callServiceHelper: function (service, data) {
     if (this.hass && this.componentName)
