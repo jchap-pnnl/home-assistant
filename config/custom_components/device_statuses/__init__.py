@@ -56,6 +56,38 @@ def setup(hass, config):
         update_device_statuses,
         descriptions['update_device_statuses'])
 
+    def update_chart_type(service):
+        """Switch to line chart or bar chart."""
+
+        update_obj = service.data.get('value')
+
+        _LOGGER.info("updating chart type")
+        _LOGGER.info("update_obj: %s", update_obj)
+
+        device_statuses = hass.states.get('device_statuses.device_statuses').as_dict()
+        
+        attributes = device_statuses["attributes"]
+
+        for obj in update_obj:
+            _LOGGER.info("in for obj in update_obj loop")
+            for series in attributes["chartSeries"]:
+                _LOGGER.info("in for series in attributes loop")
+                _LOGGER.info("series id: %s", series["id"])
+                _LOGGER.info("obj value: %s", obj["id"])
+                if series["id"] == obj["id"]:
+                    _LOGGER.info("found the right series")
+                    series["type"] = obj["value"]
+
+        device_statuses["attributes"] = attributes
+
+        hass.states.set('device_statuses.device_statuses', 'On', attributes, True)
+
+    hass.services.register(
+        DOMAIN,
+        'update_chart_type',
+        update_chart_type,
+        descriptions['update_chart_type'])
+
     return True
 
 
@@ -78,53 +110,78 @@ class DeviceStatusesComponent(Entity):
         return 'happy'
 
     @property
-    def overall_reduction(self):
-        """Return the name of the sensor."""
-        return 84
-
-    @property
     def state_attributes(self):
         """Return the optional state attributes."""
 
         data = {
             "chartSeries": [
                 {
-                    "times": [
-                        '2017-07-17 23:36:58.368599Z',
-                        '2017-07-17 23:37:28.368599Z',
-                        '2017-07-17 23:37:58.368599Z',
-                        '2017-07-17 23:38:28.368599Z',
-                        '2017-07-17 23:38:58.368599Z',
-                        '2017-07-17 23:39:28.368599Z',
-                        '2017-07-17 23:39:58.368599Z',
-                        '2017-07-17 23:40:28.368599Z',
-                        '2017-07-17 23:40:58.368599Z',
-                        '2017-07-17 23:41:28.368599Z'
-                    ],
-                    "AC1": [ 3, 4, 6, 5, 3, 4, 4, 5, 4, 5 ],
-                    "AC2": [ 4, 5, 5, 4, 3, 5, 6, 2, 6, 6 ],
-                    "WH1": [ 3, 2, 3, 6, 5, 5, 3, 3, 3, 2 ],
+                    "data": {
+                        "times": [
+                            '2017-07-17 23:36:58.368599Z',
+                            '2017-07-17 23:37:28.368599Z',
+                            '2017-07-17 23:37:58.368599Z',
+                            '2017-07-17 23:38:28.368599Z',
+                            '2017-07-17 23:38:58.368599Z',
+                            '2017-07-17 23:39:28.368599Z',
+                            '2017-07-17 23:39:58.368599Z',
+                            '2017-07-17 23:40:28.368599Z',
+                            '2017-07-17 23:40:58.368599Z',
+                            '2017-07-17 23:41:28.368599Z'
+                        ],
+                        "series": [
+                            { 
+                                "label": "AC1",
+                                "points": [ 3, 4, 6, 5, 3, 4, 4, 5, 4, 5 ]
+                            },
+                            { 
+                                "label": "AC2",
+                                "points": [ 4, 5, 5, 4, 3, 5, 6, 2, 6, 6 ]
+                            },
+                            { 
+                                "label": "WH1",
+                                "points": [ 3, 2, 3, 6, 5, 5, 3, 3, 3, 2 ]
+                            }
+                        ]
+                    },
                     "type": "bar",
-                    "label": "energy (Kwh)" 
+                    "label": "energy (Kwh)",
+                    "id": "device-energy",
+                    "updateMethod": "update_chart_type"
                 },
                 {
-                    "times": [
-                        '2017-07-17 23:36:58.368599Z',
-                        '2017-07-17 23:37:28.368599Z',
-                        '2017-07-17 23:37:58.368599Z',
-                        '2017-07-17 23:38:28.368599Z',
-                        '2017-07-17 23:38:58.368599Z',
-                        '2017-07-17 23:39:28.368599Z',
-                        '2017-07-17 23:39:58.368599Z',
-                        '2017-07-17 23:40:28.368599Z',
-                        '2017-07-17 23:40:58.368599Z',
-                        '2017-07-17 23:41:28.368599Z'
-                    ],
-                    "AC1": [ 3, 4, 2, 2, 6, 5, 5, 4, 3, 5 ],
-                    "AC2": [ 7, 6, 7, 5, 4, 4, 2, 2, 3, 6 ],
-                    "WH1": [ 5, 3, 3, 2, 3, 5, 4, 6, 6, 3 ],
+                    "data": {
+                        "times": [
+                            '2017-07-17 23:36:58.368599Z',
+                            '2017-07-17 23:37:28.368599Z',
+                            '2017-07-17 23:37:58.368599Z',
+                            '2017-07-17 23:38:28.368599Z',
+                            '2017-07-17 23:38:58.368599Z',
+                            '2017-07-17 23:39:28.368599Z',
+                            '2017-07-17 23:39:58.368599Z',
+                            '2017-07-17 23:40:28.368599Z',
+                            '2017-07-17 23:40:58.368599Z',
+                            '2017-07-17 23:41:28.368599Z'
+                        ],
+                        "series": [
+                            { 
+                                "label": "AC1",
+                                "points": [ 3, 4, 2, 2, 6, 5, 5, 4, 3, 5 ]
+                            },
+                            { 
+                                "label": "AC2",
+                                "points": [ 7, 6, 7, 5, 4, 4, 2, 2, 3, 6 ]
+                            },
+                            { 
+                                "label": "WH1",
+                                "points": [ 5, 3, 3, 2, 3, 5, 4, 6, 6, 3 ]
+                            }
+                        ]
+                    },
                     "type": "bar",
-                    "label": "power (Kw)"
+                    "label": "power (Kw)",
+                    "id": "device-power",
+                    "updateMethod": "update_chart_type"
                 }
             ]
         }

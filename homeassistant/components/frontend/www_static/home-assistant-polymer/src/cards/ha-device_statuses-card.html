@@ -30,6 +30,20 @@
       .display-none {
         display: none;
       }
+
+      paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container::shadow .floated-label-placeholder {
+        display: none;
+      }
+      paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container {
+        padding: 0;
+      }
+      paper-listbox {
+        padding: 0;
+      }
+      paper-listbox paper-item {
+        min-height: 0;
+      }
+
     </style>
 
     <ha-card class='device-statuses'>
@@ -38,7 +52,8 @@
       </div>
       <div class='data-chart'>
         <state-charts-container
-          state-obj="[[stateObj]]">
+          state-obj="[[stateObj]]"
+          hass="[[hass]]">
         </state-charts-container>
       </div>
     </ha-card>
@@ -56,14 +71,6 @@ Polymer({
     },
     groupEntity: {
       type: Object,
-    }
-  },
-  callServiceHelper: function (service, data) {
-    if (this.hass)
-    {      
-      this.hass.callService('device_statuses', service, { value: data})
-        .then(function () {
-        }.bind(this));
     }
   },
 });

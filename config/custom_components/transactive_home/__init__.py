@@ -36,32 +36,17 @@ def setup(hass, config):
 
     def update_transactive_home(service):
         """Do any update to the component."""
-        # _LOGGER.info("transactive home service object: %s", service)
-        # _LOGGER.info("what is in here?: %s", hass)
-        _LOGGER.info(service)
-        _LOGGER.info("------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        
         update_obj = service.data.get('value')
-        _LOGGER.info(update_obj)
-        # _LOGGER.info("state attributes: %s", hass.states.get('transactive_home.transactive_home'))
-
+        
         transactive_home = hass.states.get('transactive_home.transactive_home').as_dict()
-        attributes = transactive_home["attributes"]
 
-        # _LOGGER.info("writing value: %s", update_obj)
+        attributes = transactive_home["attributes"]
 
         attributes["overallflexibility"][0][update_obj["target"]] = update_obj["value"]
 
         hass.states.set('transactive_home.transactive_home', State.from_dict(transactive_home), attributes, True)
 
-        _LOGGER.info("transactive home after update: %s", hass.states.get('transactive_home.transactive_home'))
-
-
-        # transactive_homes = component.extract_from_service(service)
-
-        # for transactive_home in transactive_homes:
-        #     transactive_home.set_transactive_home(kwargs)
-
-        # hass.services.call(DOMAIN, 'update_transactive_home', kwargs)
 
     hass.services.register(
         DOMAIN,
@@ -129,23 +114,43 @@ class TransactiveComponent(Entity):
             ],
             "chartSeries": [
                 {
-                    "times": [
-                        '2017-07-17 23:36:58.368599Z',
-                        '2017-07-17 23:37:28.368599Z',
-                        '2017-07-17 23:37:58.368599Z',
-                        '2017-07-17 23:38:28.368599Z',
-                        '2017-07-17 23:38:58.368599Z',
-                        '2017-07-17 23:39:28.368599Z',
-                        '2017-07-17 23:39:58.368599Z',
-                        '2017-07-17 23:40:28.368599Z',
-                        '2017-07-17 23:40:58.368599Z',
-                        '2017-07-17 23:41:28.368599Z'
-                    ],
-                    "historical": [ 3, 4, 6, 6, 7, 9, 11, 13, 16, 17 ],
-                    "actual": [ 4, 5, 7, 8, None, None, None, None, None, None ],
-                    "transactive": [ 4, 5, 7, 8, 8, 8, 9, 9, 10, 12 ],
+                    "data": {
+                        "times": [
+                            '2017-07-17 23:36:58.368599Z',
+                            '2017-07-17 23:37:28.368599Z',
+                            '2017-07-17 23:37:58.368599Z',
+                            '2017-07-17 23:38:28.368599Z',
+                            '2017-07-17 23:38:58.368599Z',
+                            '2017-07-17 23:39:28.368599Z',
+                            '2017-07-17 23:39:58.368599Z',
+                            '2017-07-17 23:40:28.368599Z',
+                            '2017-07-17 23:40:58.368599Z',
+                            '2017-07-17 23:41:28.368599Z'
+                        ],
+                        "series": [
+                            { 
+                                "label": "historical",
+                                "points": [ 3, 4, 6, 6, 7, 9, 11, 13, 16, 17 ],
+                                "color": "#696969",
+                                "line-style": "dash"
+                            },
+                            { 
+                                "label": "actual",
+                                "points": [ 4, 5, 7, 8, None, None, None, None, None, None ],
+                                "color": "#FF7F50",
+                                "line-style": ""
+                            },
+                            { 
+                                "label": "transactive",
+                                "points": [ 4, 5, 7, 8, 8, 8, 9, 9, 10, 12 ],
+                                "color": "ForestGreen",
+                                "line-style": "dash"
+                            }
+                        ]
+                    },
                     "type": "line",
-                    "label": "energy"
+                    "label": "energy",
+                    "id": "transactive-home"
                 }
             ]
         }

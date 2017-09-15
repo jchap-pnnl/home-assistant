@@ -27,16 +27,31 @@
     is: 'state-quick-chart',
 
     properties: {
+      hass: {
+        type: Object,
+      },
       chartType: {
         type: String,
-        value: ""
+        value: "",
+        observer: 'chartTypeChanged'
       },
 
       chartLabel: {
         type: String,
         value: ""
       },
-
+      chartId: {
+        type: String,
+        value: ""
+      },
+      componentName: {
+        type: String,
+        value: ""
+      },
+      updateMethod: {
+        type: String,
+        value: ""
+      },
       unit: {
         type: String,
       },
@@ -70,7 +85,32 @@
       this.isAttached = true;
     },
 
+    chartTypeChanged: function (chartType) {
+
+      console.log('chart type changed');
+
+      const hiddenIframes = document.querySelector('.chartjs-hidden-iframe');
+
+      console.log(hiddenIframes);
+
+      if (this.chartData)
+      {
+        // this.drawChart();
+        switch (chartType)
+        {
+          case 'line':
+            this.drawChartLine(this.chartData);
+            break;
+          case 'bar':
+            this.drawChartBar(this.chartData);
+            break;
+        }
+      }
+    },
+
     dataChanged: function (chartData) {
+      console.log('chart data changed');
+
       if (chartData)
       {
         // this.drawChart();
@@ -87,7 +127,8 @@
     },
     drawChartLine: function (data) {
       var ctx = this.$.canvas.getContext('2d');
-      var myChart = new Chart(ctx, {
+
+      const chartObj = {
           type: 'line',
           data: {
               labels: data.times.map(function (timeStamp, index) {
@@ -99,70 +140,60 @@
                 // return timeLabel;
                 return moment(timeStamp).format('h:mm a');
               }),
-              datasets: [
+              datasets: data.series.map(function (item, index) {
+
+                const dataset = {
+                    label: item.label,
+                    data: item.points,
+                    pointRadius: 1,
+                    pointHoverRadius: 2,
+                    pointBorderWidth: 0,
+                    borderWidth: 2,
+                    backgroundColor: (item.color ? item.color : this.colorMap(index)),
+                    borderColor: (item.color ? item.color : this.colorMap(index)),
+                    pointStyle:'circle',
+                    lineTension: 0,
+                    fill: false
+                };
+
+                if (item['line-style'] === "dash")
                 {
-                    label: 'historical',
-                    data: data.historical,
-                    pointRadius: 1,
-                    pointHoverRadius: 2,
-                    pointBorderWidth: 0,
-                    borderWidth: 2,
-                    backgroundColor: '#696969',
-                    borderColor: '#696969',
-                    borderDash: [3,2],
-                    pointStyle:'circle',
-                    lineTension: 0,
-                    fill: false
-                },{
-                    label: 'actual',
-                    data: data.actual,
-                    pointRadius: 1,
-                    pointHoverRadius: 2,
-                    pointBorderWidth: 0,
-                    borderWidth: 2,
-                    backgroundColor: '#FF7F50',
-                    borderColor: '#FF7F50',
-                    pointStyle:'circle',
-                    lineTension: 0,
-                    fill: false
-                },{
-                    label: 'transactive',
-                    data: data.transactive,
-                    pointRadius: 1,
-                    pointHoverRadius: 2,
-                    pointBorderWidth: 0,
-                    borderWidth: 2,
-                    backgroundColor: '#FF7F50',
-                    borderColor: '#FF7F50',
-                    pointStyle:'circle',
-                    lineTension: 0,
-                    borderDash: [3, 2],
-                    fill: false
+                  dataset.borderDash = [3,2];
                 }
-              ]
+
+                return dataset;
+
+              }, this)
           },
           options: {
-            scaleShowVerticalLines: false,
+              scaleShowVerticalLines: false,
               scales : {
-                    xAxes : [ {
-                        gridLines : {
-                            display : false
-                        }
-                    } ]
-                },
-              tooltips: {
-                yAlign:'top',
-                xAlign:'right',
-                enabled: false,
-                mode: 'index',
-                position: 'nearest',
-                custom: this.customTooltips
+                  xAxes : [ {
+                      gridLines : {
+                          display : false
+                      }
+                  } ]
               },
-               animation: {
-                duration: 0
-             }
+              animation: {
+                  duration: 0
+              }
           }
-      });
+      };
+
+      if (this.chartId == 'transactive-home')
+      {
+          chartObj.options.tooltips = {
+            yAlign:'top',
+            xAlign:'right',
+            enabled: false,
+            mode: 'index',
+            position: 'nearest',
+            intersect: 'false',
+            custom: this.customTooltips
+          };
+      }
+
+      var myChart = new Chart(ctx, chartObj);
     },
     drawChartBar: function (data) {
       var ctx = this.$.canvas.getContext('2d');
@@ -172,62 +203,41 @@
               labels: data.times.map(function (timeStamp, index) {
                 return moment(timeStamp).format('h:mm a');
               }),
-              datasets: [
-                {
-                    label: 'AC1',
-                    data: data.AC1,
+              datasets: data.series.map(function (item, index) {
+                return {
+                    label: item.label,
+                    data: item.points,
                     pointRadius: 1,
                     pointHoverRadius: 2,
                     pointBorderWidth: 0,
                     borderWidth: 2,
-                    backgroundColor: 'blue',
-                    borderColor: 'blue',
+                    backgroundColor: (item.color ? item.color : this.colorMap(index)),
+                    borderColor: (item.color ? item.color : this.colorMap(index)),
                     pointStyle:'circle',
                     lineTension: 0,
                     fill: false
-                },{
-                    label: 'AC2',
-                    data: data.AC2,
-                    pointRadius: 1,
-                    pointHoverRadius: 2,
-                    pointBorderWidth: 0,
-                    borderWidth: 2,
-                    backgroundColor: 'orange',
-                    borderColor: 'orange',
-                    pointStyle:'circle',
-                    lineTension: 0,
-                    fill: false
-                },{
-                    label: 'WH1',
-                    data: data.WH1,
-                    pointRadius: 1,
-                    pointHoverRadius: 2,
-                    pointBorderWidth: 0,
-                    borderWidth: 2,
-                    backgroundColor: 'green',
-                    borderColor: 'green',
-                    pointStyle:'circle',
-                    lineTension: 0,
-                    fill: false
-                }
-              ]
+                };
+              }, this)
           },
           options: {
             scaleShowVerticalLines: false,
-                scales: {
-                    xAxes: [{
-                        stacked: true,
-                        gridLines : {
-                            display : false
-                        }
-                    }],
-                    yAxes: [{
-                        stacked: true
-                    }]
-                },
-               animation: {
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    gridLines : {
+                        display : false
+                    }
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
+            },
+            animation: {
                 duration: 0
-             }
+            },
+            tooltips: {
+                displayColors: true
+            }
           }
       });
     },
@@ -309,7 +319,57 @@
       tooltipEl.style.fontSize = tooltip.fontSize;
       tooltipEl.style.fontStyle = tooltip._fontStyle;
       tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+    },
+
+  getChartType: function () {
+    return
+
+  },
+  changeChartType: function (ev) {
+    const value = ev.currentTarget.value;
+
+    if (value && this.updateMethod)
+    {
+      const updateObj = [{ 
+        'id': this.chartId,
+        'target': 'type',
+        'value': value 
+      }];
+      
+      this.callServiceHelper(this.updateMethod, updateObj);
     }
+  },
+  colorMap: function (index) {
+    
+    const colors = [
+      '#29A6FF', // Celestine +1
+      '#E87511', // Carnelian
+
+      '#46A661', // Olivine
+      '#00AFAA', // Malachite
+      '#EA82FF', // Fluorite +1
+
+      '#FF6B70', // Cinnabar +1
+
+      '#00BDDD', // Zircon +1
+      '#AFA1FF', // Amethyst +1
+      '#F5EC5A', // Topaz
+
+      '#8CCD5A', // Peridot
+      '#FFBA59', // Citrine
+      '#BF2A75', // Tourmaline
+    ];
+
+    return colors[index];
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass && this.componentName)
+    {      
+      this.hass.callService(this.componentName, service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
+  },
 
   });
 }());

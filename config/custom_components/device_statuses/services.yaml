@@ -10,3 +10,15 @@ update_device_statuses:
     obj:
       description: An object containing the value
       example: 'obj.value'
+
+update_chart_type:
+  description: Change chart type to line or bar 
+
+  fields:
+    id:
+      description: The id of the chart
+      example: 'device-energy'
+
+    value:
+      description: The chart type being assigned
+      example: 'line'

@@ -32,11 +32,15 @@
 
     <template is='dom-if' if='[[!_isLoading]]'>
       <template is='dom-repeat' items="[[getChartSeries(stateObj)]]">
-        <div class="chart-title">[[getChartTitle(item)]]</div>
+        <div class="chart-title">[[item.label]]</div>
         <state-quick-chart
-          chart-data="[[item]]"
+          hass="[[hass]]"
+          chart-data="[[item.data]]"
           chart-type="[[item.type]]"
-          chart-label="[[item.label]]">
+          chart-label="[[item.label]]"
+          chart-id="[[item.id]]"
+          update-method="[[item.updateMethod]]"
+          component-name="[[stateObj._domain]]">
         </state-quick-chart>
       </template>
     </template>
@@ -51,7 +55,9 @@ Polymer({
     stateObj: {
       type: Object
     },
-
+    hass: {
+      type: Object,
+    },
     _isLoading: {
       type: Boolean,
       value: false
@@ -60,18 +66,8 @@ Polymer({
   },
 
   getChartSeries: function (obj) {
+    console.log('getting chart series');
     return obj.attributes.chartSeries;
-  },
-
-  getChartTitle: function (series) {
-    let title = '';
-
-    if (series.type === 'bar')
-    {
-      title = series.label;
-    }
-
-    return title;
   },
 });
 </script>
