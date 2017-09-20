@@ -32,8 +32,7 @@
       },
       chartType: {
         type: String,
-        value: "",
-        observer: 'chartTypeChanged'
+        value: ""
       },
 
       chartLabel: {
@@ -140,23 +139,23 @@
                 // return timeLabel;
                 return moment(timeStamp).format('h:mm a');
               }),
-              datasets: data.series.map(function (item, index) {
+              datasets: Object.keys(data.series).map(function (key, index) {
 
                 const dataset = {
-                    label: item.label,
-                    data: item.points,
+                    label: key,
+                    data: data.series[key].points,
                     pointRadius: 1,
                     pointHoverRadius: 2,
                     pointBorderWidth: 0,
                     borderWidth: 2,
-                    backgroundColor: (item.color ? item.color : this.colorMap(index)),
-                    borderColor: (item.color ? item.color : this.colorMap(index)),
+                    backgroundColor: (data.series[key].color ? data.series[key].color : this.colorMap(index)),
+                    borderColor: (data.series[key].color ? data.series[key].color : this.colorMap(index)),
                     pointStyle:'circle',
                     lineTension: 0,
                     fill: false
                 };
 
-                if (item['line-style'] === "dash")
+                if (data.series[key]['line-style'] === "dash")
                 {
                   dataset.borderDash = [3,2];
                 }
@@ -203,16 +202,16 @@
               labels: data.times.map(function (timeStamp, index) {
                 return moment(timeStamp).format('h:mm a');
               }),
-              datasets: data.series.map(function (item, index) {
+              datasets: Object.keys(data.series).map(function (key, index) {
                 return {
-                    label: item.label,
-                    data: item.points,
+                    label: key,
+                    data: data.series[key].points,
                     pointRadius: 1,
                     pointHoverRadius: 2,
                     pointBorderWidth: 0,
                     borderWidth: 2,
-                    backgroundColor: (item.color ? item.color : this.colorMap(index)),
-                    borderColor: (item.color ? item.color : this.colorMap(index)),
+                    backgroundColor: (data.series[key].color ? data.series[key].color : this.colorMap(index)),
+                    borderColor: (data.series[key].color ? data.series[key].color : this.colorMap(index)),
                     pointStyle:'circle',
                     lineTension: 0,
                     fill: false

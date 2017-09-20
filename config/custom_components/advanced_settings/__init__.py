@@ -86,11 +86,47 @@ class AdvancedSettingsComponent(Entity):
 
         data = {
             "energySavings":{
-                "goal": "2",
-                "unit": "Kw"
+                "label": "",
+                "value": 2,
+                "units": "Kwh"
             },
-            "savingsStartTime": "10:00am",
-            "savingsEndTime": "5:00pm"
+            "powerSavings": {
+                "label": "",
+                "value": 9,
+                "units": "Kw"
+            },
+            "timePeriodStart": "01/01/2017",
+            "timePeriodEnd": "12/31/2017",
+            "savingsStartTime": "10:00 am",
+            "savingsEndTime": "5:00 pm",
+            "incentives": {
+                "label": "Incentives",
+                "value": 10,
+                "units": "$ per peak period"
+            },
+            "time_of_use_pricing": {
+                "label": "Time of use pricing",
+                "list": [
+                    {
+                        "startTime": "10:00 am",
+                        "endTime": "17:00 pm",
+                        "value": 15,
+                        "units": "cents per"
+                    },
+                    {
+                        "startTime": "17:00 am",
+                        "endTime": "20:00 pm",
+                        "value": 35,
+                        "units": "cents per"
+                    },
+                    {
+                        "startTime": "20:00 pm",
+                        "endTime": "9:00 am",
+                        "value": 10,
+                        "units": "cents per"
+                    },
+                ]
+            }
         }
 
         return data

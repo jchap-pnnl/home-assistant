@@ -127,26 +127,23 @@ class TransactiveComponent(Entity):
                             '2017-07-17 23:40:58.368599Z',
                             '2017-07-17 23:41:28.368599Z'
                         ],
-                        "series": [
-                            { 
-                                "label": "historical",
+                        "series": {
+                            "historical": {
                                 "points": [ 3, 4, 6, 6, 7, 9, 11, 13, 16, 17 ],
                                 "color": "#696969",
                                 "line-style": "dash"
                             },
-                            { 
-                                "label": "actual",
+                            "actual": {
                                 "points": [ 4, 5, 7, 8, None, None, None, None, None, None ],
                                 "color": "#FF7F50",
                                 "line-style": ""
                             },
-                            { 
-                                "label": "transactive",
+                            "transactive": {
                                 "points": [ 4, 5, 7, 8, 8, 8, 9, 9, 10, 12 ],
                                 "color": "ForestGreen",
                                 "line-style": "dash"
                             }
-                        ]
+                        }
                     },
                     "type": "line",
                     "label": "energy",

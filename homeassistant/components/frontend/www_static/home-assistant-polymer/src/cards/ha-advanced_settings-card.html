@@ -3,7 +3,6 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../controls/ha-timepicker.html'>
 
 
 <dom-module id='ha-advanced_settings-card'>
@@ -14,7 +13,7 @@
         padding-bottom: 16px;
       }
       .content {
-        padding: 4px 16px;
+        padding: 4px 30px 30px;
       }
       td, th {
         padding-right: 8px;
@@ -58,11 +57,14 @@
         color: dimgray;
       }
 
-      .energy-selector {
+      .energy-selector,
+      .incentives {
         display: block;
       }
+
       .energy-slider,
-      .energy-goal {
+      .energy-goal,
+      .incentives > div {
         display: inline-block;
         vertical-align: middle;
       }
@@ -81,9 +83,39 @@
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
       </div>
       <div class='content'>
+        <div class="daily-period">
+          <b>Transactive Period</b>
+        </div>
+        <table class="transactive-period">
+          <tr>
+            <td>[[stateObj.attributes.timePeriodStart]]</td>
+            <td>to</td>
+            <td>[[stateObj.attributes.timePeriodEnd]]</td>
+          </tr>
+        </table>
+        <div>
+          <table>
+            <tr>
+              <td>
+                Daily&nbsp;Start:
+              </td>
+              <td>
+                [[stateObj.attributes.savingsStartTime]]
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Daily&nbsp;End:
+              </td>
+              <td>
+                [[stateObj.attributes.savingsEndTime]]
+              </td>
+            </tr>
+          </table>
+        </div>
         <div>
           <label>
-            Energy Savings Goal
+            <b>Energy Savings Goal</b>
           </label>
           <div class="energy-selector">
             <div class="energy-slider">
@@ -92,46 +124,58 @@
                 max="5"
                 step="1"
                 pin="true"
-                value="[[stateObj.attributes.energySavings.goal]]"
+                value="[[stateObj.attributes.energySavings.value]]"
                 on-change="updateEnergySavings"
               ></paper-slider>
             </div>
-            <div class="energy-goal">[[stateObj.attributes.energySavings.goal]] [[stateObj.attributes.energySavings.unit]]</div>
+            <div class="energy-goal">[[stateObj.attributes.energySavings.value]] [[stateObj.attributes.energySavings.units]]</div>
           </div>
         </div>
-        <div class="transactive-period">
-          <div class="daily-period">Daily Transactive Period</div>
+
+        <div>
+          <label>
+            <b>Power Savings Goal</b>
+          </label>
+          <div class="energy-selector">
+            <div class="energy-slider">
+              <paper-slider 
+                min="2"
+                max="10"
+                step="1"
+                pin="true"
+                value="[[stateObj.attributes.powerSavings.value]]"
+                on-change="updateEnergySavings"
+              ></paper-slider>
+            </div>
+            <div class="energy-goal">[[stateObj.attributes.powerSavings.value]] [[stateObj.attributes.powerSavings.units]]</div>
+          </div>
+        </div>
+
+        <div class="incentives">
+          <div>
+            <b>[[stateObj.attributes.incentives.label]]:</b>
+          </div>
+          <div>[[stateObj.attributes.incentives.value]]</div>
+          <div>[[stateObj.attributes.incentives.units]]</div>
+        </div>
+        <div>
+          <div>
+            <b>[[stateObj.attributes.time_of_use_pricing.label]]:</b>
+          </div>
           <table>
-            <tr>
-              <td>
-                Start:
-              </td>
-              <td>
-                <ha-timepicker
-                  hass="[[hass]]"
-                  picker_label="Savings Start Time"
-                  set_time="[[stateObj.attributes.savingsStartTime]]"
-                  data_prop="savingsStartTime"
-                  event_name="update_advanced_settings"
-                  platform_name="advanced_settings">
-                </ha-timepicker>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                End:
-              </td>
-              <td>
-                <ha-timepicker
-                  hass="[[hass]]"
-                  picker_label="Savings End Time"
-                  set_time="[[stateObj.attributes.savingsEndTime]]"
-                  data_prop="savingsEndTime"
-                  event_name="update_advanced_settings"
-                  platform_name="advanced_settings">
-                </ha-timepicker>
-              </td>
-            </tr>
+            <template 
+              is='dom-repeat' 
+              items="[[getTimeOfUsePrincings(stateObj)]]"
+            >
+              <tr>
+                <td>[[item.startTime]]</td>
+                <td>to</td>
+                <td>[[item.endTime]]</td>
+                <td>:</td>
+                <td>[[item.value]]</td>
+                <td>[[item.units]]</td>
+              </tr>
+            </template>
           </table>
         </div>
       </div>
@@ -155,6 +199,9 @@ Polymer({
     groupEntity: {
       type: Object,
     }
+  },
+  getTimeOfUsePrincings: function (obj) {
+    return obj.attributes.time_of_use_pricing.list;
   },
   updateEnergySavings: function (evt) {
       console.log(evt.currentTarget.value);
