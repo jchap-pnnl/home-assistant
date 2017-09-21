@@ -129,20 +129,17 @@ class DeviceStatusesComponent(Entity):
                             '2017-07-17 23:40:58.368599Z',
                             '2017-07-17 23:41:28.368599Z'
                         ],
-                        "series": [
-                            { 
-                                "label": "AC1",
+                        "series": {
+                            "AC1": { 
                                 "points": [ 3, 4, 6, 5, 3, 4, 4, 5, 4, 5 ]
                             },
-                            { 
-                                "label": "AC2",
+                            "AC2": { 
                                 "points": [ 4, 5, 5, 4, 3, 5, 6, 2, 6, 6 ]
                             },
-                            { 
-                                "label": "WH1",
+                            "WH1": { 
                                 "points": [ 3, 2, 3, 6, 5, 5, 3, 3, 3, 2 ]
                             }
-                        ]
+                        }
                     },
                     "type": "bar",
                     "label": "energy (Kwh)",
