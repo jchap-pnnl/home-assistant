@@ -88,7 +88,7 @@
       <div class='right-end'>[[right_value]]&nbsp;[[units_label]]</div>
       <div class='indicator-line'></div>
       <div class='pointer-outer' 
-        style="[[getPointerStyle(actual_value, left_value, right_value)]]"
+        style="[[getPointerStyle()]]"
       >
         <div class='pointer-inner'>
           <div class='actual-value'>
@@ -122,13 +122,16 @@ Polymer({
       value: 'darkgray'
     },
     left_value: {
-      type: String
+      type: String,
+      observer: 'getPointerStyle'
     },
     right_value: {
-      type: String
+      type: String,
+      observer: 'getPointerStyle'
     },
     actual_value: {
-      type: String
+      type: String,
+      observer: 'getPointerStyle'
     },
     units_label: {
       type: String,
@@ -138,8 +141,12 @@ Polymer({
       type: String
     }
   },
-  getPointerStyle: function (valueLabel, maxLabel, minLabel) {
+  getPointerStyle: function () {
     let style = "";
+
+    const valueLabel = this.actual_value;
+    const maxLabel = this.left_value;
+    const minLabel = this.right_value;
 
     let valueString = this.trimStringForNumber(valueLabel, "$");
     let maxString = this.trimStringForNumber(maxLabel, "$");
