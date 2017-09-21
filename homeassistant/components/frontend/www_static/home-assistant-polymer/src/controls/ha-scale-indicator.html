@@ -88,7 +88,7 @@
       <div class='right-end'>[[right_value]]&nbsp;[[units_label]]</div>
       <div class='indicator-line'></div>
       <div class='pointer-outer' 
-        style="[[getPointerStyle()]]"
+        style$="[[pointer_style]]"
       >
         <div class='pointer-inner'>
           <div class='actual-value'>
@@ -122,16 +122,13 @@ Polymer({
       value: 'darkgray'
     },
     left_value: {
-      type: String,
-      observer: 'getPointerStyle'
+      type: String
     },
     right_value: {
-      type: String,
-      observer: 'getPointerStyle'
+      type: String
     },
     actual_value: {
-      type: String,
-      observer: 'getPointerStyle'
+      type: String
     },
     units_label: {
       type: String,
@@ -139,87 +136,90 @@ Polymer({
     },
     description: {
       type: String
+    },
+    pointer_style: {
+      type: String,
+      computed: 'getPointerStyle(actual_value, left_value, right_value)'
     }
   },
-  getPointerStyle: function () {
+  getPointerStyle: function (valueLabel, maxLabel, minLabel) {
     let style = "";
 
-    const valueLabel = this.actual_value;
-    const maxLabel = this.left_value;
-    const minLabel = this.right_value;
-
-    let valueString = this.trimStringForNumber(valueLabel, "$");
-    let maxString = this.trimStringForNumber(maxLabel, "$");
-    let minString = this.trimStringForNumber(minLabel, "$");
-
-    const valueNum = Number(valueString);
-    let maxNum = Number(maxString);
-    let minNum = Number(minString);
-
-    if (minNum > maxNum)
+    if (valueLabel && maxLabel && minLabel)
     {
-      const tmp = minNum;
-      minNum = maxNum;
-      maxNum = tmp;
-    }
+      let valueString = this.trimStringForNumber(valueLabel, "$");
+      let maxString = this.trimStringForNumber(maxLabel, "$");
+      let minString = this.trimStringForNumber(minLabel, "$");
 
-    const midWay = ((maxNum - minNum) / 2);
+      const valueNum = Number(valueString);
+      let maxNum = Number(maxString);
+      let minNum = Number(minString);
 
-    if (valueNum < midWay)
-    {
-      const ratio = valueNum / midWay;
-
-      if ( (1 - ratio) < .1)
+      if (minNum > maxNum)
       {
-        style = "text-align: center";
+        const tmp = minNum;
+        minNum = maxNum;
+        maxNum = tmp;
       }
-      else
-      {
-        let lowValue;
 
-        if ((valueNum - minNum) !== 0)
+      const midWay = ((maxNum - minNum) / 2);
+
+      if (valueNum < midWay)
+      {
+        const ratio = valueNum / midWay;
+
+        if ( (1 - ratio) < .1)
         {
-          lowValue = (valueNum - minNum) / maxNum * 100;
+          style = "text-align: center";
         }
         else
         {
-          lowValue = 0;
+          let lowValue;
+
+          if ((valueNum - minNum) !== 0)
+          {
+            lowValue = (valueNum - minNum) / maxNum * 100;
+          }
+          else
+          {
+            lowValue = 0;
+          }
+
+          const paddingString = (lowValue ? lowValue + "%" : lowValue);
+          
+          style = "text-align: right; padding-right: " + paddingString;
         }
-
-        const paddingString = (lowValue ? lowValue + "%" : lowValue);
-        
-        style = "text-align: right; padding-right: " + paddingString;
       }
-    }
-    else if (valueNum > midWay)
-    { 
-      const ratio = midWay / valueNum;
+      else if (valueNum > midWay)
+      { 
+        const ratio = midWay / valueNum;
 
-      if ( (1 - ratio) < .1)
-      {
-        style = "text-align: center";
-      }
-      else
-      {
-        let highValue;
-
-        if ((maxNum - valueNum) !== 0)
+        if ( (1 - ratio) < .1)
         {
-          highValue = (maxNum - valueNum) / maxNum * 100;
+          style = "text-align: center";
         }
         else
         {
-          highValue = 0;
-        }
+          let highValue;
 
-        const paddingString = (highValue ? highValue + "%" : highValue);
-        
-        style = "text-align: left; padding-left: " + paddingString;
+          if ((maxNum - valueNum) !== 0)
+          {
+            highValue = (maxNum - valueNum) / maxNum * 100;
+          }
+          else
+          {
+            highValue = 0;
+          }
+
+          const paddingString = (highValue ? highValue + "%" : highValue);
+          
+          style = "text-align: left; padding-left: " + paddingString;
+        }
       }
-    }
-    else
-    {
-      style = "text-align: center";
+      else
+      {
+        style = "text-align: center";
+      }
     }
 
     return style;
