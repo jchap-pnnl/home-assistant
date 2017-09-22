@@ -1,9 +1,11 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
 
 <link rel='import' href='../components/ha-card.html'>
 
+<script src="../../bower_components/moment/min/moment.min.js"></script>
 
 <dom-module id='ha-advanced_settings-card'>
   <template>
@@ -88,9 +90,25 @@
         </div>
         <table class="transactive-period">
           <tr>
-            <td>[[stateObj.attributes.timePeriodStart]]</td>
+            <td>
+              <vaadin-date-picker 
+                id="time-period-start"
+                data-prop="timePeriodStart"
+                label="Start Date" 
+                value="[[prepDate(stateObj.attributes.timePeriodStart.value)]]"
+              >
+              </vaadin-date-picker>
+            </td>
             <td>to</td>
-            <td>[[stateObj.attributes.timePeriodEnd]]</td>
+            <td>
+              <vaadin-date-picker
+                id="time-period-end"
+                data-prop="timePeriodEnd" 
+                label="End Date" 
+                value="[[prepDate(stateObj.attributes.timePeriodEnd.value)]]"
+              >
+              </vaadin-date-picker>
+            </td>
           </tr>
         </table>
         <div>
@@ -100,7 +118,7 @@
                 Daily&nbsp;Start:
               </td>
               <td>
-                [[stateObj.attributes.savingsStartTime]]
+                [[stateObj.attributes.savingsStartTime.value]]
               </td>
             </tr>
             <tr>
@@ -108,7 +126,7 @@
                 Daily&nbsp;End:
               </td>
               <td>
-                [[stateObj.attributes.savingsEndTime]]
+                [[stateObj.attributes.savingsEndTime.value]]
               </td>
             </tr>
           </table>
@@ -119,13 +137,14 @@
           </label>
           <div class="energy-selector">
             <div class="energy-slider">
-              <paper-slider 
+              <paper-slider
+                data-prop="energySavings"
                 min="2"
                 max="5"
                 step="1"
                 pin="true"
                 value="[[stateObj.attributes.energySavings.value]]"
-                on-change="updateEnergySavings"
+                on-change="updateSetting"
               ></paper-slider>
             </div>
             <div class="energy-goal">[[stateObj.attributes.energySavings.value]] [[stateObj.attributes.energySavings.units]]</div>
@@ -138,13 +157,14 @@
           </label>
           <div class="energy-selector">
             <div class="energy-slider">
-              <paper-slider 
+              <paper-slider
+                data-prop="powerSavings"
                 min="2"
                 max="10"
                 step="1"
                 pin="true"
                 value="[[stateObj.attributes.powerSavings.value]]"
-                on-change="updateEnergySavings"
+                on-change="updateSetting"
               ></paper-slider>
             </div>
             <div class="energy-goal">[[stateObj.attributes.powerSavings.value]] [[stateObj.attributes.powerSavings.units]]</div>
@@ -186,7 +206,12 @@
 <script>
 Polymer({
   is: 'ha-advanced_settings-card',
-
+  ready: function () {
+      
+    this.$$('#time-period-start').addEventListener('value-changed', this.updateSetting.bind(this));
+    this.$$('#time-period-end').addEventListener('value-changed', this.updateSetting.bind(this));
+      
+  },
   properties: {
     hass: {
       type: Object,
@@ -200,17 +225,19 @@ Polymer({
       type: Object,
     }
   },
+  prepDate: function (dateToPrep) {
+    return moment(dateToPrep).format('YYYY-MM-DD');
+  },
   getTimeOfUsePrincings: function (obj) {
     return obj.attributes.time_of_use_pricing.list;
   },
-  updateEnergySavings: function (evt) {
-      console.log(evt.currentTarget.value);
-
+  updateSetting: function (evt) {
       const newValue = evt.currentTarget.value;
+      const prop = evt.currentTarget.dataset.prop;
 
       const updateObj = { 
-        'target': 'energySavings',
-        'subtarget': 'goal',
+        'target': prop,
+        'subtarget': 'value',
         'value': newValue 
       };
         

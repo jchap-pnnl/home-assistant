@@ -95,10 +95,18 @@ class AdvancedSettingsComponent(Entity):
                 "value": 9,
                 "units": "Kw"
             },
-            "timePeriodStart": "01/01/2017",
-            "timePeriodEnd": "12/31/2017",
-            "savingsStartTime": "10:00 am",
-            "savingsEndTime": "5:00 pm",
+            "timePeriodStart": {
+                "value": "01/01/2017"
+            },
+            "timePeriodEnd": {
+                "value": "12/31/2017"
+            },
+            "savingsStartTime": {
+                "value": "10:00 am"
+            },
+            "savingsEndTime": {
+                "value": "5:00 pm"
+            },
             "incentives": {
                 "label": "Incentives",
                 "value": 10,
