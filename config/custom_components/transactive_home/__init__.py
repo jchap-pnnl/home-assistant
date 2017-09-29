@@ -99,12 +99,12 @@ class TransactiveComponent(Entity):
             "measures": [
                 {
                     "label": "Overall Energy",
-                    "value": 80,
-                    "unit": "Kwh/24 hrs"
+                    "value": 9.5,
+                    "unit": "Kwh"
                 },
                 {
                     "label": "Overall Power",
-                    "value": 12,
+                    "value": 8.04,
                     "unit": "Kw"
                 }
             ],
@@ -143,7 +143,7 @@ class TransactiveComponent(Entity):
                         }
                     },
                     "type": "line",
-                    "label": "energy",
+                    "label": "Energy (Kwh)",
                     "id": "transactive-home"
                 }
             ]

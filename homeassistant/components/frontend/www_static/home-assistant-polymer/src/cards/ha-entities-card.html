@@ -82,7 +82,6 @@ Polymer({
   },
 
   computeTitle: function (states, groupEntity) {
-    console.log('computing title');
     return groupEntity ?
       window.hassUtil.computeStateName(groupEntity) :
       window.hassUtil.computeDomain(states[0]).replace(/_/g, ' ');

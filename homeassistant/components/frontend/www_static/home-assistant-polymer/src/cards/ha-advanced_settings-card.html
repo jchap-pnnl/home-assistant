@@ -157,24 +157,16 @@
           <div class="power-input">
             <div>
               <paper-input 
-                label="Power Savings Goal"
-                data-prop="powerSavings" 
+                label="[[stateObj.attributes.incentives.label]]"
+                data-prop="incentives" 
                 type="number"
                 on-change="updateSetting" 
-                value="[[stateObj.attributes.powerSavings.value]]" 
+                value="[[stateObj.attributes.incentives.value]]" 
               >
               </paper-input>
             </div>
-            <div>[[stateObj.attributes.powerSavings.units]]</div>
+            <div>[[stateObj.attributes.incentives.units]]</div>
           </div>
-        </div>
-
-        <div class="incentives">
-          <div>
-            <b>[[stateObj.attributes.incentives.label]]:</b>
-          </div>
-          <div>[[stateObj.attributes.incentives.value]]</div>
-          <div>[[stateObj.attributes.incentives.units]]</div>
         </div>
         <div>
           <div>

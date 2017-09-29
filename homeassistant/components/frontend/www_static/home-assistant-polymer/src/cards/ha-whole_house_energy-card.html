@@ -60,7 +60,7 @@
           right_value="[[getAttributes(stateObj, 'energyUse', 'maximum')]]"
           left_value="[[getAttributes(stateObj, 'energyUse', 'minimum')]]"
           actual_value="[[getAttributes(stateObj, 'energyUse', 'transactive')]]"
-          description="Today's estimated energy use (based on your settings)"
+          description="Today's estimated energy reduction (based on your settings)"
           units_label="Kwh"
         ></ha-scale-indicator>
         <ha-scale-indicator 
@@ -70,7 +70,7 @@
           right_value="[[getAttributes(stateObj, 'energyCost', 'maximum')]]"
           left_value="[[getAttributes(stateObj, 'energyCost', 'minimum')]]"
           actual_value="[[getAttributes(stateObj, 'energyCost', 'transactive')]]"
-          description="Today's estimated energy cost"
+          description="Today's estimated energy savings"
         ></ha-scale-indicator>
       </div>
     </ha-card>
