@@ -59,18 +59,25 @@
         color: dimgray;
       }
 
-      .energy-selector,
+      .energy-input,
+      .power-input,
       .incentives {
         display: block;
       }
 
-      .energy-slider,
-      .energy-goal,
+      .energy-input > div,
+      .power-input > div,
       .incentives > div {
         display: inline-block;
+      }
+
+      .incentives > div {
         vertical-align: middle;
       }
 
+      paper-input::shadow paper-input-container {
+        padding: 0;
+      }
       /*.energy-slider {
         width: 70%;
       }
@@ -86,7 +93,7 @@
       </div>
       <div class='content'>
         <div class="daily-period">
-          <b>Transactive Period</b>
+          <b>Peak Period</b>
         </div>
         <table class="transactive-period">
           <tr>
@@ -132,42 +139,33 @@
           </table>
         </div>
         <div>
-          <label>
-            <b>Energy Savings Goal</b>
-          </label>
-          <div class="energy-selector">
-            <div class="energy-slider">
-              <paper-slider
-                data-prop="energySavings"
-                min="2"
-                max="5"
-                step="1"
-                pin="true"
-                value="[[stateObj.attributes.energySavings.value]]"
-                on-change="updateSetting"
-              ></paper-slider>
+          <div class="energy-input">
+            <div>
+              <paper-input 
+                label="Energy Savings Goal"
+                data-prop="energySavings" 
+                type="number"
+                on-change="updateSetting" 
+                value="[[stateObj.attributes.energySavings.value]]" 
+              >
+              </paper-input>
             </div>
-            <div class="energy-goal">[[stateObj.attributes.energySavings.value]] [[stateObj.attributes.energySavings.units]]</div>
+            <div>[[stateObj.attributes.energySavings.units]]</div>
           </div>
         </div>
-
         <div>
-          <label>
-            <b>Power Savings Goal</b>
-          </label>
-          <div class="energy-selector">
-            <div class="energy-slider">
-              <paper-slider
-                data-prop="powerSavings"
-                min="2"
-                max="10"
-                step="1"
-                pin="true"
-                value="[[stateObj.attributes.powerSavings.value]]"
-                on-change="updateSetting"
-              ></paper-slider>
+          <div class="power-input">
+            <div>
+              <paper-input 
+                label="Power Savings Goal"
+                data-prop="powerSavings" 
+                type="number"
+                on-change="updateSetting" 
+                value="[[stateObj.attributes.powerSavings.value]]" 
+              >
+              </paper-input>
             </div>
-            <div class="energy-goal">[[stateObj.attributes.powerSavings.value]] [[stateObj.attributes.powerSavings.units]]</div>
+            <div>[[stateObj.attributes.powerSavings.units]]</div>
           </div>
         </div>
 

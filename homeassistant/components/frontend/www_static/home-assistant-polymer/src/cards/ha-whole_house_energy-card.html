@@ -55,20 +55,20 @@
       <div class='header domain'>
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
         <ha-scale-indicator 
-          left_icon='mdi:battery'
-          right_icon='mdi:battery-30'
-          left_value="[[getAttributes(stateObj, 'energyUse', 'maximum')]]"
-          right_value="[[getAttributes(stateObj, 'energyUse', 'minimum')]]"
+          right_icon='mdi:battery'
+          left_icon='mdi:battery-30'
+          right_value="[[getAttributes(stateObj, 'energyUse', 'maximum')]]"
+          left_value="[[getAttributes(stateObj, 'energyUse', 'minimum')]]"
           actual_value="[[getAttributes(stateObj, 'energyUse', 'transactive')]]"
           description="Today's estimated energy use (based on your settings)"
           units_label="Kwh"
         ></ha-scale-indicator>
         <ha-scale-indicator 
-          left_icon='mdi:coins'
-          right_icon='mdi:coin'
+          right_icon='mdi:coins'
+          left_icon='mdi:coin'
           icon_color='#f4b400'
-          left_value="[[getAttributes(stateObj, 'energyCost', 'maximum')]]"
-          right_value="[[getAttributes(stateObj, 'energyCost', 'minimum')]]"
+          right_value="[[getAttributes(stateObj, 'energyCost', 'maximum')]]"
+          left_value="[[getAttributes(stateObj, 'energyCost', 'minimum')]]"
           actual_value="[[getAttributes(stateObj, 'energyCost', 'transactive')]]"
           description="Today's estimated energy cost"
         ></ha-scale-indicator>

@@ -96,20 +96,16 @@ class TransactiveComponent(Entity):
                     "zone_min": 0,
                     "zone_max": 100
                 }],
-            "measures": [{
-                    "label": "Overall Reduction",
-                    "value": 51,
-                    "unit": "kw"
-                },
+            "measures": [
                 {
                     "label": "Overall Energy",
                     "value": 80,
-                    "unit": "kw-hr/24 hrs"
+                    "unit": "Kwh/24 hrs"
                 },
                 {
                     "label": "Overall Power",
                     "value": 12,
-                    "unit": "kw"
+                    "unit": "Kw"
                 }
             ],
             "chartSeries": [
@@ -127,6 +123,7 @@ class TransactiveComponent(Entity):
                             '2017-07-17 23:40:58.368599Z',
                             '2017-07-17 23:41:28.368599Z'
                         ],
+                        "time-format": "MM/DD",
                         "series": {
                             "historical": {
                                 "points": [ 3, 4, 6, 6, 7, 9, 11, 13, 16, 17 ],

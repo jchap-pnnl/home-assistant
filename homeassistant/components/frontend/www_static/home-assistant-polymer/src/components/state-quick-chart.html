@@ -137,7 +137,7 @@
                 //   timeLabel = moment(timeStamp).format('h:mm a');
                 // }
                 // return timeLabel;
-                return moment(timeStamp).format('h:mm a');
+                return moment(timeStamp).format(data['time-format']);
               }),
               datasets: Object.keys(data.series).map(function (key, index) {
 
@@ -200,7 +200,7 @@
           type: 'bar',
           data: {
               labels: data.times.map(function (timeStamp, index) {
-                return moment(timeStamp).format('h:mm a');
+                return moment(timeStamp).format(data['time-format']);
               }),
               datasets: Object.keys(data.series).map(function (key, index) {
                 return {
