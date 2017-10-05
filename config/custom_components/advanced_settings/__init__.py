@@ -87,7 +87,7 @@ class AdvancedSettingsComponent(Entity):
         data = {
             "energySavings":{
                 "label": "",
-                "value": 2,
+                "value": 11,
                 "units": "Kwh"
             },
             "powerSavings": {

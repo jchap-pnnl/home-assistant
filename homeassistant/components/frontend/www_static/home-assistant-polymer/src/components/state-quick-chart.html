@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<script src="../../bower_components/chart.js/dist/Chart.js"></script>
+<script src="http://d3js.org/d3.v4.js"></script>
 <script src="../../bower_components/moment/min/moment.min.js"></script>
 
 
@@ -10,9 +10,15 @@
         .chart-container {
           padding: 20px;
         }
+
+        .line {
+          fill: none;
+          stroke: steelblue;
+          stroke-width: 2px;
+        }
     </style>
     <div class="chart-container">
-      <canvas id="canvas" width="600" height="400"></canvas>
+      <svg id="svg"></svg>
     </div>
 
   </template>
@@ -68,38 +74,39 @@
         type: Boolean,
         value: false,
       },
-
+      url: {
+        type: String,
+        value: 'data.csv'
+      },
       chartData: {
         type: Object,
         value: {},
         observer: 'dataChanged'
       },
-    },
-
-    created: function () {
-      this.style.display = 'block';
-    },
-
-    attached: function () {
-      this.isAttached = true;
-    },
-
-    chartTypeChanged: function (chartType) {
-
-      const hiddenIframes = document.querySelector('.chartjs-hidden-iframe');
-
-      if (this.chartData)
-      {
-        // this.drawChart();
-        switch (chartType)
-        {
-          case 'line':
-            this.drawChartLine(this.chartData);
-            break;
-          case 'bar':
-            this.drawChartBar(this.chartData);
-            break;
-        }
+      data: {
+        type: Array,
+        value: [
+          {
+            date: '1-May-12',
+            close: 68.13,
+            open: 34.12
+          },
+          {
+            date: '30-Apr-12',
+            close: 63.98,
+            open: 45.56
+          },
+          {
+            date: '27-Apr-12',
+            close: 67.00,
+            open: 67.89
+          },
+          {
+            date: '26-Apr-12',
+            close: 89.70,
+            open: 78.54
+          }
+        ]
       }
     },
 
@@ -111,214 +118,166 @@
         switch (this.chartType)
         {
           case 'line':
-            this.drawChartLine(chartData);
+            const series = Object.keys(chartData.series);
+            this.drawChartLine(this.extractData(chartData), series, chartData.series);
             break;
           case 'bar':
-            this.drawChartBar(chartData);
+            // this.drawChartBar(chartData);
             break;
         }
       }
     },
-    drawChartLine: function (data) {
-      var ctx = this.$.canvas.getContext('2d');
+    createElements: function () {
+      var width = 500,
+          height = 500,
+          radius = Math.min(width, height) / 2;
 
-      const chartObj = {
-          type: 'line',
-          data: {
-              labels: data.times.map(function (timeStamp, index) {
-                // let timeLabel = '';
-                // if (index % 2 === 0)
-                // {
-                //   timeLabel = moment(timeStamp).format('h:mm a');
-                // }
-                // return timeLabel;
-                return moment(timeStamp).format(data['time-format']);
-              }),
-              datasets: Object.keys(data.series).map(function (key, index) {
-
-                const dataset = {
-                    label: key,
-                    data: data.series[key].points,
-                    pointRadius: 1,
-                    pointHoverRadius: 2,
-                    pointBorderWidth: 0,
-                    borderWidth: 2,
-                    backgroundColor: (data.series[key].color ? data.series[key].color : this.colorMap(index)),
-                    borderColor: (data.series[key].color ? data.series[key].color : this.colorMap(index)),
-                    pointStyle:'circle',
-                    lineTension: 0,
-                    fill: false
-                };
-
-                if (data.series[key]['line-style'] === "dash")
-                {
-                  dataset.borderDash = [3,2];
-                }
-
-                return dataset;
-
-              }, this)
-          },
-          options: {
-              scaleShowVerticalLines: false,
-              scales : {
-                  xAxes : [ {
-                      gridLines : {
-                          display : false
-                      }
-                  } ]
-              },
-              animation: {
-                  duration: 0
-              }
-          }
-      };
-
-      if (this.chartId == 'transactive-home')
-      {
-          chartObj.options.tooltips = {
-            yAlign:'top',
-            xAlign:'right',
-            enabled: false,
-            mode: 'index',
-            position: 'nearest',
-            intersect: 'false',
-            custom: this.customTooltips
-          };
-      }
-
-      var myChart = new Chart(ctx, chartObj);
+      this.svg = d3.select(this.$.svg)
+          .attr("width", width)
+          .attr("height", height)
+        .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
     },
-    drawChartBar: function (data) {
-      var ctx = this.$.canvas.getContext('2d');
-      var myChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-              labels: data.times.map(function (timeStamp, index) {
-                return moment(timeStamp).format(data['time-format']);
-              }),
-              datasets: Object.keys(data.series).map(function (key, index) {
-                return {
-                    label: key,
-                    data: data.series[key].points,
-                    pointRadius: 1,
-                    pointHoverRadius: 2,
-                    pointBorderWidth: 0,
-                    borderWidth: 2,
-                    backgroundColor: (data.series[key].color ? data.series[key].color : this.colorMap(index)),
-                    borderColor: (data.series[key].color ? data.series[key].color : this.colorMap(index)),
-                    pointStyle:'circle',
-                    lineTension: 0,
-                    fill: false
-                };
-              }, this)
-          },
-          options: {
-            scaleShowVerticalLines: false,
-            scales: {
-                xAxes: [{
-                    stacked: true,
-                    gridLines : {
-                        display : false
-                    }
-                }],
-                yAxes: [{
-                    stacked: true
-                }]
-            },
-            animation: {
-                duration: 0
-            },
-            tooltips: {
-                displayColors: true
-            }
-          }
-      });
-    },
-    customTooltips: function(tooltip) {
-      // remove previous tooltip if no tooltip
-      if (tooltip.opacity === 0) {
-        const divs = this._chart.canvas.parentNode.getElementsByTagName("div");
-        
-        let i = divs.length;
+    drawChartLine: function (data, series, chartInfo) {
 
-        for (i = divs.length - 1; i >= 0; i--)
-        {
-            divs[i].remove();
-        }
-
-        return;
-      }
-
-      const tooltipEl = document.createElement('div');
-      tooltipEl.id = 'chartjs-tooltip';
-      tooltipEl.innerHTML = "<div></div>";
-      this._chart.canvas.parentNode.appendChild(tooltipEl);
-
-      // Set caret Position
-      tooltipEl.classList.remove('above', 'below', 'no-transform');
+      // set the dimensions and margins of the graph
+      var margin = {top: 20, right: 20, bottom: 30, left: 50},
+          width = 400 - margin.left - margin.right,
+          height = 400 - margin.top - margin.bottom;
       
-      if (tooltip.yAlign) 
-      {
-        tooltipEl.classList.add(tooltip.yAlign);
-      } 
-      else 
-      {
-        tooltipEl.classList.add('no-transform');
-      }
+      var svg = d3.select(this.$.svg)
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
 
-      function getBody(bodyItem) {
-        return bodyItem.lines;
-      }
+        // set the ranges
+        var x = d3.scaleTime().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
 
-      // Set Text
-      if (tooltip.body) {
-        var titleLines = tooltip.title || [];
-        var bodyLines = tooltip.body.map(getBody);
+        // Scale the range of the data
+        x.domain(d3.extent(data, function(d) { 
+          return d.date; 
+        }));
+        
+        y.domain([0, d3.max(data, function(d) {
 
-        const values = {};
+          const vals = [];
 
-        // for example, bodyLines[0] might be:
-        //    ["historical: 6"]
-        bodyLines.forEach(function (bodyLine) {
-          const bodyParts = bodyLine[0].split(":");
-          values[bodyParts[0]] = Number(bodyParts[1]);
+          series.forEach((key) => {
+            if (d[key])
+            {
+              vals.push(d[key]);
+            }
+          });
+
+          const max = vals.reduce(function(a, b) {
+              return Math.max(a, b);
+          });
+
+          return max; 
+        })]);
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x)
+              .tickFormat(d3.timeFormat("%m/%d")));
+
+        // Add the Y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+        series.reverse().forEach((key, index) => {
+
+          // var tip = d3.tip()
+          //   .attr('class', 'd3-tip')
+          //   .offset([-10, 0])
+          //   .html(function(d) {
+          //     return "<strong>" + key + ":</strong> <span style='color:red'>" + d[key] + "</span>";
+          //   })
+
+          // svg.call(tip);
+
+          // var tool_tip = d3.tip()
+          //   .attr("class", "d3-tip")
+          //   .offset([-8, 0])
+          //   .html(function(d) { return "Radius: " + d; });
+          // svg.call(tool_tip);
+
+          const drawLine = d3.line()
+            .x(function(d) { 
+              // console.log('date: ' + d.date);
+              return x(d.date); 
+            })
+            .y(function(d) { 
+              // console.log(key + ': ' + d[key]);
+              return y(d[key]); 
+            })
+            .defined(function(d) { return d[key]; });
+
+            svg.append("path")
+              .data([data])
+              .attr("class", "line")
+              .style("stroke", this.colorMap(index))
+              .attr("d", drawLine);
+              // .on('mouseover', tool_tip.show)
+              // .on('mouseout', tool_tip.hide);
         });
 
-        let innerHtml = '<div>What happened at ' + titleLines + '?</div><div><div>Received incentives: $5</div>';
+    },
+    refreshChart: function () {
+      var me = this;
 
-        if (values.actual)
-        {
-            innerHtml = innerHtml + '<div>Energy use: ' + values.actual + ' Kw </div><div>Outdoor Temp: 65-75 F</div>';
-        }
+      me.g.data(me.pie(me.data))
+        .select("path").attr("d", me.arc);
 
-        innerHtml = innerHtml + '<div style="font-size:11px">Ten minutes ago:<li>Energy use: ' + values.historical + ' Kw</li><li>Outdoor Temp: 55-68 F</li></div></div>';
+      me.g.select("text")
+        .attr("transform", function(d) { 
+          console.log("d: " + d);
+          console.log("translate(" + me.arc.centroid(d) + ")");
+          return "translate(" + me.arc.centroid(d) + ")"; 
+        });
+    },
+    extractData: function (chartData) {
+      const data = chartData.times.map((t, index) => {
 
-        var bodyRoot = tooltipEl.querySelector('div');
-        bodyRoot.innerHTML = innerHtml;
-      }
+          const item = {
+            date: moment(t).toDate()
+          };
 
-      var positionY = this._chart.canvas.offsetTop;
-      var positionX = this._chart.canvas.offsetLeft;
+          Object.keys(chartData.series).forEach((key) => {
+            if (chartData.series[key]['points'][index])
+            {
+              item[key] = chartData.series[key]['points'][index];
+            }
+            else
+            {
+              item[key] = null;
+            }
+          });
 
-      // Display, position, and set styles for font
-      tooltipEl.style.position = 'absolute';
-      tooltipEl.style.background = '#1E90FF';
-      tooltipEl.style.color = 'white';
-      tooltipEl.style.padding = '5px 10px 5px 15px';
-      tooltipEl.style.opacity = 1;
-      tooltipEl.style.left = positionX + tooltip.caretX - 185 +'px';
-      tooltipEl.style.top = positionY + tooltip.caretY - 100 + 'px';
-      // tooltipEl.style.fontFamily = tooltip._fontFamily;
-      tooltipEl.style.fontSize = tooltip.fontSize;
-      tooltipEl.style.fontStyle = tooltip._fontStyle;
-      tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+          return item;
+      });
+
+      console.log('extracted data: ');
+      console.log(data);
+      return data;
+    },
+    ready: function () {
+      // this.createElements();
+      // // this.getData();
+      // this.drawChart();
     },
 
-  getChartType: function () {
-    return
+    created: function () {
+      this.style.display = 'block';
+    },
 
-  },
+    attached: function () {
+      this.isAttached = true;
+    },
   changeChartType: function (ev) {
     const value = ev.currentTarget.value;
 
