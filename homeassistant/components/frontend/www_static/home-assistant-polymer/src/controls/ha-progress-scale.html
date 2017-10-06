@@ -1,0 +1,244 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id='ha-progress-scale'>
+  <template>
+    <style include="paper-material">
+      :host {
+        display: block;
+        border-radius: 2px;
+        transition: all 0.30s ease-out;
+        padding:0 14px 0 0;
+        background-color: white;
+      }
+      .progress-scale {
+        width: 100%;
+        height: 46px;
+        position: relative;
+        padding-top: 30px;
+      }
+      .left-end,
+      .right-end {
+        position: absolute;
+        font-size: 12px;
+        bottom: 0;
+        color: dimgray;
+        font-weight: bold;
+        z-index: 2;
+        opacity: .8;
+      }
+      .left-end,
+      .left-icon {
+        left: 0;
+      }
+      .right-end,
+      .right-icon {
+        right: 0;
+      }
+      .left-icon,
+      .right-icon {
+        position: absolute;
+        font-size: 12px;
+        top: 0;
+      }
+      .actual-value {
+        font-size: 14px;
+        color: black;
+        z-index: 2;
+        height: 40px;
+        padding-top: 10px;
+      }
+      .pointer-outer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .pointer-inner {
+        text-align: center;
+        display: inline-block;
+      }
+      .pointer-marker {
+        font-size: 14px;
+        color: forestgreen;
+        opacity: .5;
+        height: 40px;
+      }
+      .description {
+        font-size: 12px;
+        color: forestgreen;
+        line-height: 12px;
+        text-align: left;
+      }
+      .indicator-line {
+        margin: 10px 0;
+        height: 2px;
+        width: 100%;
+        border: solid gray 1px;
+        box-sizing: border-box;
+      }
+    </style>
+    <div class='description'>[[description]]</div>
+    <div class='progress-scale'>
+      <div class='left-icon' style='color: [[icon_color]]'>
+        <iron-icon icon="[[left_icon]]"></iron-icon>
+      </div>
+      <div class='right-icon' style='color: [[icon_color]]'>
+        <iron-icon icon="[[right_icon]]"></iron-icon>
+      </div>
+      <div class='left-end'>[[left_value]]&nbsp;[[units_label]]</div>
+      <div class='right-end'>[[right_value]]&nbsp;[[units_label]]</div>
+      <div class='indicator-line'></div>
+      <div class='pointer-outer' 
+        style$="[[pointer_style]]"
+      >
+        <div class='pointer-inner'>
+          <div class='actual-value'>
+            [[actual_value]]&nbsp;[[units_label]]
+          </div>
+          <div class='pointer-marker'>
+            <iron-icon icon="mdi:triangle"></iron-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-progress-scale',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+    left_icon: {
+      type: String
+    },
+    right_icon: {
+      type: String
+    },
+    icon_color: {
+      type: String,
+      value: 'darkgray'
+    },
+    left_value: {
+      type: String
+    },
+    right_value: {
+      type: String
+    },
+    actual_value: {
+      type: String
+    },
+    units_label: {
+      type: String,
+      value: ''
+    },
+    description: {
+      type: String
+    },
+    pointer_style: {
+      type: String,
+      computed: 'getPointerStyle(actual_value, right_value, left_value)'
+    }
+  },
+  getPointerStyle: function (valueLabel, maxLabel, minLabel) {
+    let style = "";
+
+    if (valueLabel && maxLabel && minLabel)
+    {
+      let valueString = this.trimStringForNumber(valueLabel, "$");
+      let maxString = this.trimStringForNumber(maxLabel, "$");
+      let minString = this.trimStringForNumber(minLabel, "$");
+
+      const valueNum = Number(valueString);
+      let maxNum = Number(maxString);
+      let minNum = Number(minString);
+
+      if (minNum > maxNum)
+      {
+        const tmp = minNum;
+        minNum = maxNum;
+        maxNum = tmp;
+      }
+
+      const midWay = ((maxNum - minNum) / 2);
+
+      if (valueNum < midWay)
+      {
+        const ratio = valueNum / midWay;
+
+        if ( (1 - ratio) < .1)
+        {
+          style = "text-align: center";
+        }
+        else
+        {
+          let lowValue;
+
+          if ((valueNum - minNum) !== 0)
+          {
+            lowValue = (valueNum - minNum) / maxNum * 100;
+          }
+          else
+          {
+            lowValue = 0;
+          }
+
+          const paddingString = (lowValue ? lowValue + "%" : lowValue);
+          
+          style = "text-align: left; padding-left: " + paddingString;
+        }
+      }
+      else if (valueNum > midWay)
+      { 
+        const ratio = midWay / valueNum;
+
+        if ( (1 - ratio) < .1)
+        {
+          style = "text-align: center";
+        }
+        else
+        {
+          let highValue;
+
+          if ((maxNum - valueNum) !== 0)
+          {
+            highValue = (maxNum - valueNum) / maxNum * 100;
+          }
+          else
+          {
+            highValue = 0;
+          }
+
+          const paddingString = (highValue ? highValue + "%" : highValue);
+          
+          style = "text-align: right; padding-right: " + paddingString;
+        }
+      }
+      else
+      {
+        style = "text-align: center";
+      }
+    }
+
+    return style;
+  },
+  trimStringForNumber: function (str, chr) {
+    let prepString = str;
+
+    if (prepString.charAt(0) === chr)
+    {
+      prepString = prepString.substring(1);
+    }
+
+    return prepString;
+  }
+
+});
+
+
+</script>
