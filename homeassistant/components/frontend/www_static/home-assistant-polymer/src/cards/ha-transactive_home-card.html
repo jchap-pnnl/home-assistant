@@ -1,10 +1,10 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
-<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../components/ha-card.html'>
 <link rel="import" href='../components/state-charts-container.html'>
+<link rel='import' href='../controls/ha-progress-scale.html'>
 
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <link href="../../bower_components/toastr/toastr.css" rel="stylesheet"/>
@@ -51,6 +51,7 @@
       .progress-bar {
         display: inline-block;
         margin: 0 10px;
+        width: 100%;
       }
       .progress-start,
       .progress-end {
@@ -93,24 +94,15 @@
         </tbody>
       </table>
       <div class='progress-container'>
-          <paper-tooltip
-            class="progress-message"
-            for="overall-progress" 
-            position="top"
-            animation-delay="0"
-          >[[getProgressMessage(stateObj)]]</paper-tooltip>
-          <div class='progress-start'>$[[getProgressStart(stateObj)]]</div>
           <div class='progress-bar'>
-            <paper-progress 
-              id="overall-progress" 
-              value="[[getProgressValue(stateObj)]]" 
-              secondary-progress="80"
-            ></paper-progress>
+            <ha-progress-scale 
+              id="overall-progress"
+              right_value="$[[getProgressEnd(stateObj)]]"
+              left_value="$[[getProgressStart(stateObj)]]"
+              actual_value="$[[getProgressValue(stateObj)]]"
+              description="[[getProgressMessage(stateObj)]]"
+            ></ha-progress-scale>
           </div>
-          <div class='progress-end'>$[[getProgressEnd(stateObj)]]</div>
-          <paper-tooltip 
-            for="overall-progress"
-          >[[getProgressValue(stateObj)]]%</paper-tooltip>
       </div>
       <div class='data-chart'>
         <state-charts-container
@@ -192,7 +184,7 @@ Polymer({
       }
       else if (value <= 75)
       {
-        message = "Halfway through, keep up the good work.";
+        message = "Halfway through, keep up the good work!";
       }
       else if (value == 100)
       {
