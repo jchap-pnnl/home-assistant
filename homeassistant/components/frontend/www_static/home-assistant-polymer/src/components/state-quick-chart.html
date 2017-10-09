@@ -210,83 +210,7 @@
           .attr("transform", "translate(" + width + ",0)")
           .call(yAxis);
 
-      // var legend = svg.append("g")
-      //   .attr("class","legend")
-      //   .attr("transform","translate(50,30)")
-      //   .style("font-size","12px")
-      //   .call(d3.legend);
-
-      // var legend = svg.append("g").selectAll(".legend")
-      //   .data(series)
-      //   .enter().append("g")
-      //     .attr("class", "legend")
-      //     .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })
-      //     .style("font", "10px sans-serif");
-
-      // legend.append("rect")
-      //     .attr("x", width + 18)
-      //     .attr("width", 18)
-      //     .attr("height", 18)
-      //     .attr("fill", z);
-
-      // legend.append("text")
-      //     .attr("x", width + 44)
-      //     .attr("y", 9)
-      //     .attr("dy", "1em")
-      //     .attr("text-anchor", "start")
-      //     .text(function(d) { 
-      //       return d; 
-      //     });
-        
-        var lwidth = 500;
-        var lheight = 75;
-        var svgw = 20;
-        var svgh = 20;
-
-        var svgLegend = d3.select(this.$.outerlegend)
-            .append("svg")
-            .attr("width", lwidth)
-            .attr("height", lheight - 50)
-            .attr("transform", "translate(50,20)");
-        
-        var dataL = 0;
-        var offset = 80;
-        
-        var legend = svgLegend.selectAll('.innerlegend')
-            .data(series)
-            .enter().append('g')
-            .attr("class", "legend")
-            .attr("transform", function (d, i) {
-             if (i === 0) {
-                dataL = d.length + offset; 
-                return "translate(0,0)";
-            } else { 
-             var newdataL = dataL;
-             dataL +=  d.length + offset;
-             return "translate(" + (newdataL) + ",0)";
-            }
-        });
-        
-        legend.append('rect')
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", 10)
-            .attr("height", 10)
-            .style("fill", function (d, i) {
-            return z(i);
-        });
-        
-        legend.append('text')
-            .attr("x", 20)
-            .attr("y", 10)
-        //.attr("dy", ".35em")
-        .text(function (d, i) {
-            return d;
-        })
-            .attr("class", "textselected")
-            .style("text-anchor", "start")
-            .style("font-size", 15);
-
+      this.addLegend(series);
     },
     drawChartLine: function (data, series, chartInfo) {
 
@@ -367,15 +291,88 @@
             })
             .defined(function(d) { return d[key]; });
 
-            svg.append("path")
-              .data([data])
-              .attr("class", "line")
-              .style("stroke", this.colorMap(index))
-              .attr("d", drawLine);
-              // .on('mouseover', tool_tip.show)
-              // .on('mouseout', tool_tip.hide);
-        });
+            const color = (
+              chartInfo[series[index]].color ? 
+              chartInfo[series[index]].color : 
+              this.colorMap(index)
+            );
 
+            const lineStyle = chartInfo[series[index]]['line-style'];
+
+            if (lineStyle && lineStyle === 'dash')
+            {
+              svg.append("path")
+                .data([data])
+                .attr("class", "line")
+                .style("stroke", color)
+                .style("stroke-dasharray", "6,4")
+                .attr("d", drawLine);
+            }
+            else
+            {
+              svg.append("path")
+                .data([data])
+                .attr("class", "line")
+                .style("stroke", color)
+                .attr("d", drawLine);
+                // .on('mouseover', tool_tip.show)
+                // .on('mouseout', tool_tip.hide);
+            }
+            
+        });
+  
+        this.addLegend(series);
+    },
+    addLegend: function (series) {
+      var lwidth = 500;
+      var lheight = 75;
+      var svgh = 20;
+
+      var svgLegend = d3.select(this.$.outerlegend)
+          .append("svg")
+          .attr("width", lwidth)
+          .attr("height", lheight - 50)
+          .attr("transform", "translate(50,20)");
+      
+      var dataL = 0;
+      var offset = 80;
+      
+      var legend = svgLegend.selectAll('.innerlegend')
+          .data(series)
+          .enter().append('g')
+          .attr("class", "legend")
+          .attr("transform", function (d, i) {
+           if (i === 0) {
+              dataL = d.length + offset; 
+              return "translate(0,0)";
+          } else { 
+           var newdataL = dataL;
+           dataL +=  d.length + offset;
+           return "translate(" + (newdataL) + ",0)";
+          }
+      });
+      
+      var z = d3.scaleOrdinal(d3.schemeCategory20);
+
+      legend.append('rect')
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 10)
+          .attr("height", 10)
+          .style("fill", function (d, i) {
+          return z(i);
+      });
+      
+      legend.append('text')
+          .attr("x", 12)
+          .attr("y", 10)
+      //.attr("dy", ".35em")
+      .text(function (d, i) {
+          return d;
+      })
+          .attr("class", "textselected")
+          .style("text-anchor", "start")
+          .style("font-size", 15);
     },
     refreshChart: function () {
       var me = this;

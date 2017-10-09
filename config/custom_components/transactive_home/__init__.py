@@ -43,7 +43,12 @@ def setup(hass, config):
 
         attributes = transactive_home["attributes"]
 
-        attributes["overallflexibility"][0][update_obj["target"]] = update_obj["value"]
+        # attributes["overallflexibility"][0][update_obj["target"]] = update_obj["value"]
+
+        if update_obj["subtarget"] is not None:
+            attributes[update_obj["target"]][update_obj["subtarget"]] = update_obj["value"]
+        else:
+            attributes[update_obj["target"]] = update_obj["value"]
 
         hass.states.set('transactive_home.transactive_home', State.from_dict(transactive_home), attributes, True)
 

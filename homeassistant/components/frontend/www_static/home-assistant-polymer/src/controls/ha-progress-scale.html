@@ -78,6 +78,27 @@
         border: solid gray 1px;
         box-sizing: border-box;
       }
+      paper-input {
+        width: 50px;
+      }
+      paper-input::shadow paper-input-container input {
+        font-size: 12px !important;
+      }
+      paper-input div[prefix]  {
+        font-size: 12px !important; /* not working */
+      }
+      .static paper-input::shadow paper-input-container::shadow .underline {
+        display: none;
+      }
+      .static paper-input::shadow paper-input-container {
+        padding: 0;
+      }
+      .right-end .dynamic paper-input {
+        transform: translate(20px, 10px);
+      }
+      .right-end .static paper-input {
+        transform: translate(20px, 0px);
+      }
     </style>
     <div class='description'>[[description]]</div>
     <div class='progress-scale'>
@@ -88,7 +109,23 @@
         <iron-icon icon="[[right_icon]]"></iron-icon>
       </div>
       <div class='left-end'>[[left_value]]&nbsp;[[units_label]]</div>
-      <div class='right-end'>[[right_value]]&nbsp;[[units_label]]</div>
+      <div class='right-end'>
+        <div class$='[[input_class]]'
+          on-mouseenter="setDynamicClass"
+          on-mouseleave="setStaticClass">
+          <paper-input 
+            data-prop="[[item_prop]]"
+            data-subprop="[[right_prop]]" 
+            type="number"
+            on-change="updateSetting"
+            on-focus="setInputFocus"
+            on-blur="setInputBlur"
+            value="[[parseValue(right_value)]]" 
+          >
+            <div prefix>$</div>
+          </paper-input>
+        </div>
+      </div>
       <div class='indicator-line'></div>
       <div class='pointer-outer' 
         style$="[[pointer_style]]"
@@ -112,7 +149,7 @@ Polymer({
 
   properties: {
     hass: {
-      type: Object,
+      type: Object
     },
     left_icon: {
       type: String
@@ -143,7 +180,72 @@ Polymer({
     pointer_style: {
       type: String,
       computed: 'getPointerStyle(actual_value, right_value, left_value)'
+    },
+    input_class: {
+      type: String,
+      value: 'static'
+    },
+    input_focused: {
+      type: Boolean,
+      value: false
+    },
+    item_prop: {
+      type: String,
+      value: ''
+    },
+    right_prop: {
+      type: String,
+      value: ''
+    },
+    state_obj: {
+      type: Object,
+      value: {}
+    },
+    update_method: {
+      type: String,
+      value: ''
     }
+  },
+  setDynamicClass: function () {
+    console.log('setting dymanic');
+    this.input_class = 'dynamic';
+  },
+  setStaticClass: function () {
+    console.log('setting static');
+
+    if (!this.input_focused)
+    {
+      this.input_class = 'static';
+    }
+  },
+  setInputFocus: function () {
+    this.input_focused = true;
+    this.input_class = 'dynamic';
+  },
+  setInputBlur: function () {
+    this.input_focused = false;
+    this.input_class = 'static';
+  },
+  trimStringForNumber: function (str, chr) {
+    let prepString = str;
+
+    if (prepString.charAt(0) === chr)
+    {
+      prepString = prepString.substring(1);
+    }
+
+    return prepString;
+  },
+  parseValue: function (value) {
+    let preppedValue;
+
+    if (typeof value === "string")
+    {
+      const valueString = this.trimStringForNumber(value, "$");
+      preppedValue = Number(valueString);
+    }
+
+    return preppedValue;
   },
   getPointerStyle: function (valueLabel, maxLabel, minLabel) {
     let style = "";
@@ -236,6 +338,34 @@ Polymer({
     }
 
     return prepString;
+  },
+  updateSetting: function (ev) {
+    const newValue = ev.currentTarget.value;
+
+    const prop = ev.currentTarget.dataProp;
+    const subprop = ev.currentTarget.dataSubprop;
+
+    if (prop && subprop)
+    {
+      const updateObj = { 
+        'target': prop,
+        'subtarget': subprop,
+        'value': newValue 
+      };
+      
+      if (this.update_method)
+      {
+        this.callServiceHelper(this.update_method, updateObj);
+      }
+    }
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService(this.state_obj._domain, service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
   }
 
 });

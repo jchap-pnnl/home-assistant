@@ -97,10 +97,15 @@
           <div class='progress-bar'>
             <ha-progress-scale 
               id="overall-progress"
+              hass="[[hass]]"
+              state_obj="[[stateObj]]"
+              update_method="update_transactive_home"
               right_value="$[[getProgressEnd(stateObj)]]"
               left_value="$[[getProgressStart(stateObj)]]"
               actual_value="$[[getProgressValue(stateObj)]]"
               description="[[getProgressMessage(stateObj)]]"
+              item_prop="progress_bar"
+              right_prop="end_point"
             ></ha-progress-scale>
           </div>
       </div>
