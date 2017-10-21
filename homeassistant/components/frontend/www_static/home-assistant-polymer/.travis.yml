@@ -1,0 +1,24 @@
+sudo: false
+language: node_js
+cache:
+  yarn: true
+  directories:
+  - bower_components
+install:
+  - yarn install
+  - ./node_modules/.bin/bower install
+addons:
+  firefox: latest
+  apt:
+    sources:
+    - google-chrome
+    packages:
+    - google-chrome-stable
+script:
+  - npm run build
+  - npm run test
+  - xvfb-run wct
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --plugin sauce; fi
+dist: trusty
+addons:
+  sauce_connect: true

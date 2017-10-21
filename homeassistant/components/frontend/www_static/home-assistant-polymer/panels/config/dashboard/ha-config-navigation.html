@@ -1,0 +1,95 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="ha-config-navigation">
+  <template>
+    <style include="iron-flex">
+      paper-card {
+        display: block;
+      }
+      paper-item {
+        cursor: pointer;
+      }
+    </style>
+    <paper-card>
+      <template is='dom-repeat' items='[[pages]]'>
+        <template is='dom-if' if='[[_computeLoaded(hass, item)]]'>
+          <paper-item on-tap='_navigate'>
+            <paper-item-body two-line>
+              [[_computeCaption(item)]]
+              <div secondary>[[_computeDescription(item)]]</div>
+            </paper-item-body>
+            <iron-icon icon='mdi:chevron-right'></iron-icon>
+          </paper-item>
+        </template>
+      </template>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-config-navigation',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    pages: {
+      type: Array,
+      value: [
+        {
+          domain: 'core',
+          caption: 'General',
+          description: 'Validate your configuration file and control the server.',
+          loaded: true,
+        },
+        {
+          domain: 'customize',
+          caption: 'Customization',
+          description: 'Customize your entities.',
+          loaded: true,
+        },
+        {
+          domain: 'automation',
+          caption: 'Automation',
+          description: 'Create and edit automations.',
+        },
+        {
+          domain: 'script',
+          caption: 'Script',
+          description: 'Create and edit scripts.',
+        },
+        {
+          domain: 'zwave',
+          caption: 'Z-Wave',
+          description: 'Manage your Z-Wave network.',
+        }
+      ],
+    }
+  },
+
+  _computeLoaded: function (hass, component) {
+    return component.loaded || window.hassUtil.isComponentLoaded(
+      hass, component.domain);
+  },
+
+  _computeCaption: function (component) {
+    return component.caption;
+  },
+
+  _computeDescription: function (component) {
+    return component.description;
+  },
+
+  _navigate: function (ev) {
+    history.pushState(
+      null, null, '/config/' + ev.model.item.domain);
+    this.fire('location-changed');
+  },
+});
+</script>

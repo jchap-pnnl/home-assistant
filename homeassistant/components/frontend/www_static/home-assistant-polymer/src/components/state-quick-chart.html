@@ -1,0 +1,571 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<script src="http://d3js.org/d3.v4.js"></script>
+<script src="../../bower_components/moment/min/moment.min.js"></script>
+
+
+<dom-module id="state-quick-chart">
+
+  <template>
+    <style>
+        .chart-container {
+          padding: 20px;
+        }
+
+        .line {
+          fill: none;
+          stroke: steelblue;
+          stroke-width: 2px;
+        }
+    </style>
+    <div class="chart-container">
+      <div id="outerlegend">
+         <div class="innerlegend"></div>
+      </div>
+      <svg id="svg"></svg>
+    </div>
+
+  </template>
+
+</dom-module>
+
+<script>
+(function () {
+  'use strict';
+
+  Polymer({
+    is: 'state-quick-chart',
+
+    properties: {
+      hass: {
+        type: Object,
+      },
+      chartType: {
+        type: String,
+        value: ""
+      },
+
+      chartLabel: {
+        type: String,
+        value: ""
+      },
+      chartId: {
+        type: String,
+        value: ""
+      },
+      componentName: {
+        type: String,
+        value: ""
+      },
+      updateMethod: {
+        type: String,
+        value: ""
+      },
+      unit: {
+        type: String,
+      },
+
+      isAttached: {
+        type: Boolean,
+        value: false
+      },
+
+      chartEngine: {
+        type: Object,
+      },
+
+      _apiLoaded: {
+        type: Boolean,
+        value: false,
+      },
+      url: {
+        type: String,
+        value: 'data.csv'
+      },
+      chartData: {
+        type: Object,
+        value: {},
+        observer: 'dataChanged'
+      },
+    },
+    ready: function() {
+      // this.setUpChart();
+    },
+    setUpChart: function () {
+      if (this.chartType)
+      {
+        switch (this.chartType)
+        {
+          case 'line':
+          {
+            const series = Object.keys(this.chartData.series);
+            this.setUpLineChart(this.extractData(this.chartData), series, this.chartData.series);
+            // this.setUpLineChart();
+            break;
+          }
+          case 'bar':
+          {
+            const series = Object.keys(this.chartData.series);
+            this.setUpBarChart(this.extractData(this.chartData), series, this.chartData.series);
+            // this.setUpBarChart();
+            break;
+          }
+        }
+      }
+    },
+    dataChanged: function (chartData) {
+
+      if (chartData)
+      { 
+        switch (this.chartType)
+        {
+          case 'line':
+          {
+            const series = Object.keys(chartData.series);
+            this.updateLineChart(this.extractData(chartData), series, chartData.series);
+            break;
+          }
+          case 'bar':
+          {
+            const series = Object.keys(chartData.series);
+            this.drawChartBar(this.extractData(chartData), series, chartData.series);
+            break;
+          }
+        }
+      }
+    },
+    setUpLineChart: function (data, series, chartInfo) {
+
+      // set the dimensions and margins of the graph
+      var margin = {top: 20, right: 20, bottom: 30, left: 50};
+
+      this.chartWidth = 400 - margin.left - margin.right;
+      this.chartHeight = 400 - margin.top - margin.bottom;
+      
+      var svg = d3.select(this.$.svg)
+          .attr("width", this.chartWidth + margin.left + margin.right)
+          .attr("height", this.chartHeight + margin.top + margin.bottom)
+        .append("g")
+          .attr("class", "svg-g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // set the ranges
+        this.lineX = d3.scaleTime().range([0, this.chartWidth]);
+        this.lineY = d3.scaleLinear().range([this.chartHeight, 0]);
+
+        // Scale the range of the data
+        this.lineX.domain(d3.extent(data, function(d) { 
+          return d.date; 
+        }));
+        
+        this.lineY.domain([0, d3.max(data, function(d) {
+
+          const vals = [];
+
+          series.forEach((key) => {
+            if (d[key])
+            {
+              vals.push(d[key]);
+            }
+          });
+
+          const max = vals.reduce(function(a, b) {
+              return Math.max(a, b);
+          });
+
+          return max; 
+        })]);
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", "translate(0," + this.chartHeight + ")")
+            .call(d3.axisBottom(this.lineX)
+              .tickFormat(d3.timeFormat("%m/%d")));
+
+        // Add the Y Axis
+        svg.append("g")
+            .attr("class", "y-axis")
+            .call(d3.axisLeft(this.lineY));
+
+        this.addLegend(series, chartInfo);
+    },
+    updateLineChart: function (data, series, chartInfo) {
+
+      if (typeof this.lineX !== 'function')
+      {
+        this.setUpLineChart(data, series, chartInfo);
+      }      
+
+      var svg = d3.select(this.$.svg).select('.svg-g');
+
+      const that = this;
+
+      // Scale the range of the data
+      this.lineX.domain(d3.extent(data, function(d) { 
+        return d.date; 
+      }));
+      
+      this.lineY.domain([0, d3.max(data, function(d) {
+
+        const vals = [];
+
+        series.forEach((key) => {
+          if (d[key])
+          {
+            vals.push(d[key]);
+          }
+        });
+
+        const max = vals.reduce(function(a, b) {
+            return Math.max(a, b);
+        });
+
+        return max; 
+      })]);
+      
+      // Add the X Axis
+      svg.selectAll(".x-axis")
+          .call(d3.axisBottom(this.lineX)
+            .tickFormat(d3.timeFormat("%m/%d")));
+
+      // Add the Y Axis
+      svg.selectAll(".y-axis")
+          .call(d3.axisLeft(this.lineY));
+
+      series.reverse().forEach((key, index) => { 
+
+        // var tip = d3.tip()
+          //   .attr('class', 'd3-tip')
+          //   .offset([-10, 0])
+          //   .html(function(d) {
+          //     return "<strong>" + key + ":</strong> <span style='color:red'>" + d[key] + "</span>";
+          //   })
+
+          // svg.call(tip);
+
+          // var tool_tip = d3.tip()
+          //   .attr("class", "d3-tip")
+          //   .offset([-8, 0])
+          //   .html(function(d) { return "Radius: " + d; });
+          // svg.call(tool_tip);
+
+        const drawLine = d3.line()
+          .x(function(d) { 
+            // console.log('date: ' + d.date);
+            return that.lineX(d.date); 
+          })
+          .y(function(d) { 
+            // console.log(key + ': ' + d[key]);
+            return that.lineY(d[key]); 
+          })
+          .defined(function(d) { return d[key]; });
+
+        const color = (
+          chartInfo[series[index]].color ? 
+          chartInfo[series[index]].color : 
+          this.colorMap(index)
+        );
+
+        const lineStyle = chartInfo[series[index]]['line-style'];
+
+        const selection = svg.selectAll(`.line.${key}`)
+          .data([data])
+          .attr("d", drawLine);
+
+        if (lineStyle && lineStyle === 'dash')
+        {
+          selection.enter()
+            .append("path")
+            .attr("class", `line ${key}`)
+            .style("stroke", color)
+            .style("stroke-dasharray", "6,4")
+            .attr("d", drawLine);
+        }
+        else
+        {
+          selection.enter()
+            .append("path")
+            .attr("class", `line ${key}`)
+            .style("stroke", color)
+            .attr("d", drawLine);
+            // .on('mouseover', tool_tip.show)
+            // .on('mouseout', tool_tip.hide);
+        }
+
+        selection.exit().remove();
+            
+      });
+      
+      // if (this.chartData)
+      // {
+      //   this.chartData = this.updateData(this.chartData);
+      // }
+      
+      // this.dataGenerator(this.chartData);
+    },
+    updateData: function (chartSeries) {
+
+      const newTime = moment(chartSeries.times[9]).add(1, 'days').toDate();
+
+      console.log(newTime);
+
+      const newSeries = chartSeries;
+
+      newSeries.times.shift();
+      newSeries.times.push(newTime);
+
+      Object.keys(newSeries.series).forEach((key, index) => {
+        const newValue = newSeries.series[key].points[9] + index;
+        newSeries.series[key].points.shift();
+        newSeries.series[key].points.push(newValue);
+      });
+
+      return newSeries;
+    },
+    dataGenerator: function(chartData) {
+
+      const that = this;
+
+      setTimeout(function() {
+          console.log("timer");
+           
+          that.dataChanged(chartData);
+
+          // do forever
+          // that.dataGenerator();
+        }, 2000);
+
+    },
+    drawChartBar: function (data, series, chartInfo) {
+      const that = this;
+
+      var margin = {top: 20, right: 20, bottom: 30, left: 50},
+          width = 400 - margin.left - margin.right,
+          height = 400 - margin.top - margin.bottom;
+
+      var svg = d3.select(this.$.svg)
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+      var x = d3.scaleBand()
+          .rangeRound([0, width])
+
+      var y = d3.scaleLinear()
+          .rangeRound([height, 0]);
+
+      var z = d3.scaleOrdinal(d3.schemeCategory20);
+
+      var xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat("%H:%M"));
+
+      // var yAxis = d3.axisRight(y);
+      var yAxis = d3.axisRight(y)
+          .scale(y);
+
+      var stack = d3.stack()
+          .keys(series)
+          .order(d3.stackOrderNone)
+          .offset(d3.stackOffsetNone);
+
+      var layers = stack(data);
+
+      x.domain(layers[0].map(function(d) { 
+        return d.data.date; 
+      }));
+      y.domain([0, d3.max(layers[layers.length - 1], function(d) { 
+        return d3.max([d[0], d[1]]); 
+      })]).nice();
+
+      var layer = svg.selectAll(".layer")
+          .data(layers)
+        .enter().append("g")
+          .attr("class", "layer")
+          .style("fill", function(d, i) { 
+            return z(i); 
+          });
+
+      layer.selectAll("rect")
+          .data(function(d) { 
+            return d; 
+          })
+        .enter().append("rect")
+          .attr("x", function(d) { 
+            return x(d.data.date); 
+          })
+          .attr("y", function(d) { 
+            return y(d[1]); 
+          })
+          .attr("height", function(d) { 
+            return y(d[0]) - y(d[1]); 
+          })
+          .attr("width", x.bandwidth() - 1);
+
+      svg.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      svg.append("g")
+          .attr("class", "axis axis--y")
+          .attr("transform", "translate(" + width + ",0)")
+          .call(yAxis);
+
+      this.addLegend(series);
+    },
+    addLegend: function (series, chartInfo) {
+      var lwidth = 500;
+      var lheight = 75;
+      var svgh = 20;
+
+      var svgLegend = d3.select(this.$.outerlegend)
+          .append("svg")
+          .attr("width", lwidth)
+          .attr("height", lheight - 50)
+          .attr("transform", "translate(50,20)");
+      
+      var dataL = 0;
+      var offset = 80;
+      
+      var legend = svgLegend.selectAll('.innerlegend')
+          .data(series)
+          .enter().append('g')
+          .attr("class", "legend")
+          .attr("transform", function (d, i) {
+           if (i === 0) {
+              dataL = d.length + offset; 
+              return "translate(0,0)";
+          } else { 
+           var newdataL = dataL;
+           dataL +=  d.length + offset;
+           return "translate(" + (newdataL) + ",0)";
+          }
+      });
+      
+      var z = d3.scaleOrdinal(d3.schemeCategory20);
+
+      legend.append('rect')
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 10)
+          .attr("height", 10)
+          .style("fill", function (d, i) {
+
+            let color = z(i);
+
+            if (chartInfo){
+              if (chartInfo[series[i]].color){
+                color = chartInfo[series[i]].color;
+              }
+            }
+          return color;
+      });
+      
+      legend.append('text')
+          .attr("x", 12)
+          .attr("y", 10)
+      //.attr("dy", ".35em")
+      .text(function (d, i) {
+          return d;
+      })
+          .attr("class", "textselected")
+          .style("text-anchor", "start")
+          .style("font-size", 15);
+    },
+    refreshChart: function () {
+      var me = this;
+
+      me.g.data(me.pie(me.data))
+        .select("path").attr("d", me.arc);
+
+      me.g.select("text")
+        .attr("transform", function(d) { 
+          console.log("d: " + d);
+          console.log("translate(" + me.arc.centroid(d) + ")");
+          return "translate(" + me.arc.centroid(d) + ")"; 
+        });
+    },
+    extractData: function (chartData) {
+      const data = chartData.times.map((t, index) => {
+
+          const item = {
+            date: moment(t).toDate()
+          };
+
+          Object.keys(chartData.series).forEach((key) => {
+            if (chartData.series[key]['points'][index])
+            {
+              item[key] = chartData.series[key]['points'][index];
+            }
+            else
+            {
+              item[key] = null;
+            }
+          });
+
+          return item;
+      });
+
+      return data;
+    },
+
+    created: function () {
+      this.style.display = 'block';
+    },
+
+    attached: function () {
+      this.isAttached = true;
+    },
+  changeChartType: function (ev) {
+    const value = ev.currentTarget.value;
+
+    if (value && this.updateMethod)
+    {
+      const updateObj = [{ 
+        'id': this.chartId,
+        'target': 'type',
+        'value': value 
+      }];
+      
+      this.callServiceHelper(this.updateMethod, updateObj);
+    }
+  },
+  colorMap: function (index) {
+    
+    const colors = [
+      '#29A6FF', // Celestine +1
+      '#E87511', // Carnelian
+
+      '#46A661', // Olivine
+      '#00AFAA', // Malachite
+      '#EA82FF', // Fluorite +1
+
+      '#FF6B70', // Cinnabar +1
+
+      '#00BDDD', // Zircon +1
+      '#AFA1FF', // Amethyst +1
+      '#F5EC5A', // Topaz
+
+      '#8CCD5A', // Peridot
+      '#FFBA59', // Citrine
+      '#BF2A75', // Tourmaline
+    ];
+
+    const safeIndex = (colors.length - 1) % (index + 1);
+
+    return colors[safeIndex];
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass && this.componentName)
+    {      
+      this.hass.callService(this.componentName, service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
+  },
+
+  });
+}());
+</script>

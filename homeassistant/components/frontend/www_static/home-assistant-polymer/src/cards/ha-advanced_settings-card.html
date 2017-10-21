@@ -1,0 +1,246 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+
+<link rel='import' href='../components/ha-card.html'>
+
+<script src="../../bower_components/moment/min/moment.min.js"></script>
+
+<dom-module id='ha-advanced_settings-card'>
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .states {
+        padding-bottom: 16px;
+      }
+      .content {
+        padding: 4px 30px 30px;
+      }
+      td, th {
+        padding-right: 8px;
+      }
+      .content .label {
+        color: rgba(0, 0, 0, 0.54);
+        font-weight: bold;
+        text-transform: capitalize;
+      }
+      .content .value {
+        color: rgba(0, 0, 0, 0.87);
+      }
+      .header {
+        @apply(--paper-font-headline);
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 20px 16px 12px;
+      }
+      .header .name {
+        @apply(--paper-font-common-nowrap);
+      }
+      .header.domain .name {
+        /* Capitalize cards titles for default domain groups. */
+        text-transform: capitalize;
+      }
+      ha-entity-toggle {
+        margin-left: 16px;
+      }
+      .header-more-info {
+        cursor: pointer;
+      }
+
+      .save-button {
+        width: 100%;
+        text-align: center;
+      }
+
+      .save-button > * {
+        color: dimgray;
+      }
+
+      .energy-input,
+      .power-input,
+      .incentives {
+        display: block;
+      }
+
+      .energy-input > div,
+      .power-input > div,
+      .incentives > div {
+        display: inline-block;
+      }
+
+      .incentives > div {
+        vertical-align: middle;
+      }
+
+      paper-input::shadow paper-input-container {
+        padding: 0;
+      }
+      /*.energy-slider {
+        width: 70%;
+      }
+      paper-slider {
+        width: 100%;
+      }*/
+
+    </style>
+
+    <ha-card class='advanced-settings'>
+      <div class='header domain'>
+        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
+      </div>
+      <div class='content'>
+        <div class="daily-period">
+          <b>Peak Period</b>
+        </div>
+        <table class="transactive-period">
+          <tr>
+            <td>
+              <vaadin-date-picker 
+                id="time-period-start"
+                data-prop="timePeriodStart"
+                label="Start Date" 
+                value="[[prepDate(stateObj.attributes.timePeriodStart.value)]]"
+              >
+              </vaadin-date-picker>
+            </td>
+            <td>to</td>
+            <td>
+              <vaadin-date-picker
+                id="time-period-end"
+                data-prop="timePeriodEnd" 
+                label="End Date" 
+                value="[[prepDate(stateObj.attributes.timePeriodEnd.value)]]"
+              >
+              </vaadin-date-picker>
+            </td>
+          </tr>
+        </table>
+        <div>
+          <table>
+            <tr>
+              <td>
+                Daily&nbsp;Start:
+              </td>
+              <td>
+                [[stateObj.attributes.savingsStartTime.value]]
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Daily&nbsp;End:
+              </td>
+              <td>
+                [[stateObj.attributes.savingsEndTime.value]]
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div>
+          <div class="energy-input">
+            <div>
+              <paper-input 
+                label="Energy Savings Goal"
+                data-prop="energySavings" 
+                type="number"
+                on-change="updateSetting" 
+                value="[[stateObj.attributes.energySavings.value]]" 
+              >
+              </paper-input>
+            </div>
+            <div>[[stateObj.attributes.energySavings.units]]</div>
+          </div>
+        </div>
+        <div>
+          <div class="power-input">
+            <div>
+              <paper-input 
+                label="[[stateObj.attributes.incentives.label]]"
+                data-prop="incentives" 
+                type="number"
+                on-change="updateSetting" 
+                value="[[stateObj.attributes.incentives.value]]" 
+              >
+              </paper-input>
+            </div>
+            <div>[[stateObj.attributes.incentives.units]]</div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <b>[[stateObj.attributes.time_of_use_pricing.label]]:</b>
+          </div>
+          <table>
+            <template 
+              is='dom-repeat' 
+              items="[[getTimeOfUsePrincings(stateObj)]]"
+            >
+              <tr>
+                <td>[[item.startTime]]</td>
+                <td>to</td>
+                <td>[[item.endTime]]</td>
+                <td>:</td>
+                <td>[[item.value]]</td>
+                <td>[[item.units]]</td>
+              </tr>
+            </template>
+          </table>
+        </div>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-advanced_settings-card',
+  ready: function () {
+      
+    this.$$('#time-period-start').addEventListener('value-changed', this.updateSetting.bind(this));
+    this.$$('#time-period-end').addEventListener('value-changed', this.updateSetting.bind(this));
+      
+  },
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+
+    groupEntity: {
+      type: Object,
+    }
+  },
+  prepDate: function (dateToPrep) {
+    return moment(dateToPrep).format('YYYY-MM-DD');
+  },
+  getTimeOfUsePrincings: function (obj) {
+    return obj.attributes.time_of_use_pricing.list;
+  },
+  updateSetting: function (evt) {
+      const newValue = evt.currentTarget.value;
+      const prop = evt.currentTarget.dataset.prop;
+
+      const updateObj = { 
+        'target': prop,
+        'subtarget': 'value',
+        'value': newValue 
+      };
+        
+      this.callServiceHelper('update_advanced_settings', updateObj);
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService('advanced_settings', service, { value: data})
+        .then(function () {
+          // console.log('successful service call');
+        }.bind(this));
+    }
+  },
+});
+</script>
