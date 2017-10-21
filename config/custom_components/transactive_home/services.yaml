@@ -1,0 +1,9 @@
+
+update_transactive_home:
+  description: Update values in transactive home 
+
+  fields:
+    obj:
+    entity_id:
+      description: An object containing the value
+      example: 'transactive_home.transactive_home'
