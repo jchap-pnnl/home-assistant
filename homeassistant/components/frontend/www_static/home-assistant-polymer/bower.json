@@ -53,7 +53,8 @@
     "web-animations-js": "^2.2.5",
     "webcomponentsjs": "^1.0.10",
     "paper-tooltip": "PolymerElements/paper-tooltip#^2.0.1",
-    "paper-ripple": "PolymerElements/paper-ripple#^2.0.1"
+    "paper-ripple": "PolymerElements/paper-ripple#^2.0.1",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0"
   },
   "devDependencies": {
     "web-component-tester": "^6.0.0",
