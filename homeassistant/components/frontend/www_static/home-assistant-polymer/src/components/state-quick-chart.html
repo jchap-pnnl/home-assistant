@@ -43,7 +43,6 @@
         type: String,
         value: ""
       },
-
       chartLabel: {
         type: String,
         value: ""
@@ -90,26 +89,12 @@
     ready: function() {
       // this.setUpChart();
     },
-    setUpChart: function () {
+    setDimensions: function () {
       if (this.chartType)
       {
-        switch (this.chartType)
-        {
-          case 'line':
-          {
-            const series = Object.keys(this.chartData.series);
-            this.setUpLineChart(this.extractData(this.chartData), series, this.chartData.series);
-            // this.setUpLineChart();
-            break;
-          }
-          case 'bar':
-          {
-            const series = Object.keys(this.chartData.series);
-            this.setUpBarChart(this.extractData(this.chartData), series, this.chartData.series);
-            // this.setUpBarChart();
-            break;
-          }
-        }
+        this.margin = {top: 20, right: 20, bottom: 30, left: 50};
+        this.chartWidth = 400 - this.margin.left - this.margin.right;
+        this.chartHeight = 400 - this.margin.top - this.margin.bottom;
       }
     },
     dataChanged: function (chartData) {
@@ -127,7 +112,7 @@
           case 'bar':
           {
             const series = Object.keys(chartData.series);
-            this.drawChartBar(this.extractData(chartData), series, chartData.series);
+            this.updateBarChart(this.extractData(chartData), series, chartData.series);
             break;
           }
         }
@@ -135,19 +120,15 @@
     },
     setUpLineChart: function (data, series, chartInfo) {
 
-      // set the dimensions and margins of the graph
-      var margin = {top: 20, right: 20, bottom: 30, left: 50};
+      this.setDimensions();
 
-      this.chartWidth = 400 - margin.left - margin.right;
-      this.chartHeight = 400 - margin.top - margin.bottom;
-      
       var svg = d3.select(this.$.svg)
-          .attr("width", this.chartWidth + margin.left + margin.right)
-          .attr("height", this.chartHeight + margin.top + margin.bottom)
+          .attr("width", this.chartWidth + this.margin.left + this.margin.right)
+          .attr("height", this.chartHeight + this.margin.top + this.margin.bottom)
         .append("g")
           .attr("class", "svg-g")
           .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+                "translate(" + this.margin.left + "," + this.margin.top + ")");
 
         // set the ranges
         this.lineX = d3.scaleTime().range([0, this.chartWidth]);
@@ -189,6 +170,7 @@
             .call(d3.axisLeft(this.lineY));
 
         this.addLegend(series, chartInfo);
+        this.addTooltip(svg);
     },
     updateLineChart: function (data, series, chartInfo) {
 
@@ -236,13 +218,13 @@
       series.reverse().forEach((key, index) => { 
 
         // var tip = d3.tip()
-          //   .attr('class', 'd3-tip')
-          //   .offset([-10, 0])
-          //   .html(function(d) {
-          //     return "<strong>" + key + ":</strong> <span style='color:red'>" + d[key] + "</span>";
-          //   })
+        //     .attr('class', 'd3-tip')
+        //     .offset([-10, 0])
+        //     .html(function(d) {
+        //       return "<strong>" + key + ":</strong> <span style='color:red'>" + d[key] + "</span>";
+        //     })
 
-          // svg.call(tip);
+        //   svg.call(tip);
 
           // var tool_tip = d3.tip()
           //   .attr("class", "d3-tip")
@@ -261,11 +243,15 @@
           })
           .defined(function(d) { return d[key]; });
 
-        const color = (
-          chartInfo[series[index]].color ? 
-          chartInfo[series[index]].color : 
-          this.colorMap(index)
-        );
+        let color = this.colorMap(index);
+
+        if (chartInfo)
+        {
+          if (chartInfo[series[index]] && chartInfo[series[index]].color)
+          {
+            color = chartInfo[series[index]].color;
+          }
+        }
 
         const lineStyle = chartInfo[series[index]]['line-style'];
 
@@ -299,14 +285,14 @@
       
       // if (this.chartData)
       // {
-      //   this.chartData = this.updateData(this.chartData);
+      //   this.chartData = this.updateData(this.chartData, 'days');
       // }
       
       // this.dataGenerator(this.chartData);
     },
-    updateData: function (chartSeries) {
+    updateData: function (chartSeries, timeperiod) {
 
-      const newTime = moment(chartSeries.times[9]).add(1, 'days').toDate();
+      const newTime = moment(chartSeries.times[9]).add(1, timeperiod).toDate();
 
       console.log(newTime);
 
@@ -337,33 +323,25 @@
         }, 2000);
 
     },
-    drawChartBar: function (data, series, chartInfo) {
-      const that = this;
+    setUpBarChart: function (data, series, chartInfo) {
 
-      var margin = {top: 20, right: 20, bottom: 30, left: 50},
-          width = 400 - margin.left - margin.right,
-          height = 400 - margin.top - margin.bottom;
+      this.setDimensions();
 
       var svg = d3.select(this.$.svg)
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
+          .attr("width", this.chartWidth + this.margin.left + this.margin.right)
+          .attr("height", this.chartHeight + this.margin.top + this.margin.bottom)
         .append("g")
+          .attr("class", "svg-g")
           .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+                "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-      var x = d3.scaleBand()
-          .rangeRound([0, width])
+      this.barX = d3.scaleBand()
+          .rangeRound([0, this.chartWidth])
 
-      var y = d3.scaleLinear()
-          .rangeRound([height, 0]);
+      this.barY = d3.scaleLinear()
+          .rangeRound([this.chartHeight, 0]);
 
-      var z = d3.scaleOrdinal(d3.schemeCategory20);
-
-      var xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat("%H:%M"));
-
-      // var yAxis = d3.axisRight(y);
-      var yAxis = d3.axisRight(y)
-          .scale(y);
+      this.barZ = d3.scaleOrdinal(d3.schemeCategory20);
 
       var stack = d3.stack()
           .keys(series)
@@ -372,48 +350,127 @@
 
       var layers = stack(data);
 
-      x.domain(layers[0].map(function(d) { 
+      this.barX.domain(layers[0].map(function(d) { 
         return d.data.date; 
       }));
-      y.domain([0, d3.max(layers[layers.length - 1], function(d) { 
+
+      this.barY.domain([0, d3.max(layers[layers.length - 1], function(d) { 
         return d3.max([d[0], d[1]]); 
       })]).nice();
 
-      var layer = svg.selectAll(".layer")
-          .data(layers)
-        .enter().append("g")
-          .attr("class", "layer")
-          .style("fill", function(d, i) { 
-            return z(i); 
-          });
+      var xAxis = d3.axisBottom(this.barX).tickFormat(d3.timeFormat("%H:%M"));
 
-      layer.selectAll("rect")
-          .data(function(d) { 
-            return d; 
-          })
-        .enter().append("rect")
-          .attr("x", function(d) { 
-            return x(d.data.date); 
-          })
-          .attr("y", function(d) { 
-            return y(d[1]); 
-          })
-          .attr("height", function(d) { 
-            return y(d[0]) - y(d[1]); 
-          })
-          .attr("width", x.bandwidth() - 1);
-
+      // var yAxis = d3.axisRight(y);
+      var yAxis = d3.axisRight(this.barY)
+          .scale(this.barY);
+          
       svg.append("g")
-          .attr("class", "axis axis--x")
-          .attr("transform", "translate(0," + height + ")")
+          .attr("class", "axis x-axis")
+          .attr("transform", "translate(0," + this.chartHeight + ")")
           .call(xAxis);
 
       svg.append("g")
-          .attr("class", "axis axis--y")
-          .attr("transform", "translate(" + width + ",0)")
+          .attr("class", "axis y-axis")
+          .attr("transform", "translate(" + this.chartWidth + ",0)")
           .call(yAxis);
 
-      this.addLegend(series);
+      this.addLegend(series, chartInfo);
+      this.addTooltip(svg);
+    },
+    updateBarChart: function (data, series, chartInfo) {
+
+      if (typeof this.barX !== 'function')
+      {
+        this.setUpBarChart(data, series, chartInfo);
+      }  
+
+      var svg = d3.select(this.$.svg).select('.svg-g');
+
+      var stack = d3.stack()
+          .keys(series)
+          .order(d3.stackOrderNone)
+          .offset(d3.stackOffsetNone);
+
+      var layers = stack(data);
+
+      this.barX.domain(layers[0].map(function(d) { 
+        return d.data.date; 
+      }));
+
+      this.barY.domain([0, d3.max(layers[layers.length - 1], function(d) { 
+        return d3.max([d[0], d[1]]); 
+      })]).nice();
+
+      var xAxis = d3.axisBottom(this.barX).tickFormat(d3.timeFormat("%H:%M"));
+
+      // var yAxis = d3.axisRight(y);
+      var yAxis = d3.axisRight(this.barY)
+          .scale(this.barY);
+
+      // Add the X Axis
+      svg.selectAll(".x-axis")
+          .call(xAxis);
+
+      // Add the Y Axis
+      svg.selectAll(".y-axis")
+          .call(yAxis);
+
+      const that = this;
+
+      svg.selectAll(".layer").remove();
+
+      var layer = svg.selectAll(".layer")
+          .data(layers)
+          .enter().append("g")
+          .attr("class", "layer")
+          .style("fill", function(d, i) {
+            return that.barZ(i); 
+          });
+
+
+          // .attr("d", drawLine);
+
+      const rects = layer.selectAll("rect")
+          .data(function(d) { 
+            return d; 
+          })
+          .enter().append("rect")
+          .attr("x", function(d) { 
+            return that.barX(d.data.date); 
+          })
+          .attr("y", function(d) { 
+            return that.barY(d[1]); 
+          })
+          .attr("height", function(d) { 
+            return that.barY(d[0]) - that.barY(d[1]); 
+          })
+          .attr("width", this.barX.bandwidth() - 1);
+      
+      // if (this.chartData)
+      // {
+      //   this.chartData = this.updateData(this.chartData, 'minutes');
+      // }
+      
+      // this.dataGenerator(this.chartData);
+    },
+    addTooltip: function (svg) {
+      // Prep the tooltip bits, initial display is hidden
+      var tooltip = svg.append("g")
+        .attr("class", "tooltip")
+        .style("display", "none");
+          
+      tooltip.append("rect")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("fill", "white")
+        .style("opacity", 0.5);
+
+      tooltip.append("text")
+        .attr("x", 30)
+        .attr("dy", "1.2em")
+        .style("text-anchor", "middle")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold");
     },
     addLegend: function (series, chartInfo) {
       var lwidth = 500;
@@ -453,13 +510,11 @@
           .attr("height", 10)
           .style("fill", function (d, i) {
 
-            let color = z(i);
-
-            if (chartInfo){
-              if (chartInfo[series[i]].color){
-                color = chartInfo[series[i]].color;
-              }
-            }
+            const color = (
+              chartInfo[series[i]].color ? 
+              chartInfo[series[i]].color : 
+              z(i)
+            );
           return color;
       });
       
@@ -489,19 +544,19 @@
     },
     extractData: function (chartData) {
       const data = chartData.times.map((t, index) => {
-
           const item = {
             date: moment(t).toDate()
           };
 
           Object.keys(chartData.series).forEach((key) => {
-            if (chartData.series[key]['points'][index])
-            {
-              item[key] = chartData.series[key]['points'][index];
-            }
-            else
-            {
-              item[key] = null;
+            item[key] = null;
+
+            if (chartData.series[key].hasOwnProperty('points'))
+            { 
+              if (chartData.series[key]['points'][index])
+              {
+                item[key] = chartData.series[key]['points'][index];
+              }
             }
           });
 
