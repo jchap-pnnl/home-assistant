@@ -2,15 +2,27 @@
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../../bower_components/datetime-picker/time-picker.html">
 
 <link rel='import' href='../components/ha-card.html'>
 
 <script src="../../bower_components/moment/min/moment.min.js"></script>
-
+<script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 <dom-module id='ha-advanced_settings-card'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
+      #timer {
+          display: -ms-inline-flexbox;
+          display: -webkit-inline-flex;
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+          background-color: white;
+          color: gray;
+          border-radius: var(--datetime-element_-_border-radius);
+          padding: var(--datetime-element_-_padding);
+      }
       .states {
         padding-bottom: 16px;
       }
@@ -120,22 +132,43 @@
         </table>
         <div>
           <table>
-            <tr>
+
+           <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  time-picker.clamp {
+                    --datetime-selected-background: #eeeeee;
+                    --datetime-selected-color: #001641;
+                    --datetime-background: #fff;
+                    --datetime-color: #001641;
+                  }
+                </style>
+              </custom-style>
+              <div class="vertical-section-container">
+                <span> <b>Select time :</b></span><time-picker class="clamp" time="{{time}}" clamp="seconds" vertical-align="bottom"></time-picker>
+              </div>
+<!--               <div class="vertical-section-container result">
+                <div><code>time</code>: <b>[[time]]</b></div>
+              </div> -->
+            </template>
+          </dom-bind>
+<!--             <tr>
               <td>
                 Daily&nbsp;Start:
               </td>
               <td>
                 [[stateObj.attributes.savingsStartTime.value]]
               </td>
-            </tr>
-            <tr>
+            </tr> -->
+<!--             <tr>
               <td>
                 Daily&nbsp;End:
               </td>
               <td>
                 [[stateObj.attributes.savingsEndTime.value]]
               </td>
-            </tr>
+            </tr> -->
           </table>
         </div>
         <div>
