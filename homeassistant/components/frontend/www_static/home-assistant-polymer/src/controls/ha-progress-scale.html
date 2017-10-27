@@ -87,18 +87,18 @@
       paper-input div[prefix]  {
         font-size: 12px !important; /* not working */
       }
-      .static paper-input::shadow paper-input-container::shadow .underline {
+      .static paper-input::shadow .underline {
         display: none;
       }
       .static paper-input::shadow paper-input-container {
         padding: 0;
       }
-      .right-end .dynamic paper-input {
+      /*.right-end .dynamic paper-input {
         transform: translate(20px, 10px);
       }
       .right-end .static paper-input {
         transform: translate(20px, 0px);
-      }
+      }*/
     </style>
     <div class='description'>[[description]]</div>
     <div class='progress-scale'>
@@ -207,12 +207,9 @@ Polymer({
     }
   },
   setDynamicClass: function () {
-    console.log('setting dymanic');
     this.input_class = 'dynamic';
   },
   setStaticClass: function () {
-    console.log('setting static');
-
     if (!this.input_focused)
     {
       this.input_class = 'static';

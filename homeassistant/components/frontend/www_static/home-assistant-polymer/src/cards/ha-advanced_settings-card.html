@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/datetime-picker/time-picker.html">
 
 <link rel='import' href='../components/ha-card.html'>
+<link rel='import' href='../controls/ha-time-select.html'>
 
 <script src="../../bower_components/moment/min/moment.min.js"></script>
 <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
@@ -29,7 +30,7 @@
       .content {
         padding: 4px 30px 30px;
       }
-      td, th {
+      .transactive-period td, th {
         padding-right: 8px;
       }
       .content .label {
@@ -62,12 +63,7 @@
         cursor: pointer;
       }
 
-      .save-button {
-        width: 100%;
-        text-align: center;
-      }
-
-      .save-button > * {
+      .gray-text > * {
         color: dimgray;
       }
 
@@ -87,15 +83,18 @@
         vertical-align: middle;
       }
 
+      .time-of-use {
+        font-size: 12px;
+      }
+
+      .time-of-use paper-input {
+          width: 50px;
+          transform: translateY(-10px);
+      }
+
       paper-input::shadow paper-input-container {
         padding: 0;
       }
-      /*.energy-slider {
-        width: 70%;
-      }
-      paper-slider {
-        width: 100%;
-      }*/
 
     </style>
 
@@ -132,43 +131,28 @@
         </table>
         <div>
           <table>
-
-           <dom-bind>
-            <template is="dom-bind">
-              <custom-style>
-                <style is="custom-style">
-                  time-picker.clamp {
-                    --datetime-selected-background: #eeeeee;
-                    --datetime-selected-color: #001641;
-                    --datetime-background: #fff;
-                    --datetime-color: #001641;
-                  }
-                </style>
-              </custom-style>
-              <div class="vertical-section-container">
-                <span> <b>Select time :</b></span><time-picker class="clamp" time="{{time}}" clamp="seconds" vertical-align="bottom"></time-picker>
-              </div>
-<!--               <div class="vertical-section-container result">
-                <div><code>time</code>: <b>[[time]]</b></div>
-              </div> -->
-            </template>
-          </dom-bind>
-<!--             <tr>
+            <tr>
               <td>
-                Daily&nbsp;Start:
+                <ha-time-select 
+                  hass="[[hass]]"
+                  state_obj="[[stateObj]]"
+                  update_method="update_advanced_settings"
+                  time_value="[[stateObj.attributes.savingsStartTime.value]]"
+                  item_prop="savingsStartTime"
+                  item_label="Start Time"
+                ></ha-time-select>
               </td>
               <td>
-                [[stateObj.attributes.savingsStartTime.value]]
+                <ha-time-select 
+                  hass="[[hass]]"
+                  state_obj="[[stateObj]]"
+                  update_method="update_advanced_settings"
+                  time_value="[[stateObj.attributes.savingsEndTime.value]]"
+                  item_prop="savingsEndTime"
+                  item_label="End Time"
+                ></ha-time-select>
               </td>
-            </tr> -->
-<!--             <tr>
-              <td>
-                Daily&nbsp;End:
-              </td>
-              <td>
-                [[stateObj.attributes.savingsEndTime.value]]
-              </td>
-            </tr> -->
+            </tr>
           </table>
         </div>
         <div>
@@ -187,21 +171,6 @@
           </div>
         </div>
         <div>
-          <div class="power-input">
-            <div>
-              <paper-input 
-                label="[[stateObj.attributes.incentives.label]]"
-                data-prop="incentives" 
-                type="number"
-                on-change="updateSetting" 
-                value="[[stateObj.attributes.incentives.value]]" 
-              >
-              </paper-input>
-            </div>
-            <div>[[stateObj.attributes.incentives.units]]</div>
-          </div>
-        </div>
-        <div>
           <div>
             <b>[[stateObj.attributes.time_of_use_pricing.label]]:</b>
           </div>
@@ -210,12 +179,52 @@
               is='dom-repeat' 
               items="[[getTimeOfUsePrincings(stateObj)]]"
             >
-              <tr>
-                <td>[[item.startTime]]</td>
+              <tr class="time-of-use">
+                <td>
+                  <ha-time-select 
+                    hass="[[hass]]"
+                    state_obj="[[stateObj]]"
+                    update_method="update_advanced_settings"
+                    time_value="[[item.startTime]]"
+                    item_prop="time_of_use_pricing"
+                    item_subprop="list"
+                    item_listprop="startTime"
+                    item_index=[[index]]
+                    item_label=""
+                  ></ha-time-select>
+                </td>
                 <td>to</td>
-                <td>[[item.endTime]]</td>
-                <td>:</td>
-                <td>[[item.value]]</td>
+                <td>
+                  <ha-time-select 
+                    hass="[[hass]]"
+                    state_obj="[[stateObj]]"
+                    update_method="update_advanced_settings"
+                    time_value="[[item.endTime]]"
+                    item_prop="time_of_use_pricing"
+                    item_subprop="list"
+                    item_listprop="endTime"
+                    item_index=[[index]]
+                    item_label=""
+                  ></ha-time-select>
+                </td>
+                <td>
+                  :
+                </td>
+                <td>
+                  <div class="time-of-use">
+                    <paper-input 
+                      id=[[index]]
+                      label=""
+                      data-prop="time_of_use_pricing" 
+                      data-subprop="list"
+                      data-listprop="value"
+                      type="number"
+                      on-change="updateSetting" 
+                      value="[[item.value]]" 
+                    >
+                    </paper-input>
+                  </div>
+                </td>
                 <td>[[item.units]]</td>
               </tr>
             </template>
@@ -230,10 +239,8 @@
 Polymer({
   is: 'ha-advanced_settings-card',
   ready: function () {
-      
     this.$$('#time-period-start').addEventListener('value-changed', this.updateSetting.bind(this));
     this.$$('#time-period-end').addEventListener('value-changed', this.updateSetting.bind(this));
-      
   },
   properties: {
     hass: {
@@ -248,6 +255,9 @@ Polymer({
       type: Object,
     }
   },
+  testEvent: function () {
+    console.log('test successful');
+  },
   prepDate: function (dateToPrep) {
     return moment(dateToPrep).format('YYYY-MM-DD');
   },
@@ -257,12 +267,21 @@ Polymer({
   updateSetting: function (evt) {
       const newValue = evt.currentTarget.value;
       const prop = evt.currentTarget.dataset.prop;
+      const subprop = evt.currentTarget.dataset.subprop;
+      const listprop = evt.currentTarget.dataset.listprop;
+      const listindex = +evt.currentTarget.id;
 
       const updateObj = { 
         'target': prop,
-        'subtarget': 'value',
+        'subtarget': (subprop ? subprop : 'value'),
         'value': newValue 
       };
+
+      if (listprop)
+      {
+        updateObj.listtarget = listprop;
+        updateObj.listindex = listindex;
+      }
         
       this.callServiceHelper('update_advanced_settings', updateObj);
   },
