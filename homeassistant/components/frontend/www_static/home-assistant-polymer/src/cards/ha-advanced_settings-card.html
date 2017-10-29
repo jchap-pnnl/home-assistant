@@ -83,12 +83,13 @@
         vertical-align: middle;
       }
 
-      .time-of-use {
+      .time-of-use > .units {
         font-size: 12px;
       }
 
       .time-of-use paper-input {
           width: 50px;
+          font-size: 16px;
           transform: translateY(-10px);
       }
 
@@ -225,7 +226,7 @@
                     </paper-input>
                   </div>
                 </td>
-                <td>[[item.units]]</td>
+                <td class="units">[[item.units]]</td>
               </tr>
             </template>
           </table>
