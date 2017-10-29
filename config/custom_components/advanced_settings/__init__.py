@@ -44,10 +44,35 @@ def setup(hass, config):
         advanced_settings = hass.states.get('advanced_settings.advanced_settings').as_dict()
         attributes = advanced_settings["attributes"]
 
-        if update_obj["subtarget"] is not None:
-            attributes[update_obj["target"]][update_obj["subtarget"]] = update_obj["value"]
+        update_value = update_obj["value"]
+        target = update_obj["target"]
+        subtarget = update_obj["subtarget"]
+
+        _LOGGER.info("subtarget: %s", subtarget)
+
+        if subtarget is not None:
+            _LOGGER.info("before list")
+            if subtarget == "list":
+                _LOGGER.info("in list")
+                _LOGGER.info("before update list: %s", attributes[target][subtarget])
+                _LOGGER.info("before value: %s", update_value)
+
+                listindex = update_obj["listindex"]
+                listtarget = update_obj["listtarget"]
+
+                _LOGGER.info("before listtarget: %s", listtarget)
+
+                _LOGGER.info("before index: %s", listindex)
+                _LOGGER.info("before list index: %s", attributes[target][subtarget][listindex])
+
+                attributes[target][subtarget][listindex][listtarget] = update_value
+
+                _LOGGER.info("after update: %s", attributes[target][subtarget])
+            else:
+                _LOGGER.info("in else branch")
+                attributes[target][subtarget] = update_value
         else:
-            attributes[update_obj["target"]] = update_obj["value"]
+            attributes[target] = update_value
 
         hass.states.set('advanced_settings.advanced_settings', State.from_dict(advanced_settings), attributes, True)
 
@@ -102,10 +127,10 @@ class AdvancedSettingsComponent(Entity):
                 "value": "12/31/2017"
             },
             "savingsStartTime": {
-                "value": "10:00 am"
+                "value": "2017-10-24T10:00:00-07:00"
             },
             "savingsEndTime": {
-                "value": "5:00 pm"
+                "value": "2017-10-24T17:00:00-07:00"
             },
             "incentives": {
                 "label": "Incentives",
@@ -116,20 +141,20 @@ class AdvancedSettingsComponent(Entity):
                 "label": "Time of use pricing",
                 "list": [
                     {
-                        "startTime": "10:00 am",
-                        "endTime": "17:00 pm",
+                        "startTime": "2017-10-24T10:00:00-07:00",
+                        "endTime": "2017-10-24T14:00:00-07:00",
                         "value": 15,
                         "units": "cents per"
                     },
                     {
-                        "startTime": "17:00 am",
-                        "endTime": "20:00 pm",
+                        "startTime": "2017-10-24T14:00:00-07:00",
+                        "endTime": "2017-10-24T20:00:00-07:00",
                         "value": 35,
                         "units": "cents per"
                     },
                     {
-                        "startTime": "20:00 pm",
-                        "endTime": "9:00 am",
+                        "startTime": "2017-10-24T20:00:00-07:00",
+                        "endTime": "2017-10-24T09:00:00-07:00",
                         "value": 10,
                         "units": "cents per"
                     },
