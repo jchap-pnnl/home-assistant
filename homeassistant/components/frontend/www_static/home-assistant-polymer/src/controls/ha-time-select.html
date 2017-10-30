@@ -1,6 +1,10 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-time-input/paper-time-input.html">
+<!-- <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html"> -->
+
 
 <dom-module id='ha-time-select'>
   <template>
@@ -12,17 +16,75 @@
         padding:0 6px 0 6px;
         background-color: white;
       }
+
+      paper-time-input::shadow paper-dropdown-menu {
+        display: none;
+      }
+
+      paper-dropdown-menu{
+        width: 55px;
+        padding: 0;
+        /* Force ripple to use the whole container */
+        --paper-dropdown-menu-ripple: {
+          color: var(--paper-time-input-dropdown-ripple-color, --primary-color);
+        };
+        --paper-input-container-input: {
+          @apply --paper-font-button;
+          text-align: center;
+          padding-left: 5px;
+          @apply --paper-time-dropdown-input-cotnainer;
+        };
+        --paper-input-container-underline: {
+          border-color: transparent;
+        }
+        --paper-input-container-underline-focus: {
+          border-color: transparent;
+        };
+      }
+      paper-item{
+        cursor: pointer;
+        text-align: center;
+        font-size: 14px;
+      }
+      paper-listbox{
+        padding: 0;
+      }
+
+      .time-wrapper {
+        display: block;
+      }
+
+      .time-wrapper > * {
+        display: inline-block;
+      }
+
     </style>
       <span>
         <b>[[getItemLabel(item_label)]]</b>
       </span>
-      <paper-time-input 
-        on-change="updateSetting"
-        value="[[getTimeValue(time_value)]]"
-        hour="[[getHour(time_value)]]"
-        min="[[getMin(time_value)]]"
-        am-pm="getAmPm(time_value)"
-        label=""></paper-time-input>
+      <div class="time-wrapper">
+        <paper-time-input 
+          id="time-input"
+          on-change="updateSetting"
+          value="[[getTimeValue(time_value)]]"
+          hour="[[getHour(time_value)]]"
+          min="[[getMin(time_value)]]"
+          am-pm="[[amPm]]"
+          label=""></paper-time-input>
+        <paper-dropdown-menu
+          no-label-float
+          on-iron-select="updateAmPm">
+          <paper-listbox 
+            attr-for-selected="name" 
+            selected="[[amPm]]" 
+            slot="dropdown-content"
+            class="dropdown-content"
+          >
+            <paper-item name="AM">AM</paper-item>
+            <paper-item name="PM">PM</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
   </template>
 </dom-module>
 <script>
@@ -62,11 +124,21 @@ Polymer({
       type: String,
       value: ''
     },
+    amPm: {
+      type: String,
+      value: '',
+      computed: "getAmPm(time_value)"
+    }
   },
   ready: function () {
-    // const timePicker = this.$$('#time-picker');
-    // timePicker.addEventListener('value-changed', this.updateSetting.bind(this));
-    // timePicker.time = moment(this.time_value).valueOf();
+    const timeInput = this.$$('#time-input');
+
+    if (timeInput)
+    {
+      // timeInput.addEventListener('changed', this.updateAmPm.bind(this));
+      console.log(timeInput);
+    }
+    // menuButton.time = moment(this.time_value).valueOf();
   },
   getItemLabel(itemValue) {
     const itemLabel = (itemValue ? itemValue + ":" : "");
@@ -78,7 +150,7 @@ Polymer({
     return value;
   },
   getHour(timeValue) {
-    const value = moment(timeValue).format("H");
+    const value = moment(timeValue).format("h");
     console.log("hours:" + value);
     return value;
   },
@@ -92,6 +164,63 @@ Polymer({
     console.log("am or pm: ", value);
     return value;
   },
+  updateAmPm(evt) {
+    console.log(evt);
+    const amPm = evt.currentTarget.value;
+
+    if (amPm !== this.amPm)
+    {
+      console.log("prop: " + this.item_prop);
+      console.log("subprop: " + this.item_subprop);
+      console.log("listprop: " + this.item_listprop);
+      console.log("index: " + this.item_index);
+      console.log("update method: " + this.update_method);
+      console.log("value: " + evt.currentTarget.value);
+
+      const hour = moment(this.time_value).hour();
+
+      let newTime = moment(this.time_value);
+
+      switch (amPm)
+      {
+        case 'AM':
+          if (hour >= 12)
+          {
+            // this.amPm = 'AM';
+            newTime.subtract(12, 'hours');
+          }
+          break;
+        case 'PM':
+          if (hour <= 12)
+          {
+            // this.amPm = 'PM';
+            newTime.add(12, 'hours');
+          }
+      }
+
+      const prop = this.item_prop;
+      const subprop = this.item_subprop;
+      const listprop = this.item_listprop;
+      const listindex = this.item_index;
+
+      const updateObj = { 
+        'target': prop,
+        'subtarget': (subprop ? subprop : 'value'),
+        'value': newTime.format() 
+      };
+
+      if (listprop)
+      {
+        updateObj.listtarget = listprop;
+        updateObj.listindex = listindex;
+      }
+      
+      if (this.update_method)
+      {
+        this.callServiceHelper(this.update_method, updateObj);
+      }
+    }
+  },
   updateSetting: function (evt) {
     console.log("prop: " + this.item_prop);
     console.log("subprop: " + this.item_subprop);
@@ -101,8 +230,14 @@ Polymer({
     console.log("value: " + evt.currentTarget.value);
     
     const timeInput = evt.currentTarget;
-    const hour = timeInput.hour;
     const min = timeInput.min;
+
+    let hour = +timeInput.hour;
+
+    if (this.amPm === 'PM' && hour < 12)
+    {
+      hour = hour + 12;
+    }
 
     const newTime = moment().set('hour', hour).set('minute', min);
 
