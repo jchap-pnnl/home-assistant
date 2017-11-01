@@ -86,12 +86,12 @@
     media_player: 3,
     persistent_notification: 0,
     weather: 4,
-    transactive_home: 8,
-    whole_house_energy: 4,
-    connected_devices: 4,
-    advanced_settings: 4,
-    user_settings: 4,
-    device_statuses: 4
+    transactive_home: 10,
+    whole_house_energy: 10,
+    connected_devices: 10,
+    advanced_settings: 10,
+    user_settings: 10,
+    device_statuses: 10
   };
 
   // 4 types:
@@ -213,7 +213,8 @@
       };
       var entityCount = [];
       var i;
-      for (i = 0; i < columns; i++) {
+      //Modified by Raj
+      for (i = 0; i < columns; i=i+1.5) {
         cards.columns.push([]);
         entityCount.push(0);
       }

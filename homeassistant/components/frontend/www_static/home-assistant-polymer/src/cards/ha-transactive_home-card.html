@@ -66,9 +66,9 @@
         --paper-tooltip-background: cadetblue;
         --paper-tooltip-opacity: 1;
       }
-      .transactive-home {
+/*      .transactive-home {
         margin-bottom: 100px;
-      }
+      }*/
 
       #toast-container > .toast {
         background-image: none !important;
@@ -77,8 +77,15 @@
       .popup {
         max-width:600px !important;
       }
+      .show{
+        font-size: 10px;
+        margin-top: 15px;
+        padding: 5px;
+      }
+/*      .data-chart {
+        display: none
+      }*/
     </style>
-
     <ha-card class='transactive-home'>
       <div class='header domain'>
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
@@ -108,8 +115,9 @@
               right_prop="end_point"
             ></ha-progress-scale>
           </div>
+          <paper-button raised on-click = "myFunction" class ="show" id ="showTag">Show More</paper-button>
       </div>
-      <div class='data-chart'>
+      <div class='data-chart' hidden$="{{hidden}}">
         <state-charts-container
           state-obj="[[stateObj]]">
         </state-charts-container>
@@ -129,8 +137,24 @@ Polymer({
     },
     groupEntity: {
       type: Object,
+    },
+    hidden:{
+      type: Boolean,
+      value: true
     }
   },
+  myFunction: function(){
+    if (this.hidden == true){
+      var button = this.$.showTag;
+      button.textContent = "Show Less"
+    }
+    else if (this.hidden == false){
+      var button = this.$.showTag;
+      button.textContent = "Show More"
+    }
+    this.hidden = !this.hidden;
+  },
+
   getList: function (obj) {
     // this.showToastMessage("Hi, your HVAC isn't in transactive mode for 10 days. Simply turn it back on and start saving energy and money again.");
     // this.showToastMessage("Hi, you'll be on vacation next week. It's a good time to maximize savings. Want to set your house to minimum energy mode?");
