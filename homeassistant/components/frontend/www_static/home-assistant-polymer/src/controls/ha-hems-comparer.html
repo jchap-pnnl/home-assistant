@@ -1,0 +1,148 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id='ha-hems-comparer'>
+  <template>
+    <style include="paper-material">
+      :host {
+        display: block;
+        border-radius: 2px;
+        transition: all 0.30s ease-out;
+        padding:0 6px 0 6px;
+      }
+      .hems-comparer {
+        position: relative;
+        font-size: 12px;
+        line-height: 12px;
+      }
+      .bars-container {
+        display: block;
+        text-align: center;
+        border-bottom: 2px solid gray;
+      }
+      .bar {
+        display: inline-block;
+        vertical-align: bottom;
+        margin: 0 2px;
+      }
+      .rect {
+        width: 10px;
+      }
+      .estimate {
+        background: repeating-linear-gradient(
+          45deg,
+          orange,
+          orange 10px,
+          white 10px,
+          white 14px
+        );
+      }
+      .goal {
+        background-color: #3b92ef;
+      }
+      .actual {
+        background-color: #2db72d;
+      }
+    </style>
+    <div class="hems-comparer">
+      <div class="bars-container">
+        <div class="bar">
+          <div>[[estimate_label]]</div>
+          <div
+            class="rect estimate"
+            style="height: [[estimate_height]]px"
+          ></div>
+        </div>
+        <div class="bar">
+          <div>[[goal_label]]</div>
+          <div
+            class="rect goal"
+            style="height: [[goal_height]]px"
+          ></div>
+        </div>
+        <div class="bar">
+          <div>[[actual_label]]</div>
+          <div
+            class="rect actual"
+            style="height: [[actual_height]]px"
+          ></div>
+        </div>
+      </div>
+      <div class="item-label">[[item_label]]</div>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-hems-comparer',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+    estimate_label: {
+      type: String
+    },
+    estimate_number: {
+      type: Number,
+      computed: 'convertNumber(estimate_label)'
+    },
+    goal_label: {
+      type: String
+    },
+    goal_number: {
+      type: Number,
+      computed: 'convertNumber(goal_label)'
+    },
+    actual_label: {
+      type: String
+    },
+    actual_number: {
+      type: Number,
+      computed: 'convertNumber(actual_label)'
+    },
+    estimate_height: {
+      type: String,
+      computed: 'computeHeight(estimate_number)'
+    },
+    goal_height: {
+      type: String,
+      computed: 'computeHeight(goal_number)'
+    },
+    actual_height: {
+      type: String,
+      computed: 'computeHeight(actual_number)'
+    },
+    item_label: {
+      type: String
+    },
+    chartHeight: {
+      type: Number,
+      value: 100
+    }
+  },
+  computeHeight: function (num) {
+      let itemHeight = -1;
+      itemHeight = num / this.getMax([this.estimate_number, this.goal_number, this.actual_number]) * this.chartHeight;
+      return Math.ceil(itemHeight);
+  },
+  convertNumber: function (str) {
+      const num = (str[0] === "$" ? Number(str.substring(1)) : Number(str));
+      return num;
+  },
+  getMax: function (items) {
+      let max = 0;
+
+      if (items)
+      {
+          max = Math.max(...items);
+      }
+
+      console.log(max);
+      return max;
+  }
+});
+
+
+</script>
