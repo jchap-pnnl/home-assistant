@@ -1,9 +1,9 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../controls/ha-scale-indicator.html'>
+<link rel='import' href='../controls/ha-hems-comparer.html'>
 
 
 <dom-module id='ha-time_of_use-card'>
@@ -37,41 +37,58 @@
       }
       .header .name {
         @apply(--paper-font-common-nowrap);
+
       }
       .header.domain .name {
         /* Capitalize cards titles for default domain groups. */
         text-transform: capitalize;
       }
-      ha-entity-toggle {
-        margin-left: 16px;
+      .comparer-container {
+        display: block;
+        text-align: center;
       }
-      .header-more-info {
-        cursor: pointer;
+      .comparer-container > * {
+        display: inline-block;
+      }
+      .outlook-label {
+        color: #2db72d;
+        font-size: 14px;
+      }
+      .toggle-container {
+        font-size: 14px;
       }
 
     </style>
 
-    <ha-card class='time-of-use'>
-      <div class='header domain'>
-        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
-        <ha-scale-indicator 
-          right_icon='mdi:battery'
-          left_icon='mdi:battery-30'
-          right_value="[[getAttributes(stateObj, 'energyUse', 'maximum')]]"
-          left_value="[[getAttributes(stateObj, 'energyUse', 'minimum')]]"
-          actual_value="[[getAttributes(stateObj, 'energyUse', 'transactive')]]"
-          description="Today's estimated energy reduction (based on your settings)"
-          units_label="Kwh"
-        ></ha-scale-indicator>
-        <ha-scale-indicator 
-          right_icon='mdi:coins'
-          left_icon='mdi:coin'
-          icon_color='#f4b400'
-          right_value="[[getAttributes(stateObj, 'energyCost', 'maximum')]]"
-          left_value="[[getAttributes(stateObj, 'energyCost', 'minimum')]]"
-          actual_value="[[getAttributes(stateObj, 'energyCost', 'transactive')]]"
-          description="Today's estimated energy savings"
-        ></ha-scale-indicator>
+    <ha-card class="time-of-use" style$="[[getUseOutlookStyle(stateObj)]]">
+      <div class="header domain">
+        <div class="name">[[stateObj.attributes.friendly_name]]</div>
+        <div class="outlook-label">Today's Outlook</div>
+        <div class="comparer-container">
+          <ha-hems-comparer 
+            estimate_label="[[getAttributes(stateObj, 'energyReductionEstimate', 'value')]]"
+            goal_label="[[getAttributes(stateObj, 'energyReductionGoal', 'value')]]"
+            actual_label="[[getAttributes(stateObj, 'energyReductionActual', 'value')]]"
+            item_label="energy reduction"
+            background_style="[[getUseOutlookStyle(stateObj)]]"
+          ></ha-hems-comparer>
+          <ha-hems-comparer 
+            estimate_label="[[getAttributes(stateObj, 'savingsEstimate', 'value')]]"
+            goal_label="[[getAttributes(stateObj, 'savingsGoal', 'value')]]"
+            actual_label="[[getAttributes(stateObj, 'savingsActual', 'value')]]"
+            item_label="savings"
+            background_style="[[getUseOutlookStyle(stateObj)]]"
+          ></ha-hems-comparer>
+        </div>
+        <div class="toggle-container">
+          <paper-toggle-button raised
+            on-change="useOutlook"
+            checked="[[getAttributes(stateObj, 'useAlgorithm', 'value')]]"
+            data-prop="useAlgorithm"
+          >
+            [[getToggleLabel(stateObj)]]
+          </paper-toggle-button>
+        </div>
       </div>
     </ha-card>
   </template>
@@ -85,17 +102,60 @@ Polymer({
     hass: {
       type: Object,
     },
-
     stateObj: {
       type: Object,
     },
-
     groupEntity: {
       type: Object,
+    },
+    useLabel: {
+      type: String,
+      value: "Use This Outlook"
+    },
+    notUseLabel: {
+      type: String,
+      value: "Don't Use This Outlook"
     }
   },
-  getAttributes(obj, attr, subattr) {
+  useOutlook: function (evt) {
+      const checked = evt.target.checked;
+      const prop = evt.currentTarget.dataset.prop;
+
+      this.updateSetting(checked, prop);
+  },
+  getToggleLabel: function (stateObj) {
+      let toggleLabel = "";
+
+      if (stateObj)
+      {
+          const useOutlook = stateObj.attributes.useAlgorithm.value;
+          toggleLabel = (useOutlook ? this.useLabel : this.notUseLabel);
+      }
+      
+      return toggleLabel;
+  },
+  getUseOutlookStyle: function (stateObj) {
+      let useOutlookStyle = "";
+
+      if (stateObj)
+      {
+          const useOutlook = stateObj.attributes.useAlgorithm.value;
+          useOutlookStyle = (!useOutlook ? "background-color: lightgray" : '');
+      }
+      
+      return useOutlookStyle;
+  },
+  getAttributes: function(obj, attr, subattr) {
     return obj.attributes[attr][subattr];
+  },
+  updateSetting: function (newValue, prop) {
+      const updateObj = { 
+        'target': prop,
+        'subtarget': 'value',
+        'value': newValue 
+      };
+        
+      this.callServiceHelper('update_time_of_use', updateObj);
   },
   callServiceHelper: function (service, data) {
     if (this.hass)

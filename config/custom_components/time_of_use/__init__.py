@@ -36,23 +36,32 @@ def setup(hass, config):
 
     def update_time_of_use(service):
         """Do any update to the component."""
-        # _LOGGER.info("time of use service object: %s", service)
-        # _LOGGER.info("what is in here?: %s", hass)
         
         update_obj = service.data.get('value')
 
-        # _LOGGER.info("state attributes: %s", hass.states.get('time_of_use.time_of_use'))
+        _LOGGER.info("update object: %s", update_obj)
 
-        time_of_use = hass.states.get('time_of_use.time_of_use').as_dict()
+        update_value = update_obj["value"]
+        target = update_obj["target"]
+        subtarget = update_obj["subtarget"]
+
+        _LOGGER.info("before time_of_use")
+
+        time_of_use = hass.states.get('time_of_use.time_of_use_energy_and_savings').as_dict()
+
+        _LOGGER.info("after time_of_use: %s", time_of_use)
+        
         attributes = time_of_use["attributes"]
 
-        # _LOGGER.info("writing value: %s", update_obj)
+        _LOGGER.info("before update: %s", attributes[target][subtarget])
 
-        attributes["overallflexibility"][0][update_obj["target"]] = update_obj["value"]
+        attributes[target][subtarget] = update_value
+        
+        _LOGGER.info("after update: %s", attributes[target][subtarget])
 
-        hass.states.set('time_of_use.time_of_use', State.from_dict(time_of_use), attributes, True)
+        time_of_use["attributes"] = attributes
 
-        _LOGGER.info("Time of Use after update: %s", hass.states.get('time_of_use.time_of_use'))
+        hass.states.set('time_of_use.time_of_use_energy_and_savings', 'On', attributes, True)
 
     hass.services.register(
         DOMAIN,
@@ -64,42 +73,51 @@ def setup(hass, config):
 
 
 class TimeOfUseComponent(Entity):
-    """Representation of a Sensor."""
+    """Representation of a Component."""
 
     def __init__(self):
-        """Initialize the sensor."""
+        """Initialize the component."""
 
         _LOGGER.info("TimeOfUsePlatform loading.")
 
     @property
     def name(self):
-        """Return the name of the sensor."""
+        """Return the name of the component."""
         return 'Time of Use'
 
     @property
     def state(self):
-        """Camera state."""
+        """Component state."""
         return 'happy'
-
-    @property
-    def overall_reduction(self):
-        """Return the name of the sensor."""
-        return 84
 
     @property
     def state_attributes(self):
         """Return the optional state attributes."""
 
         data = {
-            "energyUse":{
-                "maximum": "11",
-                "minimum": "0",
-                "transactive": "5"
+            "energyReductionEstimate":{
+                "value": "6",
+                "units": "kwh"
             },
-            "energyCost":{
-                "maximum": "$50.00",
-                "minimum": "$0",
-                "transactive": "$8.75"
+            "energyReductionGoal":{
+                "value": "5",
+                "units": "kwh"
+            },
+            "energyReductionActual":{
+                "value": "5",
+                "units": "kwh"
+            },
+            "savingsEstimate":{
+                "value": "$4"
+            },
+            "savingsGoal":{
+                "value": "$5"
+            },
+            "savingsActual":{
+                "value": "$5"
+            },
+            "useAlgorithm": {
+                "value": False
             }
         }
 

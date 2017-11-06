@@ -43,35 +43,26 @@
         /* Capitalize cards titles for default domain groups. */
         text-transform: capitalize;
       }
-      ha-entity-toggle {
-        margin-left: 16px;
-      }
-      .header-more-info {
-        cursor: pointer;
-      }
       .comparer-container {
         display: block;
         text-align: center;
       }
-
       .comparer-container > * {
         display: inline-block;
       }
-
       .outlook-label {
         color: #2db72d;
         font-size: 14px;
       }
-
       .toggle-container {
         font-size: 14px;
       }
 
     </style>
 
-    <ha-card class='energy-efficiency' style$="[[getUseOutlookStyle(stateObj)]]">
-      <div class='header domain'>
-        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
+    <ha-card class="energy-efficiency" style$="[[getUseOutlookStyle(stateObj)]]">
+      <div class="header domain">
+        <div class="name">[[stateObj.attributes.friendly_name]]</div>
         <div class="outlook-label">Today's Outlook</div>
         <div class="comparer-container">
           <ha-hems-comparer 
