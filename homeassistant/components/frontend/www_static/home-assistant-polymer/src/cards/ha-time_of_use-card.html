@@ -122,6 +122,7 @@ Polymer({
       const prop = evt.currentTarget.dataset.prop;
 
       this.updateSetting(checked, prop);
+      this.updateSetting(!checked, prop, 'update_energy_efficiency', 'energy_efficiency');
   },
   getToggleLabel: function (stateObj) {
       let toggleLabel = "";
@@ -148,23 +149,23 @@ Polymer({
   getAttributes: function(obj, attr, subattr) {
     return obj.attributes[attr][subattr];
   },
-  updateSetting: function (newValue, prop) {
+  updateSetting: function (newValue, prop, method = 'update_time_of_use', platform) {
       const updateObj = { 
         'target': prop,
         'subtarget': 'value',
         'value': newValue 
       };
         
-      this.callServiceHelper('update_time_of_use', updateObj);
+      this.callServiceHelper(method, updateObj, platform);
   },
-  callServiceHelper: function (service, data) {
+  callServiceHelper: function (service, data, platform = 'time_of_use') {
     if (this.hass)
     {      
-      this.hass.callService('time_of_use', service, { value: data})
+      this.hass.callService(platform, service, { value: data})
         .then(function () {
           // console.log('successful service call');
         }.bind(this));
     }
-  },
+  }
 });
 </script>
