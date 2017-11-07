@@ -10,6 +10,12 @@
         transition: all 0.30s ease-out;
         padding:0 6px 0 6px;
       }
+      .comparer-container {
+        height: 130px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
       .hems-comparer {
         position: relative;
         font-size: 12px;
@@ -44,31 +50,34 @@
         background-color: #2db72d;
       }
     </style>
-    <div class="hems-comparer">
-      <div class="bars-container">
-        <div class="bar">
-          <div>[[estimate_label]]</div>
-          <div
-            class="rect estimate"
-            style="height: [[estimate_height]]px"
-          ></div>
+    <div class="comparer-container">
+      <div></div>
+      <div class="hems-comparer">
+        <div class="bars-container">
+          <div class="bar">
+            <div>[[estimate_label]]</div>
+            <div
+              class="rect estimate"
+              style="height: [[estimate_height]]px"
+            ></div>
+          </div>
+          <div class="bar">
+            <div>[[goal_label]]</div>
+            <div
+              class="rect goal"
+              style="height: [[goal_height]]px"
+            ></div>
+          </div>
+          <div class="bar">
+            <div>[[actual_label]]</div>
+            <div
+              class="rect actual"
+              style="height: [[actual_height]]px"
+            ></div>
+          </div>
         </div>
-        <div class="bar">
-          <div>[[goal_label]]</div>
-          <div
-            class="rect goal"
-            style="height: [[goal_height]]px"
-          ></div>
-        </div>
-        <div class="bar">
-          <div>[[actual_label]]</div>
-          <div
-            class="rect actual"
-            style="height: [[actual_height]]px"
-          ></div>
-        </div>
+        <div class="item-label">[[item_label]]</div>
       </div>
-      <div class="item-label">[[item_label]]</div>
     </div>
   </template>
 </dom-module>
@@ -120,6 +129,9 @@ Polymer({
     chartHeight: {
       type: Number,
       value: 100
+    },
+    max_value: {
+      type: Number
     }
   },
   computeHeight: function (num) {
@@ -132,14 +144,8 @@ Polymer({
       return num;
   },
   getMax: function (items) {
-      let max = 0;
+      const max = (this.max_value ? this.max_value : 0);
 
-      if (items)
-      {
-          max = Math.max(...items);
-      }
-
-      console.log(max);
       return max;
   }
 });

@@ -48,6 +48,7 @@
       }
       .comparer-container > * {
         display: inline-block;
+        vertical-align: bottom;
       }
       .outlook-label {
         color: #2db72d;
@@ -128,6 +129,7 @@
           actual_label="[[getAttributes(state_obj, 'energyReductionActual', 'value')]]"
           item_label="energy reduction"
           background_style="[[getUseOutlookStyle(state_obj)]]"
+          max_value="[[getMaxReduction()]]"
         ></ha-hems-comparer>
         <ha-hems-comparer 
           estimate_label="[[getAttributesFromLabel(state_obj, 'Estimate', 'value')]]"
@@ -135,6 +137,7 @@
           actual_label="[[getAttributesFromLabel(state_obj, 'Actual', 'value')]]"
           item_label="[[compensation_or_savings]]"
           background_style="[[getUseOutlookStyle(state_obj)]]"
+          max_value="[[getMaxMoney()]]"
         ></ha-hems-comparer>
       </div>
       <div class="your-money">
@@ -192,6 +195,58 @@ Polymer({
     other_platform: {
       type: String
     },
+  },
+  getMaxReduction: function () {
+      let max = 0;
+
+      if (this.hass)
+      {
+          const maxes = [];
+
+          const energyEfficiency = this.hass.states["energy_efficiency.peak_period_energy_and_compensation"].attributes;
+
+          maxes.push(Number(energyEfficiency.energyReductionActual.value));
+          maxes.push(Number(energyEfficiency.energyReductionEstimate.value));
+          maxes.push(Number(energyEfficiency.energyReductionGoal.value));
+
+          const timeOfUse = this.hass.states["time_of_use.time_of_use_energy_and_savings"].attributes;
+
+          maxes.push(Number(timeOfUse.energyReductionActual.value));
+          maxes.push(Number(timeOfUse.energyReductionEstimate.value));
+          maxes.push(Number(timeOfUse.energyReductionGoal.value));
+
+          max = Math.max(...maxes);
+      }
+
+      return max;
+  },
+  getMaxMoney: function () {
+      let max = 0;
+
+      if (this.hass)
+      {
+          const maxes = [];
+
+          const energyEfficiency = this.hass.states["energy_efficiency.peak_period_energy_and_compensation"].attributes;
+
+          maxes.push(Number(this.convertNumber(energyEfficiency.compensationActual.value)));
+          maxes.push(Number(this.convertNumber(energyEfficiency.compensationEstimate.value)));
+          maxes.push(Number(this.convertNumber(energyEfficiency.compensationGoal.value)));
+
+          const timeOfUse = this.hass.states["time_of_use.time_of_use_energy_and_savings"].attributes;
+
+          maxes.push(Number(this.convertNumber(timeOfUse.savingsActual.value)));
+          maxes.push(Number(this.convertNumber(timeOfUse.savingsEstimate.value)));
+          maxes.push(Number(this.convertNumber(timeOfUse.savingsGoal.value)));
+
+          max = Math.max(...maxes);
+      }
+
+      return max;
+  },
+  convertNumber: function (str) {
+      const num = (str[0] === "$" ? Number(str.substring(1)) : Number(str));
+      return num;
   },
   getLabel: function (labelType) {
     const prefix = this.compensation_or_savings;
