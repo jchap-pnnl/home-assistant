@@ -1,96 +1,25 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../controls/ha-hems-comparer.html'>
 
+<link rel='import' href='../controls/ha-energy-reduction-base.html'>
 
 <dom-module id='ha-energy_efficiency-card'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
-    <style>
-      .states {
-        padding-bottom: 16px;
-      }
-      .state {
-        padding: 4px 16px;
-      }
-      td, th {
-        padding-right: 8px;
-      }
-      .state .label {
-        color: rgba(0, 0, 0, 0.54);
-        font-weight: bold;
-        text-transform: capitalize;
-      }
-      .state .value {
-        color: rgba(0, 0, 0, 0.87);
-      }
-      .header {
-        @apply(--paper-font-headline);
-        /* overwriting line-height +8 because entity-toggle can be 40px height,
-           compensating this with reduced padding */
-        line-height: 40px;
-        color: var(--primary-text-color);
-        padding: 20px 16px 12px;
-      }
-      .header .name {
-        @apply(--paper-font-common-nowrap);
-
-      }
-      .header.domain .name {
-        /* Capitalize cards titles for default domain groups. */
-        text-transform: capitalize;
-      }
-      .comparer-container {
-        display: block;
-        text-align: center;
-      }
-      .comparer-container > * {
-        display: inline-block;
-      }
-      .outlook-label {
-        color: #2db72d;
-        font-size: 14px;
-      }
-      .toggle-container {
-        font-size: 14px;
-      }
-
-    </style>
-
     <ha-card class="energy-efficiency" style$="[[getUseOutlookStyle(stateObj)]]">
-      <div class="header domain">
-        <div class="name">[[stateObj.attributes.friendly_name]]</div>
-        <div class="outlook-label">Today's Outlook</div>
-        <div class="comparer-container">
-          <ha-hems-comparer 
-            estimate_label="[[getAttributes(stateObj, 'energyReductionEstimate', 'value')]]"
-            goal_label="[[getAttributes(stateObj, 'energyReductionGoal', 'value')]]"
-            actual_label="[[getAttributes(stateObj, 'energyReductionActual', 'value')]]"
-            item_label="energy reduction"
-            background_style="[[getUseOutlookStyle(stateObj)]]"
-          ></ha-hems-comparer>
-          <ha-hems-comparer 
-            estimate_label="[[getAttributes(stateObj, 'compensationEstimate', 'value')]]"
-            goal_label="[[getAttributes(stateObj, 'compensationGoal', 'value')]]"
-            actual_label="[[getAttributes(stateObj, 'compensationActual', 'value')]]"
-            item_label="compensation"
-            background_style="[[getUseOutlookStyle(stateObj)]]"
-          ></ha-hems-comparer>
-        </div>
-        <div class="toggle-container">
-          <paper-toggle-button raised
-            on-change="useOutlook"
-            checked="[[getAttributes(stateObj, 'useAlgorithm', 'value')]]"
-            data-prop="useAlgorithm"
-          >
-            [[getToggleLabel(stateObj)]]
-          </paper-toggle-button>
-        </div>
-      </div>
-    </ha-card>
+      <ha-energy-reduction-base
+        card_name="[[stateObj.attributes.friendly_name]]"
+        compensation_or_savings="compensation"
+        background_color="[[getUseOutlookStyle(stateObj)]]"
+        update_method="update_energy_efficiency"
+        update_platform="energy_efficiency"
+        other_method="update_time_of_use"
+        other_platform="time_of_use"
+        state_obj="[[stateObj]]"
+        hass="[[hass]]"
+      >
+      </ha-energy-reduction-base>
   </template>
 </dom-module>
 
@@ -106,33 +35,7 @@ Polymer({
     },
     groupEntity: {
       type: Object,
-    },
-    useLabel: {
-      type: String,
-      value: "Use This Outlook"
-    },
-    notUseLabel: {
-      type: String,
-      value: "Don't Use This Outlook"
     }
-  },
-  useOutlook: function (evt) {
-      const checked = evt.target.checked;
-      const prop = evt.currentTarget.dataset.prop;
-
-      this.updateSetting(checked, prop);
-      this.updateSetting(!checked, prop, 'update_time_of_use', 'time_of_use');
-  },
-  getToggleLabel: function (stateObj) {
-      let toggleLabel = "";
-
-      if (stateObj)
-      {
-          const useOutlook = stateObj.attributes.useAlgorithm.value;
-          toggleLabel = (useOutlook ? this.useLabel : this.notUseLabel);
-      }
-      
-      return toggleLabel;
   },
   getUseOutlookStyle: function (stateObj) {
       let useOutlookStyle = "";
@@ -144,27 +47,6 @@ Polymer({
       }
       
       return useOutlookStyle;
-  },
-  getAttributes: function(obj, attr, subattr) {
-    return obj.attributes[attr][subattr];
-  },
-  updateSetting: function (newValue, prop, method = 'update_energy_efficiency', platform) {
-      const updateObj = { 
-        'target': prop,
-        'subtarget': 'value',
-        'value': newValue 
-      };
-        
-      this.callServiceHelper(method, updateObj, platform);
-  },
-  callServiceHelper: function (service, data, platform = 'energy_efficiency') {
-    if (this.hass)
-    {      
-      this.hass.callService(platform, service, { value: data})
-        .then(function () {
-          // console.log('successful service call');
-        }.bind(this));
-    }
   }
 });
 </script>
