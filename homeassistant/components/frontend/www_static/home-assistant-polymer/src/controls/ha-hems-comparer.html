@@ -10,8 +10,9 @@
         transition: all 0.30s ease-out;
         padding:0 6px 0 6px;
       }
-      .comparer-container {
+      .comparer-outer {
         height: 130px;
+        width: 150px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -31,8 +32,14 @@
         vertical-align: bottom;
         margin: 0 2px;
       }
+      .bar > div:first-child {
+        text-align: left;
+      }
       .rect {
         width: 10px;
+        padding-right: 10px;
+        box-shadow: 4px -2px 4px 2px rgba(0, 0, 0, .2);
+        margin-right: 10px;
       }
       .estimate {
         background: repeating-linear-gradient(
@@ -50,7 +57,7 @@
         background-color: #2db72d;
       }
     </style>
-    <div class="comparer-container">
+    <div class="comparer-outer">
       <div></div>
       <div class="hems-comparer">
         <div class="bars-container">
@@ -94,34 +101,28 @@ Polymer({
       type: String
     },
     estimate_number: {
-      type: Number,
-      computed: 'convertNumber(estimate_label)'
+      type: Number
     },
     goal_label: {
       type: String
     },
     goal_number: {
-      type: Number,
-      computed: 'convertNumber(goal_label)'
+      type: Number
     },
     actual_label: {
       type: String
     },
     actual_number: {
-      type: Number,
-      computed: 'convertNumber(actual_label)'
+      type: Number
     },
     estimate_height: {
-      type: String,
-      computed: 'computeHeight(estimate_number)'
+      type: String
     },
     goal_height: {
-      type: String,
-      computed: 'computeHeight(goal_number)'
+      type: String
     },
     actual_height: {
-      type: String,
-      computed: 'computeHeight(actual_number)'
+      type: String
     },
     item_label: {
       type: String
@@ -131,8 +132,17 @@ Polymer({
       value: 100
     },
     max_value: {
-      type: Number
+      type: Number,
+      observer: 'updateHeights'
     }
+  },
+  updateHeights: function (maxValue) {
+    this.estimate_number = this.convertNumber(this.estimate_label);
+    this.goal_number = this.convertNumber(this.goal_label);
+    this.actual_number = this.convertNumber(this.actual_label);
+    this.estimate_height = this.computeHeight(this.estimate_number);
+    this.goal_height = this.computeHeight(this.goal_number);
+    this.actual_height = this.computeHeight(this.actual_number);
   },
   computeHeight: function (num) {
       let itemHeight = -1;
