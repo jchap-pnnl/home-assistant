@@ -60,11 +60,14 @@
         vertical-align: bottom;
       }
       .outlook-label {
-        color: #2db72d;
-        font-size: 14px;
+        color: dimgray;
+        font-size: 16px;
+        font-weight: bold;
+        padding-left: 10px;
       }
       .toggle-container {
         font-size: 14px;
+        padding-left: 10px;
       }
       .color-box {
         height: 10px;
@@ -86,16 +89,20 @@
         background-color: #2db72d;
       }
       .legend {
-        font-size: 12px;
-        line-height: 12px;
+        font-size: 14px;
+        line-height: 14px;
         float: right;
       }
       .your-money {
         float: right;
-        border: 1px solid gray;
-        font-size: 12px;
+        border: 2px solid gray;
+        font-size: 14px;
         padding: 0 20px;
         margin-right: 10px;
+      }
+      .your-money > .amount {
+        font-weight: bold;
+        color: green;
       }
 
     </style>
@@ -154,7 +161,7 @@
         </div>
       </div>
       <div class="your-money">
-        $$ for you: [[getAttributesFromLabel(state_obj, 'Actual', 'value')]]
+        <span class="dollar-signs">$$</span> for you: <span class="amount">[[getAttributesFromLabel(state_obj, 'Actual', 'value')]]</span>
       </div>
       <div class="toggle-container">
         <paper-toggle-button raised
