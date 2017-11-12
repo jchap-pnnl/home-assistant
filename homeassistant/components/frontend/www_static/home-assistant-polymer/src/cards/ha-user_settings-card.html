@@ -5,6 +5,8 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel='import' href='../controls/ha-element-chooser.html'>
+<link rel='import' href='../controls/ha-time-select.html'>
 
 <link rel='import' href='../components/ha-card.html'>
 
@@ -41,82 +43,20 @@
       .data-table tbody {
         color: rgba(0, 0, 0, 0.87);
       }
-      .data-table td.participation {
-        width: 50px;
-      }
-      .data-table td.reset {
-        width: 90px;
-      }
-      .data-table .indicator .cell {
-        padding: 4px;
-        position: relative;
-        height: 8px;
-        width: 8px;
-        opacity: .7;
-      }
-      .data-table .indicator .cell > * {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        left: 0px;
-        bottom: 0px;
-        border-radius: 8px;
-      }
       .data-table table {
         margin-bottom: 20px;
         width: 100%;
       }
-      .indicator {
-        margin: 0;
-        padding: 0;
-      }
-      .green {
-        background-color: green;
-      }
-      .red {
-        background-color: red;
-      }
-      .flexibility-cell {
-        position: relative;
-      }
-      .reset-button {
-        background-color: #c74507;
-        color: #ebf73c;
-        height: 30px;
-      }
-      .reset-mode {
-        opacity: .3;
-      }
-      paper-toggle-button {
-        cursor: pointer;
-      }
       .display-none {
         display: none;
-      }
-      paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container::shadow .floated-label-placeholder {
-        display: none;
-      }
-      paper-dropdown-menu::shadow paper-menu-button div.dropdown-trigger paper-input::shadow paper-input-container {
-        padding: 0;
-      }
-      paper-listbox {
-        padding: 0;
-      }
-      paper-listbox paper-item {
-        min-height: 0;
       }
       .device-name-row {
         margin-top: 20px;
       }
-      .device-name-cell {
-        background-color: gainsboro;
-      }
       .device-name {
         font-size: 14px;
         font-weight: bold;
-      }
-      .column-name {
-        font-size: 10px;
+        background-color: gainsboro;
       }
       .space-row {
         height: 10px;
@@ -124,8 +64,14 @@
       .display-inline {
         display: block;
       }
-      .display-inline > div {
+      .display-inline > * {
         display: inline-block;
+      }
+      .space-row {
+        height: 10px;
+      }
+      .setting-label {
+        line-height: 62px;
       }
     </style>
 
@@ -134,51 +80,58 @@
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
       </div>
       <div class='data-table'>
-        <table>
-          <tbody>
-            <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
-            <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
-              <tr class='device-name-row'>
-                <td class='device-name-cell' colspan=20>
-                  <div class='device-name'><i>[[item.name]]</i></div>
-                </td>
-              </tr>
-              <tr>
-                <template is='dom-repeat' items="[[getSettings(item)]]" as="setting">
-                  <td>
-                    <div>
-                      <div>[[setting.label]]:</div>
+        <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
+        <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
+          <div class='device-name'><i>[[item.name]]</i></div>
+          <div class='display-inline'>
+            <template is='dom-repeat' items="[[getSettings(item)]]" as="setting">
+              <div class='display-inline'>
+                <div class="setting-label">
+                  <div>[[setting.label]]:</div>
+                </div>
+                <template is="dom-if" if="[[isRange(setting)]]">
+                  <div class='display-inline'>
+                    <ha-element-chooser
+                      item_value="[[getProperty(setting, 0, 'value')]]"
+                      item_type="[[getProperty(setting, 0, 'type')]]"
+                      item_units="[[getProperty(setting, 0, 'units')]]"
+                      item_update_method="update_user_settings"
+                      hass="[[hass]]"
+                      state_obj="[[stateObj]]"
+                    >
+                    </ha-element-chooser>
+                    <div>&nbsp;to&nbsp;</div>
+                    <ha-element-chooser
+                      item_value="[[getProperty(setting, 1, 'value')]]"
+                      item_type="[[getProperty(setting, 1, 'type')]]"
+                      item_units="[[getProperty(setting, 1, 'units')]]"
+                      item_update_method="update_user_settings"
+                      hass="[[hass]]"
+                      state_obj="[[stateObj]]"
+                    >
+                    </ha-element-chooser>
+                  </div>
+                </template>
+                <template is="dom-if" if="[[!isRange(setting)]]">
+                  <template is='dom-repeat' items="[[getAttributes(setting)]]" as="attr">
+                    <div class='display-inline'>
+                      <ha-element-chooser
+                        item_value="[[attr.value]]"
+                        item_type="[[attr.type]]"
+                        item_units="[[attr.units]]"
+                        item_update_method="update_user_settings"
+                        hass="[[hass]]"
+                        state_obj="[[stateObj]]"
+                      >
+                      </ha-element-chooser>
                     </div>
-                  </td>
-                  <template is="dom-if" if="[[isRange(setting)]]">
-                    <td colspan=4>
-                      <div class='display-inline'>
-                        <div>[[getProperty(setting, 0, "value")]]</div>
-                        <div>[[getProperty(setting, 0, "units")]]</div>
-                        <div>&nbsp;to&nbsp;</div>
-                        <div>[[getProperty(setting, 1, "value")]]</div>
-                        <div>[[getProperty(setting, 1, "units")]]</div>
-                      </div>
-                    </td>
-                  </template>
-                  <template is="dom-if" if="[[!isRange(setting)]]">
-                    <template is='dom-repeat' items="[[getAttributes(setting)]]" as="attr">
-                      <td>
-                        <div class='display-inline'>
-                          <div>[[attr.value]]</div>
-                          <div>[[attr.units]]</div>
-                        </div>
-                      </td>
-                    </template>
                   </template>
                 </template>
-              </tr>
-              <tr class='space-row'>
-                <td></td>
-              </tr>
+              </div>
             </template>
-          </tbody>
-        </table>
+          </div>
+          <div class="space-row"></div>
+        </template>
       </div>
     </ha-card>
   </template>
@@ -196,6 +149,9 @@ Polymer({
     groupEntity: {
       type: Object,
     }
+  },
+  updateSetting: function () {
+
   },
   getProperty: function (setting, index, prop) {
       let val;
@@ -219,12 +175,6 @@ Polymer({
   getParticipation: function (participate) {
       return (participate ? 'green' : 'red');
   },
-  getReset: function (participate, reset) {
-      return (reset ? 'reset-mode' : (participate ? '' : 'display-none'));
-  },
-  getDropdown: function (participate) {
-      return (participate ? '' : 'display-none');
-  },
   getDataDevices: function(obj){
     return Object.keys(obj.attributes.devices).map((key) => {
       const device = obj.attributes.devices[key];
@@ -232,121 +182,6 @@ Polymer({
 
       return device;
     });
-  },
-  convertFlexibility: function (item) {
-    let selection = 0; // high
-
-    if (item.hasOwnProperty('flexibility'))
-    {
-      switch (item.flexibility)
-      {
-        case 'low':
-        {
-          selection = 2;
-          break;
-        }
-        case 'medium':
-        {
-          selection = 1;
-          break;
-        }
-        default:
-        {
-          // selection already is 0
-        }
-      }
-    }
-
-    return selection;
-  },
-  doReset: function (ev) {
-    if (ev.target)
-    {
-      const device = ev.target.dataDevice;
-
-      const updateObj = [{ 
-        'device': device, 
-        'target': 'participate', 
-        'value': false 
-      },
-      { 
-        'device': device, 
-        'target': 'reset', 
-        'value': true 
-      }];
-
-      this.callServiceHelper('update_connected_device', updateObj);
-    }
-  },
-  confirmReset: function (ev) {
-    if (ev.target)
-    {
-      if (!ev.target.dataReset)
-      {
-        const device = ev.target.dataDevice;
-        const dialogName = `#reset-${device}`;
-        this.$$(dialogName).open();
-      }
-    }
-  },
-  transactiveChanged: function (ev) {
-    if (ev.target)
-    {
-      const newValue = ev.target.checked;
-      const device = ev.target.dataDevice;
-
-      if (newValue)
-      { 
-        console.log('transactive changed: ' + newValue);
-        
-        const updateObj = [{ 
-          'device': device,
-          'target': 'participate',
-          'value': newValue 
-        },
-        { 
-          'device': device,
-          'target': 'reset',
-          'value': false 
-        }];
-
-        this.callServiceHelper('update_connected_device', updateObj);
-      }
-      else
-      {
-        ev.target.checked = true;
-        this.$$(`#toggle-${device}`).open();
-      }
-    }
-  },
-  turnTransactiveOff: function (ev) {
-    const device = ev.target.dataDevice;
-
-    const updateObj = [{ 
-      'device': device,
-      'target': 'participate',
-      'value': false 
-    }];
-    
-    this.callServiceHelper('update_connected_device', updateObj);
-  },
-  changeFlexibility: function (ev) {
-    const device = ev.currentTarget.dataDevice;
-
-    const stateDevice = this.stateObj.attributes.devices[device];
-
-    const value = ev.currentTarget.value;
-
-    if (value && value !== stateDevice.flexibility)
-    {
-      const updateObj = [{ 
-        'device': device,
-        'target': 'flexibility',
-        'value': value 
-      }];
-      
-      this.callServiceHelper('update_connected_device', updateObj);
-    }
   },
   callServiceHelper: function (service, data) {
     if (this.hass)

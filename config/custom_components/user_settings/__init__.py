@@ -185,11 +185,11 @@ class UserSettingsComponent(Entity):
                             "attributes": [
                                 {
                                     "type": "time",
-                                    "value": "7:00 A.M."
+                                    "value": "2017-10-24T10:00:00-07:00"
                                 },
                                 {
                                     "type": "time",
-                                    "value": "9:00 P.M."
+                                    "value": "2017-10-24T17:00:00-07:00"
                                 }
                             ]
                         }           
@@ -205,12 +205,12 @@ class UserSettingsComponent(Entity):
                                 {
                                     "name": "start",
                                     "type": "time",
-                                    "value": "20:00 P.M."
+                                    "value": "2017-10-24T10:00:00-07:00"
                                 },
                                 {
                                     "name": "end",
                                     "type": "time",
-                                    "value": "7:00 A.M."
+                                    "value": "2017-10-24T14:00:00-07:00"
                                 }
                             ]
                         }       
