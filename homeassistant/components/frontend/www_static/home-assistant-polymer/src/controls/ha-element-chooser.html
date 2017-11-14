@@ -28,21 +28,19 @@
         <div>
           <ha-time-select 
             hass="[[hass]]"
-            state_obj="[[stateObj]]"
+            state_obj="[[state_obj]]"
             update_method="[[item_update_method]]"
             time_value="[[item_value]]"
-            item_prop="0"
-            item_label=""
+            device_name="[[device_name]]"
+            setting_name="[[setting_name]]"
+            attr_name="[[attr_name]]"
           ></ha-time-select>
         </div>
       </template>
       <template is="dom-if" if="[[isNumber()]]">
         <div>
           <paper-input 
-            id="0"
             label=""
-            data-prop="0"
-            data-listprop="value"
             type="number"
             on-change="updateSetting" 
             value="[[item_value]]" 
@@ -75,43 +73,17 @@ Polymer({
     item_units: {
       type: String
     },
+    device_name: {
+      type: String
+    },
+    setting_name: {
+      type: String
+    },
+    attr_name: {
+      type: String
+    },
     item_update_method: {
       type: String
-    },
-    groupEntity: {
-      type: Object,
-    },
-    useLabel: {
-      type: String,
-      value: "Use This Outlook"
-    },
-    notUseLabel: {
-      type: String,
-      value: "Don't Use This Outlook"
-    },
-    compensation_or_savings: {
-      type: String
-    },
-    background_color: {
-      type: String
-    },
-    update_method: {
-      type: String
-    },
-    update_platform: {
-      type: String
-    },
-    other_method: {
-      type: String
-    },
-    other_platform: {
-      type: String
-    },
-    max_reduction: {
-      type: Number
-    },
-    max_money: {
-      type: Number
     }
   },
   isTime: function () {
@@ -120,5 +92,25 @@ Polymer({
   isNumber: function () {
       return this.item_type === 'number';
   },
+  updateSetting: function (evt) {
+      const newValue = evt.currentTarget.value;
+
+      const updateObj = { 
+        'device': this.device_name,
+        'setting': this.setting_name,
+        'attr': this.attr_name,
+        'value': newValue 
+      };
+        
+      this.callServiceHelper(this.item_update_method, updateObj);
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService(this.state_obj._domain, service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
+  }
 });
 </script>

@@ -96,6 +96,9 @@
                       item_type="[[getProperty(setting, 0, 'type')]]"
                       item_units="[[getProperty(setting, 0, 'units')]]"
                       item_update_method="update_user_settings"
+                      device_name="[[item.name]]"
+                      setting_name="[[setting.name]]"
+                      attr_name="[[getProperty(setting, 0, 'name')]]"
                       hass="[[hass]]"
                       state_obj="[[stateObj]]"
                     >
@@ -106,6 +109,9 @@
                       item_type="[[getProperty(setting, 1, 'type')]]"
                       item_units="[[getProperty(setting, 1, 'units')]]"
                       item_update_method="update_user_settings"
+                      device_name="[[item.name]]"
+                      setting_name="[[setting.name]]"
+                      attr_name="[[getProperty(setting, 1, 'name')]]"
                       hass="[[hass]]"
                       state_obj="[[stateObj]]"
                     >
@@ -120,6 +126,9 @@
                         item_type="[[attr.type]]"
                         item_units="[[attr.units]]"
                         item_update_method="update_user_settings"
+                        device_name="[[item.name]]"
+                        setting_name="[[setting.name]]"
+                        attr_name="[[attr.name]]"
                         hass="[[hass]]"
                         state_obj="[[stateObj]]"
                       >
@@ -172,9 +181,6 @@ Polymer({
   getSettings: function (device) {
       return device.settings;
   },
-  getParticipation: function (participate) {
-      return (participate ? 'green' : 'red');
-  },
   getDataDevices: function(obj){
     return Object.keys(obj.attributes.devices).map((key) => {
       const device = obj.attributes.devices[key];
@@ -186,10 +192,10 @@ Polymer({
   callServiceHelper: function (service, data) {
     if (this.hass)
     {      
-      this.hass.callService('connected_devices', service, { value: data})
+      this.hass.callService('user_settings', service, { value: data})
         .then(function () {
         }.bind(this));
     }
-  },
+  }
 });
 </script>
