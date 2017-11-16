@@ -5,6 +5,9 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
 <link rel='import' href='../controls/ha-element-chooser.html'>
 <link rel='import' href='../controls/ha-time-select.html'>
 
@@ -73,71 +76,101 @@
       .setting-label {
         line-height: 62px;
       }
+      .user-settings paper-icon-button {
+        color: gray;
+      }
     </style>
 
-    <ha-card class='connected-devices'>
+    <ha-card class='user-settings'>
       <div class='header domain'>
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
       </div>
       <div class='data-table'>
-        <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
         <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
           <div class='device-name'><i>[[item.name]]</i></div>
           <div class='display-inline'>
             <template is='dom-repeat' items="[[getSettings(item)]]" as="setting">
-              <div class='display-inline'>
-                <div class="setting-label">
-                  <div>[[setting.label]]:</div>
-                </div>
+              <div class="display-inline">
                 <template is="dom-if" if="[[isRange(setting)]]">
-                  <div class='display-inline'>
-                    <ha-element-chooser
-                      item_value="[[getProperty(setting, 0, 'value')]]"
-                      item_type="[[getProperty(setting, 0, 'type')]]"
-                      item_units="[[getProperty(setting, 0, 'units')]]"
-                      item_update_method="update_user_settings"
-                      device_name="[[item.name]]"
-                      setting_name="[[setting.name]]"
-                      attr_name="[[getProperty(setting, 0, 'name')]]"
-                      hass="[[hass]]"
-                      state_obj="[[stateObj]]"
-                    >
-                    </ha-element-chooser>
-                    <div>&nbsp;to&nbsp;</div>
-                    <ha-element-chooser
-                      item_value="[[getProperty(setting, 1, 'value')]]"
-                      item_type="[[getProperty(setting, 1, 'type')]]"
-                      item_units="[[getProperty(setting, 1, 'units')]]"
-                      item_update_method="update_user_settings"
-                      device_name="[[item.name]]"
-                      setting_name="[[setting.name]]"
-                      attr_name="[[getProperty(setting, 1, 'name')]]"
-                      hass="[[hass]]"
-                      state_obj="[[stateObj]]"
-                    >
-                    </ha-element-chooser>
-                  </div>
+                  <span class="setting-label">[[setting.label]]: </span>
+                  <span>[[getPropertyByType(setting, 0, 'value')]]</span>
+                  <span>[[getProperty(setting, 0, 'units')]]</span>
+                  <span>&nbsp;to&nbsp;</span>
+                  <span>[[getPropertyByType(setting, 1, 'value')]]</span>
+                  <span>[[getProperty(setting, 1, 'units')]]</span>
                 </template>
                 <template is="dom-if" if="[[!isRange(setting)]]">
+                  <span class="setting-label">[[setting.label]]: </span>
                   <template is='dom-repeat' items="[[getAttributes(setting)]]" as="attr">
+                    <span>[[getValueByType(attr.value, attr.type)]]</span>
+                    <span>[[attr.units]]</span>
+                  </template>
+                </template>
+              </div>
+            </template>
+            <paper-icon-button
+              mini 
+              icon="mdi:pencil"
+              data-setting="[[getId(item.name)]]"
+              on-click="editSetting"
+            ></i></paper-icon-button>
+            <paper-dialog id="[[getId(item.name)]]" class="popup">
+              <h3>Change settings for: [[item.name]]</h3>
+              <div class='display-inline'>
+                <template is='dom-repeat' items="[[getSettings(item)]]" as="setting">
+                  <div class="setting-label">
+                    <div>[[setting.label]]:</div>
+                  </div>
+                  <template is="dom-if" if="[[isRange(setting)]]">
                     <div class='display-inline'>
                       <ha-element-chooser
-                        item_value="[[attr.value]]"
-                        item_type="[[attr.type]]"
-                        item_units="[[attr.units]]"
+                        item_value="[[getProperty(setting, 0, 'value')]]"
+                        item_type="[[getProperty(setting, 0, 'type')]]"
+                        item_units="[[getProperty(setting, 0, 'units')]]"
                         item_update_method="update_user_settings"
                         device_name="[[item.name]]"
                         setting_name="[[setting.name]]"
-                        attr_name="[[attr.name]]"
+                        attr_name="[[getProperty(setting, 0, 'name')]]"
+                        hass="[[hass]]"
+                        state_obj="[[stateObj]]"
+                      >
+                      </ha-element-chooser>
+                      <div>&nbsp;to&nbsp;</div>
+                      <ha-element-chooser
+                        item_value="[[getProperty(setting, 1, 'value')]]"
+                        item_type="[[getProperty(setting, 1, 'type')]]"
+                        item_units="[[getProperty(setting, 1, 'units')]]"
+                        item_update_method="update_user_settings"
+                        device_name="[[item.name]]"
+                        setting_name="[[setting.name]]"
+                        attr_name="[[getProperty(setting, 1, 'name')]]"
                         hass="[[hass]]"
                         state_obj="[[stateObj]]"
                       >
                       </ha-element-chooser>
                     </div>
                   </template>
+                  <template is="dom-if" if="[[!isRange(setting)]]">
+                    <template is='dom-repeat' items="[[getAttributes(setting)]]" as="attr">
+                      <div class='display-inline'>
+                        <ha-element-chooser
+                          item_value="[[attr.value]]"
+                          item_type="[[attr.type]]"
+                          item_units="[[attr.units]]"
+                          item_update_method="update_user_settings"
+                          device_name="[[item.name]]"
+                          setting_name="[[setting.name]]"
+                          attr_name="[[attr.name]]"
+                          hass="[[hass]]"
+                          state_obj="[[stateObj]]"
+                        >
+                        </ha-element-chooser>
+                      </div>
+                    </template>
+                  </template>
                 </template>
               </div>
-            </template>
+            </paper-dialog>
           </div>
           <div class="space-row"></div>
         </template>
@@ -159,8 +192,29 @@ Polymer({
       type: Object,
     }
   },
-  updateSetting: function () {
+  getId: function (name) {
+    return name.replace(/ /g, '_').toLowerCase();
+  },
+  getValueByType: function (value, type) {
+      let val = value;
 
+      if (type === 'time')
+      {
+          val = moment(value).format("h:mm A");
+      }
+
+      return val;
+  },
+  getPropertyByType: function (setting, index, prop) {
+      let val;
+
+      if (setting.attributes && setting.attributes.length)
+      {
+        val = setting.attributes[index][prop];
+        val = this.getValueByType(val, setting.attributes[index].type);
+      }
+
+      return val;
   },
   getProperty: function (setting, index, prop) {
       let val;
@@ -188,6 +242,14 @@ Polymer({
 
       return device;
     });
+  },
+  editSetting: function (ev) {
+    if (ev.target)
+    {
+      const setting = ev.target.dataSetting;
+      const dialogName = `#${setting}`;
+      this.$$(dialogName).open();
+    }
   },
   callServiceHelper: function (service, data) {
     if (this.hass)
