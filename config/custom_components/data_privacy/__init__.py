@@ -92,15 +92,15 @@ class DataPrivacyComponent(Entity):
             "privacy_options": [
                 { 
                     "key": "no_external",
-                    "label": "No external connections allowed."
+                    "label": "No external connections allowed. (most private)"
                 },
                 { 
                     "key": "vendor_updates",
-                    "label": "Allow vendors to push updates without sharing data."
+                    "label": "Allow vendors to update your devices, but not share your data."
                 },
                 { 
                     "key": "allow_control",
-                    "label": "Allow technicians and utilities to control devices for remote setup, diagnostics, and override."
+                    "label": "Allow technicians and utilities to control devices for remote setup, diagnostics, and override. (least private)"
                 }
             ]
         }

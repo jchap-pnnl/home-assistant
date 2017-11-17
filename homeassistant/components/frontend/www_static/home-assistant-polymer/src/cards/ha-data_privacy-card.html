@@ -11,10 +11,6 @@
     <style is="custom-style" include="iron-flex"></style>
     <style>
       
-      td, th {
-        padding-right: 8px;
-      }
-      
       .header {
         @apply(--paper-font-headline);
         /* overwriting line-height +8 because entity-toggle can be 40px height,
@@ -39,6 +35,24 @@
       tr {
         cursor: pointer;
       }
+      .content {
+        padding: 4px 30px 30px;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td {
+        padding: 10px;
+      }
+      .description {
+        color: dimgray;
+        font-size: 16px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+      }
+      iron-icon {
+        color: green;
+      }
     </style>
 
     <ha-card class='data-privacy'>
@@ -46,14 +60,16 @@
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
       </div>
       <div class="content">
+        <div class="description">Choose the privacy setting you want applied to your Connected Homes network.</div>
         <table>
           <template is='dom-repeat' items="[[getSettings(stateObj)]]">
             <tr 
               data-setting="[[item.key]]"
-              on-click="updateSetting">
+              on-click="updateSetting"
+            >
               <td>
-                <div hidden$=[[getVisible(item)]]>
-                  <iron-icon icon="mdi:triangle"></iron-icon>
+                <div style$=[[getVisible(item)]]>
+                  <iron-icon icon="mdi:check"></iron-icon>
                 </div>
               </td>
               <td>[[item.label]]</td>
@@ -79,7 +95,14 @@ Polymer({
       return obj.attributes.privacy_options;
   },
   getVisible: function (item) {
-      return item.key !== this.stateObj.attributes.privacy_setting;
+      let style = "visibility: visible";
+
+      if (item.key !== this.stateObj.attributes.privacy_setting)
+      {
+        style = "visibility: hidden";
+      }
+
+      return style;
   },
   updateSetting: function (evt) {
       const newValue = evt.currentTarget.dataSetting;
