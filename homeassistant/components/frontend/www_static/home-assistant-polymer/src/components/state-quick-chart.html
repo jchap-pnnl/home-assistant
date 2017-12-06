@@ -238,7 +238,7 @@
           .style("color", "white")
           .style("padding", "10px")
           .style("width", "120px")
-          .style("height", "60px");
+          .style("height", "160px");
 
         var formatTime = d3.timeFormat("%e %B");
 
@@ -283,7 +283,7 @@
                 .duration(200)
                 .style("opacity", .9);
 
-              tool_tip.html(that.getTooltipMessage(d))
+              tool_tip.html(that.getTooltipMessage(d[index]))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
                 
@@ -307,7 +307,7 @@
                 .duration(200)
                 .style("opacity", .9);
 
-              tool_tip.html(that.getTooltipMessage(d))
+              tool_tip.html(that.getTooltipMessage(d[index]))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
 
@@ -361,7 +361,7 @@
       // this.dataGenerator(this.chartData);
     },
     getTooltipMessage: function (d) {
-        return ("Outlook of 07/21<br/>Energy use: 50 kWh<br/>Energy cost: $5<br/>Energy savings: $2");
+        return ("Outlook of 07/21<br/>Energy use: 50 kWh<br/>Energy cost: $5<br/>Energy savings: $2" + "<br/><br/>date: " + d.date + "<br/>historical: " + d.historical + "<br/>transactive: " + d.transactive + "<br/>actual" + d.actual);
     },
     updateData: function (chartSeries, timeperiod) {
 
