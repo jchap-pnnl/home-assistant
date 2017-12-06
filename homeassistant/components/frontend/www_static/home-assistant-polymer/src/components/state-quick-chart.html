@@ -1,14 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <script src="http://d3js.org/d3.v4.js"></script>
 <script src="../../bower_components/moment/min/moment.min.js"></script>
-
 
 <dom-module id="state-quick-chart">
 
   <template>
-    <style>
+    <style include="paper-material">
         .chart-container {
           padding: 20px;
+          position: relative;
         }
 
         .line {
@@ -17,7 +18,7 @@
           stroke-width: 2px;
         }
     </style>
-    <div class="chart-container">
+    <div id="chart" class="chart-container">
       <div id="outerlegend">
          <div class="innerlegend"></div>
       </div>
@@ -96,7 +97,7 @@
     setDimensions: function () {
       if (this.chartType)
       {
-        this.margin = {top: 20, right: 40, bottom: 30, left: 20};
+        this.margin = {top: 20, right: 80, bottom: 30, left: 20};
         this.chartWidth = this.cardWidth - this.margin.left - this.margin.right;
         this.chartHeight = this.cardWidth - this.margin.top - this.margin.bottom;
       }
@@ -132,7 +133,7 @@
         .append("g")
           .attr("class", "svg-g")
           .attr("transform",
-                "translate(0," + this.margin.top + ")");
+                "translate(40," + this.margin.top + ")");
 
         // set the ranges
         this.lineX = d3.scaleTime().range([0, this.chartWidth]);
@@ -221,20 +222,25 @@
 
       series.reverse().forEach((key, index) => { 
 
-        // var tip = d3.tip()
-        //     .attr('class', 'd3-tip')
-        //     .offset([-10, 0])
-        //     .html(function(d) {
-        //       return "<strong>" + key + ":</strong> <span style='color:red'>" + d[key] + "</span>";
-        //     })
+        var tool_tip = d3.select("body").append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0)
+          .style("position", "absolute")
+          .style("text-align", "left")
+          .style("width", "60px")
+          .style("height", "28px")
+          .style("padding", "2px")
+          .style("font", "12px sans-serif")
+          .style("background", "blue")
+          .style("border", "0px")
+          .style("border-radius", "2px")
+          .style("pointer-events", "none")
+          .style("color", "white")
+          .style("padding", "10px")
+          .style("width", "120px")
+          .style("height", "60px");
 
-        //   svg.call(tip);
-
-          // var tool_tip = d3.tip()
-          //   .attr("class", "d3-tip")
-          //   .offset([-8, 0])
-          //   .html(function(d) { return "Radius: " + d; });
-          // svg.call(tool_tip);
+        var formatTime = d3.timeFormat("%e %B");
 
         const drawLine = d3.line()
           .x(function(d) { 
@@ -270,7 +276,23 @@
             .attr("class", `line ${key}`)
             .style("stroke", color)
             .style("stroke-dasharray", "6,4")
-            .attr("d", drawLine);
+            .attr("d", drawLine)
+            .on("mouseover", function(d) {
+
+              tool_tip.transition()
+                .duration(200)
+                .style("opacity", .9);
+
+              tool_tip.html(that.getTooltipMessage(d))
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+                
+               })
+             .on("mouseout", function(d) {
+               tool_tip.transition()
+                 .duration(500)
+                 .style("opacity", 0);
+               });
         }
         else
         {
@@ -278,21 +300,68 @@
             .append("path")
             .attr("class", `line ${key}`)
             .style("stroke", color)
-            .attr("d", drawLine);
-            // .on('mouseover', tool_tip.show)
-            // .on('mouseout', tool_tip.hide);
+            .attr("d", drawLine)
+            .on("mouseover", function(d) {
+
+              tool_tip.transition()
+                .duration(200)
+                .style("opacity", .9);
+
+              tool_tip.html(that.getTooltipMessage(d))
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+
+               })
+             .on("mouseout", function(d) {
+               tool_tip.transition()
+                 .duration(500)
+                 .style("opacity", 0);
+               });
         }
 
         selection.exit().remove();
-            
       });
       
+      var vertical = d3.select(this.$.chart)
+        .append("div")
+        .attr("class", "remove")
+        .style("position", "absolute")
+        .style("z-index", "9")
+        .style("width", "1px")
+        .style("height", this.chartHeight + "px")
+        .style("top", "50px")
+        .style("bottom", "10px")
+        .style("left", "0px")
+        .style("background", "gray")
+        .style("opacity", "0")
+        .style("transform",
+          "translateY(20px)");
+
+      d3.select(this.$.chart)
+        .on("mousemove", function(){  
+          let mousex = d3.mouse(this);
+          mousex = mousex[0] + 2;
+          vertical.style("left", mousex + "px" );
+        })
+        .on("mouseover", function() {  
+          let mousex = d3.mouse(this);
+          mousex = mousex[0] + 2;
+          vertical.style("left", mousex + "px");
+          vertical.style("opacity", "1");
+        })
+        .on("mouseout", function () {
+          vertical.style("opacity", "0");
+        });
+
       // if (this.chartData)
       // {
       //   this.chartData = this.updateData(this.chartData, 'days');
       // }
       
       // this.dataGenerator(this.chartData);
+    },
+    getTooltipMessage: function (d) {
+        return ("Outlook of 07/21<br/>Energy use: 50 kWh<br/>Energy cost: $5<br/>Energy savings: $2");
     },
     updateData: function (chartSeries, timeperiod) {
 

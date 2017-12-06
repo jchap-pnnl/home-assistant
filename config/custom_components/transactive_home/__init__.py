@@ -134,17 +134,17 @@ class TransactiveComponent(Entity):
                         "time-format": "MM/DD",
                         "series": {
                             "historical": {
-                                "points": [ 3, 4, 6, 6, 7, 9, 11, 13, 16, 17 ],
+                                "points": [ 66, 119, 176, 237, 282, 329, 381, 439, 499, 554 ],
                                 "color": "#696969",
                                 "line-style": "dash"
                             },
                             "actual": {
-                                "points": [ 4, 5, 7, 8, None, None, None, None, None, None ],
+                                "points": [ 41, 93, 140, 188, None, None, None, None, None, None ],
                                 "color": "#FF7F50",
                                 "line-style": ""
                             },
                             "transactive": {
-                                "points": [ 4, 5, 7, 8, 8, 8, 9, 9, 10, 12 ],
+                                "points": [ 48, 94, 135, 183, 239, 294, 344, 392, 454, 509 ],
                                 "color": "ForestGreen",
                                 "line-style": "dash"
                             }
