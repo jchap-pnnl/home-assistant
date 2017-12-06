@@ -32,5 +32,5 @@ class UserSettingsPlatform(UserSettingsComponent):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'User Settings'
+        return 'Device Settings'
 

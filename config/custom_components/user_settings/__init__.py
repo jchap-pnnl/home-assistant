@@ -46,7 +46,7 @@ def setup(hass, config):
         target_attr = update_obj["attr"]
         update_value = update_obj["value"]
 
-        user_settings = hass.states.get('user_settings.user_settings').as_dict()
+        user_settings = hass.states.get('user_settings.device_settings').as_dict()
 
         _LOGGER.info("updating user settings: %s", user_settings)
         
@@ -75,7 +75,7 @@ def setup(hass, config):
 
         _LOGGER.info("after update: %s", attributes)
 
-        hass.states.set('user_settings.user_settings', 'On', attributes, True)
+        hass.states.set('user_settings.device_settings', 'On', attributes, True)
 
     hass.services.register(
         DOMAIN,
@@ -97,7 +97,7 @@ class UserSettingsComponent(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'User Settings'
+        return 'Device Settings'
 
     @property
     def state(self):

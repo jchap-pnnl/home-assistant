@@ -41,7 +41,7 @@ def setup(hass, config):
 
         _LOGGER.info("update object: %s", update_obj)
 
-        advanced_settings = hass.states.get('advanced_settings.advanced_settings').as_dict()
+        advanced_settings = hass.states.get('advanced_settings.utility_settings').as_dict()
         attributes = advanced_settings["attributes"]
 
         update_value = update_obj["value"]
@@ -74,9 +74,9 @@ def setup(hass, config):
         else:
             attributes[target] = update_value
 
-        hass.states.set('advanced_settings.advanced_settings', 'On', attributes, True)
+        hass.states.set('advanced_settings.utility_settings', 'On', attributes, True)
 
-        _LOGGER.info("advanced settings after update: %s", hass.states.get('advanced_settings.advanced_settings'))
+        _LOGGER.info("advanced settings after update: %s", hass.states.get('advanced_settings.utility_settings'))
 
     hass.services.register(
         DOMAIN,

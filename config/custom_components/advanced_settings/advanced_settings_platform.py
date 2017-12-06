@@ -32,7 +32,7 @@ class AdvancedSettingsPlatform(AdvancedSettingsComponent):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'Advanced Settings'
+        return 'Utility Settings'
 
     def set_advanced_settings(self: AdvancedSettingsComponent, new_value):
         _LOGGER.info("In component set_advanced_settings method")
