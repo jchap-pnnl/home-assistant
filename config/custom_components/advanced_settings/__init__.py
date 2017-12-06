@@ -144,19 +144,19 @@ class AdvancedSettingsComponent(Entity):
                         "startTime": "2017-10-24T10:00:00-07:00",
                         "endTime": "2017-10-24T14:00:00-07:00",
                         "value": 15,
-                        "units": "cents per"
+                        "units": "cents per kWh"
                     },
                     {
                         "startTime": "2017-10-24T14:00:00-07:00",
                         "endTime": "2017-10-24T20:00:00-07:00",
                         "value": 35,
-                        "units": "cents per"
+                        "units": "cents per kWh"
                     },
                     {
                         "startTime": "2017-10-24T20:00:00-07:00",
                         "endTime": "2017-10-24T09:00:00-07:00",
                         "value": 10,
-                        "units": "cents per"
+                        "units": "cents per kWh"
                     },
                 ]
             }
