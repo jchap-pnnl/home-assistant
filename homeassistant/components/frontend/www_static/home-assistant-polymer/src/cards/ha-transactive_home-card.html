@@ -173,7 +173,8 @@
         ></paper-fab>
         <div class='data-chart' hidden$="{{hidden}}">
           <state-charts-container
-            state-obj="[[stateObj]]">
+            state-obj="[[stateObj]]"
+            card_width="[[cardWidth]]">
           </state-charts-container>
         </div>
       </div>
@@ -210,7 +211,18 @@ Polymer({
     progressMessage: {
       type: String,
       computed: 'getProgressMessage(stateObj)'
+    },
+    cardWidth: {
+      type: Number
     }
+  },
+  ready: function() {
+      try {
+        this.cardWidth = this.getClientRects()[1].width;
+      }
+      catch(e) {
+
+      }
   },
   getPercentSavings: function (obj) {
       const lastYear = obj.attributes.progress_bar.last_year;

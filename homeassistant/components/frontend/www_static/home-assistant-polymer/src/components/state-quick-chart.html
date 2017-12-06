@@ -85,6 +85,10 @@
         value: {},
         observer: 'dataChanged'
       },
+      cardWidth: {
+        type: Number,
+        value: 400
+      }
     },
     ready: function() {
       // this.setUpChart();
@@ -92,9 +96,9 @@
     setDimensions: function () {
       if (this.chartType)
       {
-        this.margin = {top: 20, right: 20, bottom: 30, left: 50};
-        this.chartWidth = 400 - this.margin.left - this.margin.right;
-        this.chartHeight = 400 - this.margin.top - this.margin.bottom;
+        this.margin = {top: 20, right: 40, bottom: 30, left: 20};
+        this.chartWidth = this.cardWidth - this.margin.left - this.margin.right;
+        this.chartHeight = this.cardWidth - this.margin.top - this.margin.bottom;
       }
     },
     dataChanged: function (chartData) {
@@ -128,7 +132,7 @@
         .append("g")
           .attr("class", "svg-g")
           .attr("transform",
-                "translate(" + this.margin.left + "," + this.margin.top + ")");
+                "translate(0," + this.margin.top + ")");
 
         // set the ranges
         this.lineX = d3.scaleTime().range([0, this.chartWidth]);
@@ -333,10 +337,10 @@
         .append("g")
           .attr("class", "svg-g")
           .attr("transform",
-                "translate(" + this.margin.left + "," + this.margin.top + ")");
+                "translate(0," + this.margin.top + ")");
 
       this.barX = d3.scaleBand()
-          .rangeRound([0, this.chartWidth])
+          .rangeRound([0, this.chartWidth]);
 
       this.barY = d3.scaleLinear()
           .rangeRound([this.chartHeight, 0]);

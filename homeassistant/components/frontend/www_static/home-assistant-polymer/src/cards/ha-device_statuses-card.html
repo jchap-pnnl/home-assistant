@@ -46,14 +46,15 @@
 
     </style>
 
-    <ha-card class='device-statuses'>
+    <ha-card id='deviceStatusesCard' class='device-statuses'>
       <div class='header domain'>
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
       </div>
       <div class='data-chart'>
         <state-charts-container
           state-obj="[[stateObj]]"
-          hass="[[hass]]">
+          hass="[[hass]]"
+          card_width="[[cardWidth]]">
         </state-charts-container>
       </div>
     </ha-card>
@@ -71,7 +72,18 @@ Polymer({
     },
     groupEntity: {
       type: Object,
+    },
+    cardWidth: {
+      type: Number
     }
   },
+  ready: function() {
+      try {
+        this.cardWidth = this.getClientRects()[1].width;
+      }
+      catch(e) {
+
+      }
+  }
 });
 </script>

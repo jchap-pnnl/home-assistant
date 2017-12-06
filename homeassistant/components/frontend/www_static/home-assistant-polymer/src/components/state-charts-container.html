@@ -39,7 +39,8 @@
           chart-label="[[item.label]]"
           chart-id="[[item.id]]"
           update-method="[[item.updateMethod]]"
-          component-name="[[stateObj._domain]]">
+          component-name="[[stateObj._domain]]"
+          card-width="[[card_width]]">
         </state-quick-chart>
       </template>
     </template>
@@ -62,6 +63,10 @@ Polymer({
       value: false
       // computed: '_computeIsLoading(isLoadingData, _apiLoaded)',
     },
+    card_width: {
+      type: Number,
+      value: 400
+    }
   },
 
   getChartSeries: function (obj) {
