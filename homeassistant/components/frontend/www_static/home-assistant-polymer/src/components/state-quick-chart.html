@@ -22,7 +22,9 @@
       <div id="outerlegend">
          <div class="innerlegend"></div>
       </div>
-      <svg id="svg"></svg>
+      <div id="chartWrapper">
+          <svg id="svg"></svg>
+      </div>
     </div>
 
   </template>
@@ -89,6 +91,10 @@
       cardWidth: {
         type: Number,
         value: 400
+      },
+      aggregation: {
+        type: Boolean,
+        value: false
       }
     },
     ready: function() {
@@ -132,6 +138,7 @@
           .attr("height", this.chartHeight + this.margin.top + this.margin.bottom)
         .append("g")
           .attr("class", "svg-g")
+          .attr("id", "svgg")
           .attr("transform",
                 "translate(40," + this.margin.top + ")");
 
@@ -222,24 +229,6 @@
 
       series.reverse().forEach((key, index) => { 
 
-        var tool_tip = d3.select("body").append("div")
-          .attr("class", "tooltip")
-          .style("opacity", 0)
-          .style("position", "absolute")
-          .style("text-align", "left")
-          .style("width", "60px")
-          .style("height", "28px")
-          .style("padding", "2px")
-          .style("font", "12px sans-serif")
-          .style("background", "blue")
-          .style("border", "0px")
-          .style("border-radius", "2px")
-          .style("pointer-events", "none")
-          .style("color", "white")
-          .style("padding", "10px")
-          .style("width", "120px")
-          .style("height", "160px");
-
         var formatTime = d3.timeFormat("%e %B");
 
         const drawLine = d3.line()
@@ -269,60 +258,25 @@
           .data([data])
           .attr("d", drawLine);
 
+        const ent = selection.enter()
+          .append("path")
+          .attr("class", `line ${key}`)
+          .style("stroke", color)
+          .attr("d", drawLine);
+
         if (lineStyle && lineStyle === 'dash')
         {
-          selection.enter()
-            .append("path")
-            .attr("class", `line ${key}`)
-            .style("stroke", color)
-            .style("stroke-dasharray", "6,4")
-            .attr("d", drawLine)
-            .on("mouseover", function(d) {
-
-              tool_tip.transition()
-                .duration(200)
-                .style("opacity", .9);
-
-              tool_tip.html(that.getTooltipMessage(d[index]))
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-                
-               })
-             .on("mouseout", function(d) {
-               tool_tip.transition()
-                 .duration(500)
-                 .style("opacity", 0);
-               });
+          ent.style("stroke-dasharray", "6,4");
         }
-        else
+        else if (lineStyle && lineStyle === 'dot')
         {
-          selection.enter()
-            .append("path")
-            .attr("class", `line ${key}`)
-            .style("stroke", color)
-            .attr("d", drawLine)
-            .on("mouseover", function(d) {
-
-              tool_tip.transition()
-                .duration(200)
-                .style("opacity", .9);
-
-              tool_tip.html(that.getTooltipMessage(d[index]))
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-
-               })
-             .on("mouseout", function(d) {
-               tool_tip.transition()
-                 .duration(500)
-                 .style("opacity", 0);
-               });
+          ent.style("stroke-dasharray", "2,2");
         }
-
+        
         selection.exit().remove();
       });
       
-      var vertical = d3.select(this.$.chart)
+      var vertical = d3.select(this.$.chartWrapper)
         .append("div")
         .attr("class", "remove")
         .style("position", "absolute")
@@ -353,6 +307,68 @@
           vertical.style("opacity", "0");
         });
 
+      var tool_tip = d3.select("body").append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0)
+          .style("position", "absolute")
+          .style("text-align", "left")
+          .style("width", "60px")
+          .style("height", "28px")
+          .style("padding", "2px")
+          .style("font", "12px sans-serif")
+          .style("background", "#eeeeee")
+          .style("border", "0px")
+          .style("border-radius", "2px")
+          .style("pointer-events", "none")
+          .style("color", "black")
+          .style("padding", "10px")
+          .style("width", "120px")
+          .style("height", "120px")
+          .style("box-shadow", "2px 2px 2px 1px rgba(0, 0, 0, .2)");
+
+      // Gridline
+      var gridlines = d3.axisBottom()
+          .tickFormat("")
+          .tickSize(this.chartHeight)
+          .scale(this.lineX);
+
+      svg.append("g")
+        .attr("class", "grid")
+        .call(gridlines)
+          .attr("stroke-width", "8px")
+          .attr("class", "vertical-grid")
+          .attr("opacity", "0")
+          .on("mouseover", function() {
+
+            let mousex = d3.mouse(this);
+            console.log(mousex);
+            var invertedx = that.lineX.invert(mousex[0]);
+            console.log(invertedx);
+
+            const xDate = moment(invertedx).format('MM/DD');
+
+            tool_tip.transition()
+              .duration(200)
+              .style("opacity", .9);
+
+            tool_tip.html(that.getTooltipMessage(data, xDate))
+              .style("left", (d3.event.pageX) + "px")
+              .style("top", (d3.event.pageY - 28) + "px");
+              
+             })
+           .on("mouseout", function() {
+             tool_tip.transition()
+               .duration(500)
+               .style("opacity", 0);
+             });
+
+      svg.append("g")
+        .attr("class", "light-grid")
+        .call(gridlines)
+          .attr("stroke-width", "1px")
+          .attr("opacity", ".2")
+          .attr("class", "vertical-grid");
+
       // if (this.chartData)
       // {
       //   this.chartData = this.updateData(this.chartData, 'days');
@@ -360,8 +376,25 @@
       
       // this.dataGenerator(this.chartData);
     },
-    getTooltipMessage: function (d) {
-        return ("Outlook of 07/21<br/>Energy use: 50 kWh<br/>Energy cost: $5<br/>Energy savings: $2" + "<br/><br/>date: " + d.date + "<br/>historical: " + d.historical + "<br/>transactive: " + d.transactive + "<br/>actual" + d.actual);
+    getTooltipMessage: function (data, xDate) {
+
+        const d = data.find((datum) => (
+            moment(datum.date).format('MM/DD') === xDate
+        ));
+        
+        let messageInfo = '';
+
+        if (typeof d !== 'undefined')
+        {
+            messageInfo = "<br/>historical: " + d.display.historical + "<br/>transactive: " + d.display.transactive;
+
+            if (d.actual !== null)
+            {
+                messageInfo = messageInfo + "<br/>actual: " + d.display.actual;
+            }
+        }
+
+        return ("Outlook of " + xDate + "<br/>Energy use: 50 kWh<br/>Energy cost: $5<br/>Energy savings: $2" + "<br/>" + messageInfo);
     },
     updateData: function (chartSeries, timeperiod) {
 
@@ -616,9 +649,19 @@
         });
     },
     extractData: function (chartData) {
+      const totals = {};
+
+      if (this.aggregation)
+      {
+          Object.keys(chartData.series).forEach((key) => {
+              totals[key] = 0;
+          });
+      }
+
       const data = chartData.times.map((t, index) => {
           const item = {
-            date: moment(t).toDate()
+            date: moment(t).toDate(),
+            display: {}
           };
 
           Object.keys(chartData.series).forEach((key) => {
@@ -629,6 +672,15 @@
               if (chartData.series[key]['points'][index])
               {
                 item[key] = chartData.series[key]['points'][index];
+
+                item.display[key] = item[key];
+
+                if (this.aggregation)
+                {
+                  totals[key] = totals[key] + item[key];
+
+                  item[key] = totals[key];
+                }
               }
             }
           });

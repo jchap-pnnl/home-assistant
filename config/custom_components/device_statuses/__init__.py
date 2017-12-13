@@ -129,6 +129,7 @@ class DeviceStatusesComponent(Entity):
                             '2017-07-17 23:40:58.368599Z',
                             '2017-07-17 23:41:28.368599Z'
                         ],
+                        "step": 30,
                         "time-format": "h:mm a",
                         "series": {
                             "AC1": { 

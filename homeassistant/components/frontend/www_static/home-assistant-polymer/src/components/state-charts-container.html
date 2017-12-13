@@ -40,7 +40,8 @@
           chart-id="[[item.id]]"
           update-method="[[item.updateMethod]]"
           component-name="[[stateObj._domain]]"
-          card-width="[[card_width]]">
+          card-width="[[card_width]]"
+          aggregation="[[useAggregation]]">
         </state-quick-chart>
       </template>
     </template>
@@ -66,9 +67,20 @@ Polymer({
     card_width: {
       type: Number,
       value: 400
+    },
+    aggregation: {
+      type: String,
+      value: ''
+    },
+    useAggregation: {
+      type: Boolean,
+      computed: 'getAggregation(aggregation)'
     }
   },
-
+  getAggregation: function (aggregation) {
+      const useAggregation = aggregation == 'true';
+      return useAggregation;
+  },
   getChartSeries: function (obj) {
     return obj.attributes.chartSeries;
   },
