@@ -111,10 +111,10 @@
             <paper-icon-button
               mini 
               icon="mdi:pencil"
-              data-setting="[[getId(item.name)]]"
+              data-setting="[[getId(item.key)]]"
               on-click="editSetting"
             ></i></paper-icon-button>
-            <paper-dialog id="[[getId(item.name)]]" class="popup">
+            <paper-dialog id="[[getId(item.key)]]" class="popup">
               <h3>Change settings for: [[item.name]]</h3>
               <div class='display-inline'>
                 <template is='dom-repeat' items="[[getSettings(item)]]" as="setting">
@@ -128,7 +128,7 @@
                         item_type="[[getProperty(setting, 0, 'type')]]"
                         item_units="[[getProperty(setting, 0, 'units')]]"
                         item_update_method="update_user_settings"
-                        device_name="[[item.name]]"
+                        device_name="[[item.key]]"
                         setting_name="[[setting.name]]"
                         attr_name="[[getProperty(setting, 0, 'name')]]"
                         hass="[[hass]]"
@@ -141,7 +141,7 @@
                         item_type="[[getProperty(setting, 1, 'type')]]"
                         item_units="[[getProperty(setting, 1, 'units')]]"
                         item_update_method="update_user_settings"
-                        device_name="[[item.name]]"
+                        device_name="[[item.key]]"
                         setting_name="[[setting.name]]"
                         attr_name="[[getProperty(setting, 1, 'name')]]"
                         hass="[[hass]]"
@@ -158,7 +158,7 @@
                           item_type="[[attr.type]]"
                           item_units="[[attr.units]]"
                           item_update_method="update_user_settings"
-                          device_name="[[item.name]]"
+                          device_name="[[item.key]]"
                           setting_name="[[setting.name]]"
                           attr_name="[[attr.name]]"
                           hass="[[hass]]"
@@ -238,7 +238,7 @@ Polymer({
   getDataDevices: function(obj){
     return Object.keys(obj.attributes.devices).map((key) => {
       const device = obj.attributes.devices[key];
-      device.name = key;
+      device.key = key;
 
       return device;
     });

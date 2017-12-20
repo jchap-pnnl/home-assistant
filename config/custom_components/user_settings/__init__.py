@@ -116,6 +116,7 @@ class UserSettingsComponent(Entity):
         data = {
             "devices": {
                 "AC1":  {
+                    "name": "Air Conditioner living space",
                     "settings": [
                         {
                             "name": "preferred_temperature",
@@ -153,6 +154,7 @@ class UserSettingsComponent(Entity):
                     ]
                 },
                 "AC2": {
+                    "name": "Air Conditioner bedroom",
                     "settings": [
                         {
                             "name": "preferred",
@@ -190,6 +192,7 @@ class UserSettingsComponent(Entity):
                     ]
                 },
                 "WH1": {
+                    "name": "Water Heater",
                     "settings": [
                         {
                             "name": "max",
@@ -225,6 +228,7 @@ class UserSettingsComponent(Entity):
                     ]
                 },
                 "EV": {
+                    "name": "Electric Vehicle",
                     "settings": [
                         {
                             "name": "charging_time",

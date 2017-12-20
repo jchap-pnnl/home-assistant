@@ -181,7 +181,7 @@
             .attr("class", "y-axis")
             .call(d3.axisLeft(this.lineY));
 
-        this.addLegend(series, chartInfo);
+        this.addLegend(series, chartInfo, 'line');
         this.addTooltip(svg);
     },
     updateLineChart: function (data, series, chartInfo) {
@@ -272,8 +272,14 @@
         {
           ent.style("stroke-dasharray", "2,2");
         }
-        
-        selection.exit().remove();
+
+        // svg.selectAll(".dot")
+        //     .data(data)
+        //   .enter().append("circle") // Uses the enter().append() method
+        //     .attr("class", "dot") // Assign a class for styling
+        //     .attr("cx", function(d, i) { return this.lineX(i) })
+        //     .attr("cy", function(d) { return this.lineY(d.y) })
+        //     .attr("r", 5);
       });
       
       var vertical = d3.select(this.$.chartWrapper)
@@ -332,12 +338,42 @@
           .tickSize(this.chartHeight)
           .scale(this.lineX);
 
+      // svg.append("g")
+      //   .attr("class", "grid")
+      //   .call(gridlines)
+      //     .attr("stroke-width", "8px")
+      //     .attr("class", "vertical-grid")
+      //     .attr("opacity", "0")
+      //     .on("mouseover", function() {
+
+      //       let mousex = d3.mouse(this);
+      //       console.log(mousex);
+      //       var invertedx = that.lineX.invert(mousex[0]);
+      //       console.log(invertedx);
+
+      //       const xDate = moment(invertedx).format('MM/DD');
+
+      //       tool_tip.transition()
+      //         .duration(200)
+      //         .style("opacity", .9);
+
+      //       tool_tip.html(that.getTooltipMessage(data, xDate))
+      //         .style("left", (d3.event.pageX) + "px")
+      //         .style("top", (d3.event.pageY - 28) + "px");
+              
+      //        })
+      //      .on("mouseout", function() {
+      //        tool_tip.transition()
+      //          .duration(500)
+      //          .style("opacity", 0);
+      //        });
+
       svg.append("g")
-        .attr("class", "grid")
+        .attr("class", "light-grid")
         .call(gridlines)
-          .attr("stroke-width", "8px")
+          .attr("stroke-width", "1px")
+          .attr("opacity", ".2")
           .attr("class", "vertical-grid")
-          .attr("opacity", "0")
           .on("mouseover", function() {
 
             let mousex = d3.mouse(this);
@@ -361,13 +397,6 @@
                .duration(500)
                .style("opacity", 0);
              });
-
-      svg.append("g")
-        .attr("class", "light-grid")
-        .call(gridlines)
-          .attr("stroke-width", "1px")
-          .attr("opacity", ".2")
-          .attr("class", "vertical-grid");
 
       // if (this.chartData)
       // {
@@ -480,7 +509,7 @@
           .attr("transform", "translate(" + this.chartWidth + ",0)")
           .call(yAxis);
 
-      this.addLegend(series, chartInfo);
+      this.addLegend(series, chartInfo, 'bar');
       this.addTooltip(svg);
     },
     updateBarChart: function (data, series, chartInfo) {
@@ -578,7 +607,7 @@
         .attr("font-size", "12px")
         .attr("font-weight", "bold");
     },
-    addLegend: function (series, chartInfo) {
+    addLegend: function (series, chartInfo, chartType) {
       var lwidth = 500;
       var lheight = 75;
       var svgh = 20;
@@ -609,23 +638,136 @@
       
       var z = d3.scaleOrdinal(d3.schemeCategory20);
 
-      legend.append('rect')
-          .attr("x", 0)
-          .attr("y", 0)
-          .attr("width", 10)
-          .attr("height", 10)
-          .style("fill", function (d, i) {
+      let swatchHeight = 2;
+      let swatchWidth = 16;
+      let swatchY = 4;
 
-            const color = (
-              chartInfo[series[i]].color ? 
-              chartInfo[series[i]].color : 
-              z(i)
-            );
-          return color;
-      });
+      if (chartType === 'bar')
+      {
+          swatchHeight = 10;
+          swatchWidth = 10;
+          swatchY = 0;
+
+          legend.append('rect')
+              .attr("x", 0)
+              .attr("y", swatchY)
+              .attr("width", 10)
+              .attr("height", swatchHeight)
+              .style("fill", function (d, i) {
+
+                const color = (
+                  chartInfo[series[i]].color ? 
+                  chartInfo[series[i]].color : 
+                  z(i)
+                );
+              return color;
+          });
+      }
+      else 
+      {
+          legend.append('defs')
+            .append('pattern')
+              .attr('id', 'dash-pattern')
+              .attr('patternUnits', 'userSpaceOnUse')
+              .attr('width', 8)
+              .attr('height', 4)
+            .append('path')
+              .attr('d', 'M0,-2 l0,10 M8,-2 l0,10')
+              .attr('stroke', '#ffffff')
+              .attr('stroke-width', 4);
+
+            legend.append('pattern')
+              .attr('id', 'dot-pattern')
+              .attr('patternUnits', 'userSpaceOnUse')
+              .attr('width', 4)
+              .attr('height', 4)
+            .append('path')
+              .attr('d', 'M0,0l0,6')
+              .attr('stroke', '#ffffff')
+              .attr('stroke-width', 4);
+
+            legend.append('rect')
+                .attr("x", 0)
+                .attr("y", swatchY)
+                .attr("width", swatchWidth)
+                .attr("height", swatchHeight)
+                .style("fill", function (d, i) {
+
+                  const color = (
+                    chartInfo[series[i]].color ? 
+                    chartInfo[series[i]].color : 
+                    z(i)
+                  );
+                return color;
+            });
+
+            legend.append("rect")
+                .attr("x", 0)
+                .attr("y", swatchY)
+                .attr("width", swatchWidth)
+                .attr("height", swatchHeight)
+                .style("fill", function (d, i) {
+
+                  let color = (
+                    chartInfo[series[i]].color ? 
+                    chartInfo[series[i]].color : 
+                    z(i)
+                  );
+
+                  if (chartInfo[series[i]]['line-style'] === 'dash')
+                  {
+                    color = 'url(#dash-pattern)';
+                  }
+                  else if (chartInfo[series[i]]['line-style'] === 'dot')
+                  {
+                    color = 'url(#dot-pattern)';
+                  }
+
+                return color;
+            });
+      }
+
+      // legend.append('rect')
+      //     .attr("x", 0)
+      //     .attr("y", swatchY)
+      //     .attr("width", 10)
+      //     .attr("height", swatchHeight)
+      //     .style("fill", function (d, i) {
+
+      //       const color = (
+      //         chartInfo[series[i]].color ? 
+      //         chartInfo[series[i]].color : 
+      //         z(i)
+      //       );
+      //     return color;
+      // });
+
+      // legend.append("defs")
+      //   .append("pattern")
+      //     .attr("id", "hash4_4")
+      //     .attr("width", 8)
+      //     .attr("height", 8)
+      //     .attr("patternUnits", "userSpaceOnUse")
+      //     .attr("patternTransform", "rotate(60)")
+      //   .append('rect')
+      //     .attr("x", 0)
+      //     .attr("y", swatchY)
+      //     .attr("width", 10)
+      //     .attr("height", swatchHeight)
+      //     .style("fill", function (d, i) {
+
+      //       const color = (
+      //         chartInfo[series[i]].color ? 
+      //         chartInfo[series[i]].color : 
+      //         z(i)
+      //       );
+      //     return color;
+      // });
+
+      
       
       legend.append('text')
-          .attr("x", 12)
+          .attr("x", swatchWidth + 2)
           .attr("y", 10)
       //.attr("dy", ".35em")
       .text(function (d, i) {
