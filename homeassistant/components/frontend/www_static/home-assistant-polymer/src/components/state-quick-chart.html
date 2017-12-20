@@ -181,8 +181,57 @@
             .attr("class", "y-axis")
             .call(d3.axisLeft(this.lineY));
 
+        var vertical = d3.select(this.$.chartWrapper)
+          .append("div")
+          .attr("class", "remove")
+          .style("position", "absolute")
+          .style("z-index", "9")
+          .style("width", "1px")
+          .style("height", this.chartHeight + "px")
+          .style("top", "50px")
+          .style("bottom", "10px")
+          .style("left", "0px")
+          .style("background", "gray")
+          .style("opacity", "0")
+          .style("transform",
+            "translateY(20px)");
+
+        d3.select(this.$.chart)
+          .on("mousemove", function(){  
+            let mousex = d3.mouse(this);
+            mousex = mousex[0] + 2;
+            vertical.style("left", mousex + "px" );
+          })
+          .on("mouseover", function() {  
+            let mousex = d3.mouse(this);
+            mousex = mousex[0] + 2;
+            vertical.style("left", mousex + "px");
+            vertical.style("opacity", "1");
+          })
+          .on("mouseout", function () {
+            vertical.style("opacity", "0");
+          });
+
+        this.tool_tip = d3.select("body").append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0)
+          .style("position", "absolute")
+          .style("text-align", "left")
+          .style("width", "60px")
+          .style("height", "28px")
+          .style("padding", "2px")
+          .style("font", "12px sans-serif")
+          .style("background", "#eeeeee")
+          .style("border", "0px")
+          .style("border-radius", "2px")
+          .style("pointer-events", "none")
+          .style("color", "black")
+          .style("padding", "10px")
+          .style("width", "120px")
+          .style("height", "120px")
+          .style("box-shadow", "2px 2px 2px 1px rgba(0, 0, 0, .2)");
+
         this.addLegend(series, chartInfo, 'line');
-        this.addTooltip(svg);
     },
     updateLineChart: function (data, series, chartInfo) {
 
@@ -272,71 +321,30 @@
         {
           ent.style("stroke-dasharray", "2,2");
         }
-
-        // svg.selectAll(".dot")
-        //     .data(data)
-        //   .enter().append("circle") // Uses the enter().append() method
-        //     .attr("class", "dot") // Assign a class for styling
-        //     .attr("cx", function(d, i) { return this.lineX(i) })
-        //     .attr("cy", function(d) { return this.lineY(d.y) })
-        //     .attr("r", 5);
       });
       
-      var vertical = d3.select(this.$.chartWrapper)
-        .append("div")
-        .attr("class", "remove")
-        .style("position", "absolute")
-        .style("z-index", "9")
-        .style("width", "1px")
-        .style("height", this.chartHeight + "px")
-        .style("top", "50px")
-        .style("bottom", "10px")
-        .style("left", "0px")
-        .style("background", "gray")
-        .style("opacity", "0")
-        .style("transform",
-          "translateY(20px)");
+      this.updateGridLines(data, svg);
+      
 
-      d3.select(this.$.chart)
-        .on("mousemove", function(){  
-          let mousex = d3.mouse(this);
-          mousex = mousex[0] + 2;
-          vertical.style("left", mousex + "px" );
-        })
-        .on("mouseover", function() {  
-          let mousex = d3.mouse(this);
-          mousex = mousex[0] + 2;
-          vertical.style("left", mousex + "px");
-          vertical.style("opacity", "1");
-        })
-        .on("mouseout", function () {
-          vertical.style("opacity", "0");
-        });
-
-      var tool_tip = d3.select("body").append("div")
-          .attr("class", "tooltip")
-          .style("opacity", 0)
-          .style("position", "absolute")
-          .style("text-align", "left")
-          .style("width", "60px")
-          .style("height", "28px")
-          .style("padding", "2px")
-          .style("font", "12px sans-serif")
-          .style("background", "#eeeeee")
-          .style("border", "0px")
-          .style("border-radius", "2px")
-          .style("pointer-events", "none")
-          .style("color", "black")
-          .style("padding", "10px")
-          .style("width", "120px")
-          .style("height", "120px")
-          .style("box-shadow", "2px 2px 2px 1px rgba(0, 0, 0, .2)");
+      // if (this.chartData)
+      // {
+      //   this.chartData = this.updateData(this.chartData, 'days');
+      // }
+      
+      // this.dataGenerator(this.chartData);
+    },
+    updateGridLines: function (data, svg) {
 
       // Gridline
       var gridlines = d3.axisBottom()
           .tickFormat("")
           .tickSize(this.chartHeight)
           .scale(this.lineX);
+
+      const that = this;
+
+      svg.selectAll(".grid").remove();
+      svg.selectAll(".light-grid").remove();
 
       svg.append("g")
         .attr("class", "grid")
@@ -353,20 +361,20 @@
 
             const xDate = moment(invertedx).format('MM/DD');
 
-            tool_tip.transition()
+            that.tool_tip.transition()
               .duration(200)
               .style("opacity", .9);
 
-            tool_tip.html(that.getTooltipMessage(data, xDate))
+            that.tool_tip.html(that.getTooltipMessage(data, xDate))
               .style("left", (d3.event.pageX) + "px")
               .style("top", (d3.event.pageY - 28) + "px");
               
-             })
-           .on("mouseout", function() {
-             tool_tip.transition()
-               .duration(500)
-               .style("opacity", 0);
-             });
+          })
+          .on("mouseout", function() {
+            that.tool_tip.transition()
+              .duration(500)
+              .style("opacity", 0);
+          });
 
       svg.append("g")
         .attr("class", "light-grid")
@@ -374,36 +382,6 @@
           .attr("stroke-width", "1px")
           .attr("opacity", ".2")
           .attr("class", "vertical-grid");
-          // .on("mouseover", function() {
-
-          //   let mousex = d3.mouse(this);
-          //   console.log(mousex);
-          //   var invertedx = that.lineX.invert(mousex[0]);
-          //   console.log(invertedx);
-
-          //   const xDate = moment(invertedx).format('MM/DD');
-
-          //   tool_tip.transition()
-          //     .duration(200)
-          //     .style("opacity", .9);
-
-          //   tool_tip.html(that.getTooltipMessage(data, xDate))
-          //     .style("left", (d3.event.pageX) + "px")
-          //     .style("top", (d3.event.pageY - 28) + "px");
-              
-          //    })
-          //  .on("mouseout", function() {
-          //    tool_tip.transition()
-          //      .duration(500)
-          //      .style("opacity", 0);
-          //    });
-
-      // if (this.chartData)
-      // {
-      //   this.chartData = this.updateData(this.chartData, 'days');
-      // }
-      
-      // this.dataGenerator(this.chartData);
     },
     getTooltipMessage: function (data, xDate) {
 
@@ -510,7 +488,6 @@
           .call(yAxis);
 
       this.addLegend(series, chartInfo, 'bar');
-      this.addTooltip(svg);
     },
     updateBarChart: function (data, series, chartInfo) {
 
@@ -562,9 +539,6 @@
             return that.barZ(i); 
           });
 
-
-          // .attr("d", drawLine);
-
       const rects = layer.selectAll("rect")
           .data(function(d) { 
             return d; 
@@ -587,25 +561,6 @@
       // }
       
       // this.dataGenerator(this.chartData);
-    },
-    addTooltip: function (svg) {
-      // Prep the tooltip bits, initial display is hidden
-      var tooltip = svg.append("g")
-        .attr("class", "tooltip")
-        .style("display", "none");
-          
-      tooltip.append("rect")
-        .attr("width", 60)
-        .attr("height", 20)
-        .attr("fill", "white")
-        .style("opacity", 0.5);
-
-      tooltip.append("text")
-        .attr("x", 30)
-        .attr("dy", "1.2em")
-        .style("text-anchor", "middle")
-        .attr("font-size", "12px")
-        .attr("font-weight", "bold");
     },
     addLegend: function (series, chartInfo, chartType) {
       var lwidth = 500;
