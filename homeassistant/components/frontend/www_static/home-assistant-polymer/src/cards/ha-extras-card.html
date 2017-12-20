@@ -1,0 +1,120 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/juicy-iframe/juicy-iframe.html">
+
+<link rel='import' href='../components/ha-card.html'>
+
+<dom-module id='ha-extras-card'>
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .extras {
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .header {
+        @apply(--paper-font-headline);
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 20px 16px 12px;
+      }
+      .header .name {
+        @apply(--paper-font-common-nowrap);
+      }
+      .header.domain .name {
+        /* Capitalize cards titles for default domain groups. */
+        text-transform: capitalize;
+      }
+      .display-inline {
+        display: block;
+      }
+      .display-inline > * {
+        display: inline-block;
+      }
+      .content {
+        padding: 4px 30px 10px;
+      }
+      .action-button {
+        margin-top: 20px;
+      }
+      .item-image {
+        height: 100px;
+        width: 100px;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+    </style>
+
+    <template is='dom-repeat' items="[[getExtras(stateObj)]]">
+      <ha-card class='extras'>
+        <div class='header domain'>
+          <div class='name'>[[item.name]]</div>
+        </div>
+        <div class="content">
+          <div>[[item.description]]</div>
+          <paper-button 
+            class="action-button"
+            data-location="[[item.url]]"
+            raised
+            on-click="goTo"
+          >[[item.button]]</paper-button>
+        </div>
+        <template is='dom-if' if='[[item.image]]'>
+          <img 
+            class="item-image"
+            src="[[item.image]]"
+          ></img>
+        </template>
+      </ha-card>
+    </template>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'ha-extras-card',
+  properties: {
+    hass: {
+      type: Object,
+    },
+    stateObj: {
+      type: Object,
+    }
+  },
+  getExtras: function(obj) {
+      return obj.attributes.extra_items;
+  },
+  goTo: function (evt) {
+      let url = evt.target.dataLocation;
+      
+      if (url.indexOf("https://") < 0)
+      {
+          url = "https://" + url;
+      }
+
+      window.open(url, "_blank");
+  },
+  updateSetting: function (evt) {
+      const newValue = evt.currentTarget.dataSetting;
+
+      const updateObj = { 
+        'value': newValue 
+      };
+        
+      this.callServiceHelper('update_data_privacy', updateObj);
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService(this.stateObj._domain, service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
+  }
+});
+</script>

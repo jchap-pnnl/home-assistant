@@ -1,0 +1,139 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+
+<dom-module id="ha-dropdown-select">
+  <template>
+    <style>
+      :host {
+        display: block;
+        @apply --paper-font-common-base;
+      } 
+    </style>
+    <div>
+      <vaadin-combo-box
+        id="ha-select"
+        label="Temperature Flexibility"
+        item-value-path="value"
+        allow-custom-value
+        selectedItem="{{selected_value}}"
+      >
+        <template>
+          <span>[[item.value]] ([[item.label]] &deg;F)</span>
+        </template>
+      </vaadin-combo-box>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'ha-dropdown-select',
+      properties: {
+        hass: {
+          type: Object,
+        },
+        label: {
+          type: String,
+          value: 'Time'
+        },
+        items_list: {
+          type: Array,
+          value: []
+        },
+        selected_value: {
+          type: String
+        },
+        update_method: {
+          type: String
+        },
+        update_platform: {
+          type: String
+        },
+        item_target: {
+          type: String
+        },
+        device: {
+          type: String
+        }
+
+      },
+      ready: function () {
+          const dropdownSelect = this.$$('#ha-select');
+
+          if (dropdownSelect)
+          {
+              dropdownSelect.addEventListener('value-changed', this.updateSetting.bind(this));
+
+              dropdownSelect.items = this.items_list;
+
+              dropdownSelect.value = this.selected_value;
+
+              dropdownSelect.addEventListener('custom-value-set', function(e) {
+                // Prevents setting the value property automatically.
+                e.preventDefault();
+
+                dropdownSelect.value = e.detail;
+              });
+
+          }
+
+          // var combobox = document.querySelector('#elements-box');
+
+          // // elementsJson is an Array of Objects. Item object format:
+          // //   {name: 'Hydrogen', symbol: 'H', number: 1}
+          // combobox.items = elementsJson;
+
+          // combobox.addEventListener('selected-item-changed', function() {
+          //   document.querySelector('#element-name').innerHTML = combobox.selectedItem && combobox.selectedItem.name;
+          // });
+
+          // combobox.addEventListener('value-changed', function() {
+          //   document.querySelector('#element-value').innerHTML = combobox.value;
+          // });
+
+          // combobox.value = this.selectedValue;
+      },
+      updateSetting: function (evt) {
+        console.log(evt);
+        if (evt.currentTarget)
+        {
+
+          const value = evt.currentTarget.value;
+
+          // const targetItem = this.items_list.find((item) => {
+          //     console.log(item);
+          //     return item.value === evt.currentTarget.label;
+
+          // });
+
+          // if (typeof targetItem !== 'undefined')
+          // {
+          //     evt.currentTargt.value = targetItem.label;
+          // }
+
+
+
+          // evt.currentTarget.value = 'value: ' + value;
+
+          if (value)
+          {
+            const updateObj = [{ 
+              'device': this.device,
+              'target': this.item_target,
+              'value': value 
+            }];
+            
+            this.callServiceHelper(this.update_method, updateObj);
+          }
+        }
+      },
+      callServiceHelper: function (service, data) {
+        if (this.hass)
+        {      
+          this.hass.callService(this.update_platform, service, { value: data})
+            .then(function () {
+            }.bind(this));
+        }
+      },
+    });
+  </script>
+</dom-module>
