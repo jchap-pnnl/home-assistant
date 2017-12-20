@@ -123,7 +123,7 @@
           case 'bar':
           {
             const series = Object.keys(chartData.series);
-            this.updateBarChart(this.extractData(chartData), series, chartData.series);
+            this.updateBarChart(this.extractBarData(chartData), series, chartData.series);
             break;
           }
         }
@@ -829,6 +829,73 @@
 
           return item;
       });
+
+      return data;
+    },
+
+    extractBarData: function (chartData) {
+      const totals = {};
+
+      if (this.aggregation)
+      {
+          Object.keys(chartData.series).forEach((key) => {
+              totals[key] = 0;
+          });
+      }
+
+      const data = chartData.times.map((t, index) => {
+          const item = {
+            date: moment(t).toDate(),
+            display: {}
+          };
+
+          Object.keys(chartData.series).forEach((key) => {
+            item[key] = null;
+
+            if (chartData.series[key].hasOwnProperty('points'))
+            { 
+              if (chartData.series[key]['points'][index])
+              {
+                item[key] = chartData.series[key]['points'][index];
+
+                item.display[key] = item[key];
+
+                if (this.aggregation)
+                {
+                  totals[key] = totals[key] + item[key];
+
+                  item[key] = totals[key];
+                }
+              }
+            }
+          });
+
+          return item;
+      });
+
+      if (data.length < 10)
+      {
+        let lastTime = data[data.length - 1].date;
+
+        let i;
+
+        for (i = 0; i < 10; i++)
+        {
+          const lastMoment = moment(lastTime);
+        
+          lastTime = lastMoment.add(chartData.step, 's').toDate();
+          const blankItem = {
+            date: lastTime,
+            display: {}
+          };
+
+          Object.keys(chartData.series).forEach((key) => {
+            blankItem[key] = null;
+          });
+
+          data.push(blankItem);
+        }
+      }
 
       return data;
     },
