@@ -338,47 +338,17 @@
           .tickSize(this.chartHeight)
           .scale(this.lineX);
 
-      // svg.append("g")
-      //   .attr("class", "grid")
-      //   .call(gridlines)
-      //     .attr("stroke-width", "8px")
-      //     .attr("class", "vertical-grid")
-      //     .attr("opacity", "0")
-      //     .on("mouseover", function() {
-
-      //       let mousex = d3.mouse(this);
-      //       console.log(mousex);
-      //       var invertedx = that.lineX.invert(mousex[0]);
-      //       console.log(invertedx);
-
-      //       const xDate = moment(invertedx).format('MM/DD');
-
-      //       tool_tip.transition()
-      //         .duration(200)
-      //         .style("opacity", .9);
-
-      //       tool_tip.html(that.getTooltipMessage(data, xDate))
-      //         .style("left", (d3.event.pageX) + "px")
-      //         .style("top", (d3.event.pageY - 28) + "px");
-              
-      //        })
-      //      .on("mouseout", function() {
-      //        tool_tip.transition()
-      //          .duration(500)
-      //          .style("opacity", 0);
-      //        });
-
       svg.append("g")
-        .attr("class", "light-grid")
+        .attr("class", "grid")
         .call(gridlines)
-          .attr("stroke-width", "1px")
-          .attr("opacity", ".2")
+          .attr("stroke-width", "8px")
           .attr("class", "vertical-grid")
+          .attr("opacity", "0")
           .on("mouseover", function() {
 
             let mousex = d3.mouse(this);
             console.log(mousex);
-            var invertedx = that.lineX.invert(mousex[0]);
+            var invertedx = that.lineX.invert(mousex[0] + 10);
             console.log(invertedx);
 
             const xDate = moment(invertedx).format('MM/DD');
@@ -397,6 +367,36 @@
                .duration(500)
                .style("opacity", 0);
              });
+
+      svg.append("g")
+        .attr("class", "light-grid")
+        .call(gridlines)
+          .attr("stroke-width", "1px")
+          .attr("opacity", ".2")
+          .attr("class", "vertical-grid");
+          // .on("mouseover", function() {
+
+          //   let mousex = d3.mouse(this);
+          //   console.log(mousex);
+          //   var invertedx = that.lineX.invert(mousex[0]);
+          //   console.log(invertedx);
+
+          //   const xDate = moment(invertedx).format('MM/DD');
+
+          //   tool_tip.transition()
+          //     .duration(200)
+          //     .style("opacity", .9);
+
+          //   tool_tip.html(that.getTooltipMessage(data, xDate))
+          //     .style("left", (d3.event.pageX) + "px")
+          //     .style("top", (d3.event.pageY - 28) + "px");
+              
+          //    })
+          //  .on("mouseout", function() {
+          //    tool_tip.transition()
+          //      .duration(500)
+          //      .style("opacity", 0);
+          //    });
 
       // if (this.chartData)
       // {
