@@ -343,11 +343,9 @@
 
       const that = this;
 
-      svg.selectAll(".grid").remove();
-      svg.selectAll(".light-grid").remove();
+      svg.selectAll(".vertical-grid").remove();
 
       svg.append("g")
-        .attr("class", "grid")
         .call(gridlines)
           .attr("stroke-width", "8px")
           .attr("class", "vertical-grid")
@@ -377,7 +375,6 @@
           });
 
       svg.append("g")
-        .attr("class", "light-grid")
         .call(gridlines)
           .attr("stroke-width", "1px")
           .attr("opacity", ".2")
