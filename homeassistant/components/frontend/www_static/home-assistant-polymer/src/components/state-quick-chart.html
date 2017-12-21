@@ -196,22 +196,6 @@
           .style("transform",
             "translateY(20px)");
 
-        d3.select(this.$.chart)
-          .on("mousemove", function(){  
-            let mousex = d3.mouse(this);
-            mousex = mousex[0] + 2;
-            vertical.style("left", mousex + "px" );
-          })
-          .on("mouseover", function() {  
-            let mousex = d3.mouse(this);
-            mousex = mousex[0] + 2;
-            vertical.style("left", mousex + "px");
-            vertical.style("opacity", "1");
-          })
-          .on("mouseout", function () {
-            vertical.style("opacity", "0");
-          });
-
         this.tool_tip = d3.select("body").append("div")
           .attr("class", "tooltip")
           .style("opacity", 0)
@@ -322,8 +306,49 @@
           ent.style("stroke-dasharray", "2,2");
         }
       });
+
+      d3.select(this.$.chart)
+        .on("mousemove", function(){  
+          let mousex = d3.mouse(this);
+          mousex = mousex[0] + 2;
+          vertical.style("left", mousex + "px" );
+        })
+        .on("mouseover", function() {  
+          let mousex = d3.mouse(this);
+          mousex = mousex[0] + 2;
+          vertical.style("left", mousex + "px");
+          vertical.style("opacity", "1");
+        })
+        .on("mouseout", function () {
+          vertical.style("opacity", "0");
+        });
+
+
+      d3.select(this.$.chart).on("mouseover", function() {
+
+        let mousex = d3.mouse(this);
+        console.log(mousex);
+        var invertedx = that.lineX.invert(mousex[0] + 10);
+        console.log(invertedx);
+
+        const xDate = moment(invertedx).format('MM/DD');
+
+        that.tool_tip.transition()
+          .duration(200)
+          .style("opacity", .9);
+
+        that.tool_tip.html(that.getTooltipMessage(data, xDate))
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+          
+      })
+      .on("mouseout", function() {
+        that.tool_tip.transition()
+          .duration(500)
+          .style("opacity", 0);
+      });
       
-      this.updateGridLines(data, svg);
+      // this.updateGridLines(data, svg);
       
 
       // if (this.chartData)
@@ -831,7 +856,7 @@
 
         let i;
 
-        for (i = 0; i < 10; i++)
+        for (i = 0; i < 10 - data.length; i++)
         {
           const lastMoment = moment(lastTime);
         
