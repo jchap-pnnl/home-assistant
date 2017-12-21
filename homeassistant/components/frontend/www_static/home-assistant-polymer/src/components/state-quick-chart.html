@@ -353,7 +353,7 @@
           else
           {
             that.tool_tip.transition()
-              .duration(0)
+              .duration(500)
               .style("opacity", 0);
           }
         })
@@ -368,11 +368,11 @@
         .on("mouseout", function () {
 
           // vertical line
-          that.vertical.style("opacity", "0");
+          that.vertical.style("opacity", 0);
 
           // tooltip
           that.tool_tip.transition()
-            .duration(0)
+            .duration(500)
             .style("opacity", 0);
         });
 
