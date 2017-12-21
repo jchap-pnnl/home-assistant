@@ -316,7 +316,10 @@
         .on("mousemove", function() { 
 
           // vertical line
-          that.vertical.style("left", (d3.event.pageX - 10) + "px");
+          const leftEdge = that.getClientRects()[0].left;
+          let leftPos = d3.event.pageX - leftEdge + 5;
+
+          that.vertical.style("left", (leftPos) + "px");
 
           // tooltip
           const mousex = d3.mouse(this);
@@ -332,10 +335,11 @@
               .duration(200)
               .style("opacity", .9);
 
-            const rightEdge = that.getClientRects()[0].width;
+            const rightEdge = that.getClientRects()[0].right;
+
             const tooltipWidth = that.tool_tip.node().getClientRects()[0].width;
 
-            let leftPos = d3.event.pageX;
+            leftPos = d3.event.pageX;
 
             if (leftPos > rightEdge - tooltipWidth)
             {
@@ -355,7 +359,10 @@
         })
         .on("mouseover", function() {  
           // const mousex = d3.mouse(this);
-          that.vertical.style("left", (d3.event.pageX - 10) + "px");
+          const leftEdge = that.getClientRects()[0].left;
+          const leftPos = d3.event.pageX - leftEdge;
+
+          that.vertical.style("left", (leftPos) + "px");
           that.vertical.style("opacity", 1);
         })
         .on("mouseout", function () {
