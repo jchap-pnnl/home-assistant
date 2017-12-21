@@ -335,16 +335,15 @@
             const rightEdge = that.getClientRects()[0].width;
             const tooltipWidth = that.tool_tip.node().getClientRects()[0].width;
 
-            const leftPos = d3.event.pageX;
-            let dir = "left";
+            let leftPos = d3.event.pageX;
 
             if (leftPos > rightEdge - tooltipWidth)
             {
-                dir = "right";
+                leftPos = rightEdge - tooltipWidth;
             }
 
             that.tool_tip.html(that.getTooltipMessage(xDate, dateInfo))
-              .style(dir, (d3.event.pageX) + "px")
+              .style("left", leftPos + "px")
               .style("top", (d3.event.pageY - 28) + "px");
           }
           else
