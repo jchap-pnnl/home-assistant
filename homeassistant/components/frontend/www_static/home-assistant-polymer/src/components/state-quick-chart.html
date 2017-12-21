@@ -133,12 +133,13 @@
 
       this.setDimensions();
 
-      var svg = d3.select(this.$.svg)
+      this.svgg = d3.select(this.$.svg)
           .attr("width", this.chartWidth + this.margin.left + this.margin.right)
           .attr("height", this.chartHeight + this.margin.top + this.margin.bottom)
         .append("g")
           .attr("class", "svg-g")
           .attr("id", "svgg")
+          .style("z-index", "8")
           .attr("transform",
                 "translate(40," + this.margin.top + ")");
 
@@ -170,29 +171,28 @@
         })]);
 
         // Add the X Axis
-        svg.append("g")
+        this.svgg.append("g")
             .attr("class", "x-axis")
             .attr("transform", "translate(0," + this.chartHeight + ")")
             .call(d3.axisBottom(this.lineX)
               .tickFormat(d3.timeFormat("%m/%d")));
 
         // Add the Y Axis
-        svg.append("g")
+        this.svgg.append("g")
             .attr("class", "y-axis")
             .call(d3.axisLeft(this.lineY));
 
-        var vertical = d3.select(this.$.chartWrapper)
-          .append("div")
+        this.vertical = d3.select(this.$.chartWrapper).append("div")
           .attr("class", "remove")
           .style("position", "absolute")
-          .style("z-index", "9")
+          .style("z-index", 9)
           .style("width", "1px")
           .style("height", this.chartHeight + "px")
           .style("top", "50px")
           .style("bottom", "10px")
           .style("left", "0px")
           .style("background", "gray")
-          .style("opacity", "0")
+          .style("opacity", 0)
           .style("transform",
             "translateY(20px)");
 
@@ -201,8 +201,6 @@
           .style("opacity", 0)
           .style("position", "absolute")
           .style("text-align", "left")
-          .style("width", "60px")
-          .style("height", "28px")
           .style("padding", "2px")
           .style("font", "12px sans-serif")
           .style("background", "#eeeeee")
@@ -307,49 +305,70 @@
         }
       });
 
-      d3.select(this.$.chart)
-        .on("mousemove", function(){  
-          let mousex = d3.mouse(this);
-          mousex = mousex[0] + 2;
-          vertical.style("left", mousex + "px" );
+      const mouseOffset = 10;
+
+      this.svgg
+        .append("rect")
+        .attr("class", "overlay")
+        .attr("width", this.chartWidth)
+        .attr("height", this.chartHeight)
+        .attr("opacity", "0")
+        .on("mousemove", function() { 
+
+          // vertical line
+          that.vertical.style("left", (d3.event.pageX - 10) + "px");
+
+          // tooltip
+          const mousex = d3.mouse(this);
+          const invertedx = that.lineX.invert(mousex[0] + mouseOffset);
+
+          const xDate = moment(invertedx).format('MM/DD');
+
+          const dateInfo = that.getDateInfo(data, xDate);
+
+          if (dateInfo !== null)
+          {
+            that.tool_tip.transition()
+              .duration(200)
+              .style("opacity", .9);
+
+            const rightEdge = that.getClientRects()[0].width;
+            const tooltipWidth = that.tool_tip.node().getClientRects()[0].width;
+
+            const leftPos = d3.event.pageX;
+            let dir = "left";
+
+            if (leftPos > rightEdge - tooltipWidth)
+            {
+                dir = "right";
+            }
+
+            that.tool_tip.html(that.getTooltipMessage(xDate, dateInfo))
+              .style(dir, (d3.event.pageX) + "px")
+              .style("top", (d3.event.pageY - 28) + "px");
+          }
+          else
+          {
+            that.tool_tip.transition()
+              .duration(500)
+              .style("opacity", 0);
+          }
         })
         .on("mouseover", function() {  
-          let mousex = d3.mouse(this);
-          mousex = mousex[0] + 2;
-          vertical.style("left", mousex + "px");
-          vertical.style("opacity", "1");
+          // const mousex = d3.mouse(this);
+          that.vertical.style("left", (d3.event.pageX - 10) + "px");
+          that.vertical.style("opacity", 1);
         })
         .on("mouseout", function () {
-          vertical.style("opacity", "0");
+
+          // vertical line
+          that.vertical.style("opacity", "0");
+
+          // tooltip
+          that.tool_tip.transition()
+            .duration(500)
+            .style("opacity", 0);
         });
-
-
-      d3.select(this.$.chart).on("mouseover", function() {
-
-        let mousex = d3.mouse(this);
-        console.log(mousex);
-        var invertedx = that.lineX.invert(mousex[0] + 10);
-        console.log(invertedx);
-
-        const xDate = moment(invertedx).format('MM/DD');
-
-        that.tool_tip.transition()
-          .duration(200)
-          .style("opacity", .9);
-
-        that.tool_tip.html(that.getTooltipMessage(data, xDate))
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
-          
-      })
-      .on("mouseout", function() {
-        that.tool_tip.transition()
-          .duration(500)
-          .style("opacity", 0);
-      });
-      
-      // this.updateGridLines(data, svg);
-      
 
       // if (this.chartData)
       // {
@@ -358,59 +377,14 @@
       
       // this.dataGenerator(this.chartData);
     },
-    updateGridLines: function (data, svg) {
-
-      // Gridline
-      var gridlines = d3.axisBottom()
-          .tickFormat("")
-          .tickSize(this.chartHeight)
-          .scale(this.lineX);
-
-      const that = this;
-
-      svg.selectAll(".vertical-grid").remove();
-
-      svg.append("g")
-        .call(gridlines)
-          .attr("stroke-width", "8px")
-          .attr("class", "vertical-grid")
-          .attr("opacity", "0")
-          .on("mouseover", function() {
-
-            let mousex = d3.mouse(this);
-            console.log(mousex);
-            var invertedx = that.lineX.invert(mousex[0] + 10);
-            console.log(invertedx);
-
-            const xDate = moment(invertedx).format('MM/DD');
-
-            that.tool_tip.transition()
-              .duration(200)
-              .style("opacity", .9);
-
-            that.tool_tip.html(that.getTooltipMessage(data, xDate))
-              .style("left", (d3.event.pageX) + "px")
-              .style("top", (d3.event.pageY - 28) + "px");
-              
-          })
-          .on("mouseout", function() {
-            that.tool_tip.transition()
-              .duration(500)
-              .style("opacity", 0);
-          });
-
-      svg.append("g")
-        .call(gridlines)
-          .attr("stroke-width", "1px")
-          .attr("opacity", ".2")
-          .attr("class", "vertical-grid");
-    },
-    getTooltipMessage: function (data, xDate) {
-
+    getDateInfo: function (data, xDate) {
         const d = data.find((datum) => (
             moment(datum.date).format('MM/DD') === xDate
         ));
         
+        return (typeof d !== 'undefined' ? d : null);
+    },
+    getTooltipMessage: function (xDate, d) {
         let messageInfo = '';
 
         if (typeof d !== 'undefined')
