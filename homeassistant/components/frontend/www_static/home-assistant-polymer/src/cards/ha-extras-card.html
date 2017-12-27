@@ -3,7 +3,6 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/juicy-iframe/juicy-iframe.html">
 
 <link rel='import' href='../components/ha-card.html'>
 
@@ -52,26 +51,28 @@
     </style>
 
     <template is='dom-repeat' items="[[getExtras(stateObj)]]">
-      <ha-card class='extras'>
-        <div class='header domain'>
-          <div class='name'>[[item.name]]</div>
-        </div>
-        <div class="content">
-          <div>[[item.description]]</div>
-          <paper-button 
-            class="action-button"
-            data-location="[[item.url]]"
-            raised
-            on-click="goTo"
-          >[[item.button]]</paper-button>
-        </div>
-        <template is='dom-if' if='[[item.image]]'>
-          <img 
-            class="item-image"
-            src="[[item.image]]"
-          ></img>
-        </template>
-      </ha-card>
+      <template is='dom-if' if="[[item.enabled]]">
+        <ha-card class='extras'>
+          <div class='header domain'>
+            <div class='name'>[[item.name]]</div>
+          </div>
+          <div class="content">
+            <div>[[item.description]]</div>
+            <paper-button 
+              class="action-button"
+              data-location="[[item.url]]"
+              raised
+              on-click="goTo"
+            >[[item.button]]</paper-button>
+          </div>
+          <template is='dom-if' if='[[item.image]]'>
+            <img 
+              class="item-image"
+              src="[[item.image]]"
+            ></img>
+          </template>
+        </ha-card>
+      </template>
     </template>
   </template>
 </dom-module>
