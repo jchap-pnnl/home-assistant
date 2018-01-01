@@ -1,0 +1,208 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id='ha-hems-benefit-comparer'>
+  <template>
+    <style include="paper-material">
+      :host {
+        display: block;
+        border-radius: 2px;
+        transition: all 0.30s ease-out;
+        padding:0 6px 0 6px;
+      }
+      .comparer-outer {
+        height: 130px;
+        width: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .hems-benefit-comparer {
+        position: relative;
+        font-size: 12px;
+        line-height: 12px;
+      }
+      .bars-container {
+        display: block;
+        text-align: center;
+        border-bottom: 2px solid gray;
+      }
+      .bar {
+        display: inline-block;
+        vertical-align: bottom;
+        margin: 0 2px;
+      }
+      .bar > div:first-child {
+        text-align: left;
+        padding-bottom: 5px;
+      }
+      .rect {
+        width: 20px;
+        box-shadow: 4px -2px 4px 2px rgba(0, 0, 0, .2);
+        margin-right: 10px;
+      }
+      .estimate {
+        background: repeating-linear-gradient(
+          45deg,
+          orange,
+          orange 10px,
+          transparent 10px,
+          transparent 14px
+        );
+      }
+      .goal {
+        background-color: #3b92ef;
+      }
+      .actual {
+        background-color: #2db72d;
+      }
+      .goal:last-child,
+      .estimate:last-child {
+        box-sizing: border-box;
+        border-top: 1px solid white;
+      }
+    </style>
+    <div class="comparer-outer">
+      <div></div>
+      <div class="hems-benefit-comparer">
+        <div class="bars-container">
+          <div class="bar">
+            <div>$[[estimate_label]]</div>
+            <div class="rect">
+              <div
+                class="estimate"
+                style="height: [[savings_estimate_height]]px"
+              ></div>
+              <div
+                class="estimate"
+                style="height: [[compensation_estimate_height]]px"
+              ></div>
+            </div>
+          </div>
+          <div class="bar">
+            <div>$[[goal_label]]</div>
+            <div class="rect">
+              <div
+                class="goal"
+                style="height: [[savings_goal_height]]px"
+              ></div>
+              <div
+                class="goal"
+                style="height: [[compensation_goal_height]]px"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="item-label">benefit</div>
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-hems-benefit-comparer',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+    estimate_label: {
+      type: String
+    },
+    goal_label: {
+      type: String
+    },
+    savings_estimate_label: {
+      type: String
+    },
+    savings_estimate_number: {
+      type: Number
+    },
+    compensation_estimate_label: {
+      type: String
+    },
+    compensation_estimate_number: {
+      type: Number
+    },
+    savings_goal_label: {
+      type: String
+    },
+    savings_goal_number: {
+      type: Number
+    },
+    compensation_goal_label: {
+      type: String
+    },
+    compensation_goal_number: {
+      type: Number
+    },
+    units_label: {
+      type: String
+    },
+    savings_estimate_height: {
+      type: String
+    },
+    savings_goal_height: {
+      type: String
+    },
+    compensation_estimate_height: {
+      type: String
+    },
+    compensation_goal_height: {
+      type: String
+    },
+    item_label: {
+      type: String
+    },
+    chartHeight: {
+      type: Number,
+      value: 100
+    },
+    max_value: {
+      type: Number,
+      observer: 'updateHeights'
+    }
+  },
+  updateHeights: function (maxValue) {
+
+    this.savings_estimate_number = this.convertNumber(this.savings_estimate_label);
+    this.savings_goal_number = this.convertNumber(this.savings_goal_label);
+    
+    this.compensation_estimate_number = this.convertNumber(this.compensation_estimate_label);
+    this.compensation_goal_number = this.convertNumber(this.compensation_goal_label);
+    
+
+    this.savings_estimate_height = this.computeHeight(this.savings_estimate_number);
+    this.savings_goal_height = this.computeHeight(this.savings_goal_number);
+
+    this.compensation_estimate_height = this.computeHeight(this.compensation_estimate_number);
+    this.compensation_goal_height = this.computeHeight(this.compensation_goal_number);
+
+    this.estimate_label = this.convertNumber(this.savings_estimate_label) + this.convertNumber(this.compensation_estimate_label);
+    this.goal_label = this.convertNumber(this.savings_goal_label) + this.convertNumber(this.compensation_goal_label);
+  },
+  computeHeight: function (num) {
+      let itemHeight = -1;
+      // itemHeight = num / this.getMax([
+      //   (this.savings_estimate_number + this.compensation_estimate_number),
+      //   (this.savings_goal_number + this.compensation_goal_number)
+      // ]) * this.chartHeight;
+      console.log('num: ' + num);
+      console.log('max: ' + this.max_value);
+      itemHeight = num / this.max_value * this.chartHeight;
+      return Math.ceil(itemHeight);
+  },
+  convertNumber: function (str) {
+      const num = (str[0] === "$" ? Number(str.substring(1)) : Number(str));
+      return num;
+  },
+  getMax: function (items) {
+      const max = (this.max_value ? this.max_value : 0);
+
+      return max;
+  }
+});
+
+
+</script>

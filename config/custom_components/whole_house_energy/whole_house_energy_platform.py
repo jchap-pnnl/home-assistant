@@ -1,5 +1,5 @@
 """
-The "whole house energy platform" platform.
+The "whole-house energy platform" platform.
 
 """
 
@@ -32,7 +32,7 @@ class WholeHouseEnergyPlatform(WholeHouseEnergyComponent):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'Whole-house energy use and cost'
+        return 'Whole House Energy'
 
     def set_whole_house_energy(self: WholeHouseEnergyComponent, new_value):
         _LOGGER.info("In component set_whole_house_energy method")
@@ -40,5 +40,5 @@ class WholeHouseEnergyPlatform(WholeHouseEnergyComponent):
         # self._state = {'slider_value': new_value.slider_value}
         # _LOGGER.info("state: %s", self._state)
         # self.state_attributes["device"][0]["flexibility"] = new_value
-        # _LOGGER.info("whole house enerrgy component device flexibility: %s", self.state_attributes["device"][0]["flexibility"])
+        # _LOGGER.info("whole-house energy component device flexibility: %s", self.state_attributes["device"][0]["flexibility"])
 

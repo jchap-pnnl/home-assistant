@@ -106,6 +106,9 @@
       paper-listbox paper-item {
         min-height: 0;
       }
+      .device-options {
+        height: 68px;
+      }
       .device-name-cell {
         background-color: gainsboro;
       }
@@ -132,14 +135,13 @@
       <div class='data-table'>
         <table>
           <tbody>
-            <!-- <template is='dom-repeat' items="[[getFakeDevices()]]"> -->
             <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
               <tr class='device-name-row'>
                 <td class='device-name-cell' colspan=6>
                   <div class='device-name'><i>[[item.name]]</i></div>
                 </td>
               </tr>
-              <tr>
+              <tr class="device-options">
                 <td class='indicator'>
                   <div class='cell'>
                     <div class$="[[getParticipation(item.participate)]]"></div>
@@ -263,32 +265,6 @@ Polymer({
       return device;
     });
   },
-  // convertFlexibility: function (item) {
-  //   let selection = 0; // high
-
-  //   if (item.hasOwnProperty('flexibility'))
-  //   {
-  //     switch (item.flexibility)
-  //     {
-  //       case 'low':
-  //       {
-  //         selection = 2;
-  //         break;
-  //       }
-  //       case 'medium':
-  //       {
-  //         selection = 1;
-  //         break;
-  //       }
-  //       default:
-  //       {
-  //         // selection already is 0
-  //       }
-  //     }
-  //   }
-
-  //   return selection;
-  // },
   convertFlexibility: function (item) {
     const selection = item.flexibility;
 
