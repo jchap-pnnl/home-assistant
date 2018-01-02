@@ -10,6 +10,9 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
+      :host {
+        position: relative;
+      }
       .states {
         padding-bottom: 16px;
       }
@@ -34,10 +37,10 @@
         line-height: 40px;
         color: var(--primary-text-color);
         padding: 20px 16px 20px;
+        background-color: #fff176
       }
       .header .name {
         @apply(--paper-font-common-nowrap);
-
       }
       .header.domain .name {
         /* Capitalize cards titles for default domain groups. */
@@ -65,11 +68,14 @@
         font-size: 16px;
         font-weight: bold;
         padding-left: 10px;
+        margin-top: 10px;
       }
       .toggle-container {
         font-size: 14px;
         padding-left: 10px;
         height: 40px;
+        display: inline;
+        margin-top: 10px;
       }
       .color-box {
         height: 10px;
@@ -78,8 +84,8 @@
       .color-box.estimate {
         background: repeating-linear-gradient(
           45deg,
-          orange,
-          orange 2px,
+          forestgreen,
+          forestgreen 2px,
           transparent 2px,
           transparent 4px
         );
@@ -99,17 +105,23 @@
         float: right;
         border: 2px solid gray;
         font-size: 14px;
-        padding: 0 20px;
+        padding: 20px;
         margin-right: 10px;
       }
       .your-money > .amount {
         font-weight: bold;
         color: green;
       }
+      .content {
+        padding: 4px 30px 30px;
+        background-color: #ffffa8;
+      }
 
     </style>
     <div class="header domain">
       <div class="name">[[card_name]]</div>
+    </div>
+    <div class="content">
       <div class="outlook-label">Today's Outlook</div>
       <div class="legend">
         <table>
