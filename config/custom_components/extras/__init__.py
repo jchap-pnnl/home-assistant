@@ -127,39 +127,39 @@ class ExtrasComponent(Entity):
         data = {
             "extra_items": [
                 { 
-                    "id": "google",
-                    "name": "Google",
-                    "description": "Search the whole Internet",
-                    "url": "www.google.com",
-                    "button": "Search",
-                    "image": "https://www.google.com/about/img/social/generic-feed.svg",
+                    "id": "pay_my_bill",
+                    "name": "Pay My Bill",
+                    "description": "Pay your electric bill online at the utility's website",
+                    "url": "https://www.pge.com/en_US/residential/your-account/account-management/manage-your-account/manage-your-account.page",
+                    "button": "Go",
+                    "image": "pay_online.png",
                     "enabled": True
                 },
                 { 
-                    "id": "twitter",
-                    "name": "Twitter",
-                    "description": "Post content to Twitter",
-                    "url": "www.twitter.com",
-                    "button": "Post",
-                    "image": "http://redhint.com/wp-content/uploads/2017/09/Twitter.jpg",
-                    "enabled": False
-                },
-                { 
-                    "id": "facebook",
-                    "name": "Facebook",
-                    "description": "Post content to Facebook",
-                    "url": "www.facebook.com",
-                    "button": "Post",
-                    "image": "https://lh3.googleusercontent.com/ZZPdzvlpK9r_Df9C3M7j1rNRi7hhHRvPhlklJ3lfi5jk86Jd1s0Y5wcQ1QgbVaAP5Q=w170",
+                    "id": "report_electric_outage",
+                    "name": "Report Electric Outage",
+                    "description": "Report an electric outage to the utility",
+                    "url": "https://m.pge.com/?WT.pgeac=Home_Outages#outages",
+                    "button": "Go",
+                    "image": "electric_outage.png",
                     "enabled": True
                 },
                 { 
-                    "id": "utility",
-                    "name": "City of Richland",
-                    "description": "Pay your utility bill",
-                    "url": "https://www.ci.richland.wa.us/departments/administrative-services/finance/utility-billing/pay-utility-bill-online",
-                    "button": "Pay Bill",
-                    "image": "https://pbs.twimg.com/profile_images/715323158379646980/G4qeTTkU.jpg",
+                    "id": "report_gas_outage",
+                    "name": "Report Gas Outage",
+                    "description": "Report a gas outage to the utility",
+                    "url": "https://www.pge.com/en_US/residential/outages/current-outages/gas-outages/gas-outages.page",
+                    "button": "Go",
+                    "image": "gas_outage.png",
+                    "enabled": True
+                },
+                { 
+                    "id": "rebates",
+                    "name": "Rebates",
+                    "description": "Find rebates available through PG&E",
+                    "url": "https://marketplace.pge.com/?categoryId=94",
+                    "button": "Go",
+                    "image": "home_product.png",
                     "enabled": True
                 }
             ]

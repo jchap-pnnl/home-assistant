@@ -41,12 +41,18 @@
       .action-button {
         margin-top: 20px;
       }
+      .item-image-url,
       .item-image {
         height: 100px;
         width: 100px;
         position: absolute;
         top: 20px;
         right: 20px;
+      }
+      .item-image {
+        background-position: center center;
+        background-size: contain;
+        background-repeat: no-repeat;
       }
     </style>
 
@@ -65,11 +71,17 @@
               on-click="goTo"
             >[[item.button]]</paper-button>
           </div>
-          <template is='dom-if' if='[[item.image]]'>
+          <template is='dom-if' if='[[item.image_url]]'>
             <img 
-              class="item-image"
-              src="[[item.image]]"
+              class="item-image-url"
+              src="[[item.image_url]]"
             ></img>
+          </template>
+          <template is='dom-if' if='[[item.image]]'>
+            <div 
+              class="item-image"
+              style="background-image: url(/static/images/connected_homes/[[item.image]])"
+            ></div>
           </template>
         </ha-card>
       </template>
