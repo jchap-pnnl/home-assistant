@@ -133,7 +133,8 @@ class ExtrasComponent(Entity):
                     "url": "https://www.pge.com/en_US/residential/your-account/account-management/manage-your-account/manage-your-account.page",
                     "button": "Go",
                     "image": "pay_online.png",
-                    "enabled": True
+                    "enabled": True,
+                    "color": 'teal'
                 },
                 { 
                     "id": "report_electric_outage",
@@ -142,7 +143,8 @@ class ExtrasComponent(Entity):
                     "url": "https://m.pge.com/?WT.pgeac=Home_Outages#outages",
                     "button": "Go",
                     "image": "electric_outage.png",
-                    "enabled": True
+                    "enabled": True,
+                    "color": 'orange'
                 },
                 { 
                     "id": "report_gas_outage",
@@ -151,16 +153,18 @@ class ExtrasComponent(Entity):
                     "url": "https://www.pge.com/en_US/residential/outages/current-outages/gas-outages/gas-outages.page",
                     "button": "Go",
                     "image": "gas_outage.png",
-                    "enabled": True
+                    "enabled": True,
+                    "color": 'pink'
                 },
                 { 
                     "id": "rebates",
                     "name": "Rebates",
-                    "description": "Find rebates available through PG&E",
+                    "description": "Find rebate offers from the utility",
                     "url": "https://marketplace.pge.com/?categoryId=94",
                     "button": "Go",
                     "image": "home_product.png",
-                    "enabled": True
+                    "enabled": True,
+                    "color": 'teal'
                 }
             ]
         }
