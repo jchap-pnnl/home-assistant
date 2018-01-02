@@ -3,6 +3,8 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
 
 <link rel='import' href='../components/ha-card.html'>
 
@@ -68,7 +70,28 @@
         color: green;
       }
       #edit-shortcut div {
-        min-width: 300px;
+        min-width: 400px;
+      }
+      paper-radio-button.pink {
+        --paper-radio-button-checked-color: var(--paper-pink-500);
+        --paper-radio-button-checked-ink-color: var(--paper-pink-500);
+        --paper-radio-button-unchecked-color: var(--paper-pink-900);
+        --paper-radio-button-unchecked-ink-color: var(--paper-pink-900);
+        --paper-radio-button-label-color: var(--paper-pink-500);
+      }
+      paper-radio-button.teal {
+        --paper-radio-button-checked-color: var(--paper-teal-500);
+        --paper-radio-button-checked-ink-color: var(--paper-teal-500);
+        --paper-radio-button-unchecked-color: var(--paper-teal-900);
+        --paper-radio-button-unchecked-ink-color: var(--paper-teal-900);
+        --paper-radio-button-label-color: var(--paper-teal-500);
+      }
+      paper-radio-button.orange {
+        --paper-radio-button-checked-color: var(--paper-orange-500);
+        --paper-radio-button-checked-ink-color: var(--paper-orange-500);
+        --paper-radio-button-unchecked-color: var(--paper-orange-900);
+        --paper-radio-button-unchecked-ink-color: var(--paper-orange-900);
+        --paper-radio-button-label-color: var(--paper-orange-500);
       }
     </style>
 
@@ -92,8 +115,8 @@
                 <div>[[item.name]]</div>
                 <div class="description">[[item.description]]</div>
                 <div class="url">[[item.url]]</div>
-                <div>[[item.button]]</div>
                 <div class="url">[[item.image]]</div>
+                <div class="url">[[item.image_url]]</div>
               </td>
               <td class='buttons'>
                 <div>
@@ -146,19 +169,45 @@
               >
               </paper-input>
               <paper-input 
-                label="Button Text"
-                data-prop="button"
+                label="Image Name"
+                data-prop="image"
                 on-change="setPropValue" 
-                value="[[update_obj.button]]" 
+                value="[[update_obj.image]]" 
               >
               </paper-input>
               <paper-input 
                 label="Image Address"
                 data-prop="image"
                 on-change="setPropValue" 
-                value="[[update_obj.image]]" 
+                value="[[update_obj.image_url]]" 
               >
               </paper-input>
+              <label>Card Color:</label>
+              <paper-radio-group
+                on-change="colorSelect"
+                selected="[[update_obj.color]]"
+              >
+                <paper-radio-button
+                  name="none"
+                  data-color="none"
+                  class=""
+                >none</paper-radio-button>
+                <paper-radio-button
+                  name="pink"
+                  class="pink"
+                  data-color="pink"
+                >pink</paper-radio-button>
+                <paper-radio-button
+                  name="teal"
+                  class="teal"
+                  data-color="teal"
+                >teal</paper-radio-button>
+                <paper-radio-button
+                  name="orange"
+                  class="orange"
+                  data-color="orange"
+                >orange</paper-radio-button>
+              </paper-radio-group>
             </div>
             <paper-button 
               on-click="handleModalClick"
@@ -223,7 +272,8 @@ Polymer({
         url: '',
         button: '', 
         image: '',
-        enabled: true
+        enabled: true,
+        color: 'none'
       };
   },
   editShortcut: function (ev) {
@@ -250,7 +300,8 @@ Polymer({
                 button: target.button, 
                 image: target.image,
                 enabled: target.enabled,
-                id: target.id
+                id: target.id,
+                color: (target.color ? target.color : 'none')
               };
             }
           }
@@ -280,6 +331,14 @@ Polymer({
       }
       
     }
+  },
+  colorSelected: function (obj, color) {
+    return (obj.color === color || (!obj.color && color === 'none'));
+  },
+  colorSelect: function (ev) {
+    console.log('color');
+    console.log(ev);
+    this.update_obj.color = ev.target.dataset.color;
   },
   handleModalClick: function (ev) {
     this.update_obj.onSubmit();

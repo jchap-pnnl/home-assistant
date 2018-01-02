@@ -10,14 +10,39 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
+      :host {
+        display: inline-block;
+      }
       .extras {
         margin-bottom: 10px;
+        margin-right: 10px;
         position: relative;
+        width: 200px;
+        height: 200px;
+        float: left;
+      }
+      .extras:hover {
+        box-shadow: 
+          0 8px 10px -5px rgba(0,0,0,.2), 
+          0 8px 24px 2px rgba(0,0,0,.14), 
+          0 6px 30px 5px rgba(0,0,0,.12);
+
+        cursor: pointer;
+      }
+      .extras.pink {
+        background-color: #f06292;
+      }
+      .extras.teal {
+        background-color: #4bb5ab;
+      }
+      .extras.orange {
+        background-color: #ffb74d;
+      }
+      .extras.yellow {
+        background-color: #fff176
       }
       .header {
         @apply(--paper-font-headline);
-        /* overwriting line-height +8 because entity-toggle can be 40px height,
-           compensating this with reduced padding */
         line-height: 40px;
         color: var(--primary-text-color);
         padding: 20px 16px 12px;
@@ -26,7 +51,6 @@
         @apply(--paper-font-common-nowrap);
       }
       .header.domain .name {
-        /* Capitalize cards titles for default domain groups. */
         text-transform: capitalize;
       }
       .display-inline {
@@ -36,54 +60,57 @@
         display: inline-block;
       }
       .content {
-        padding: 4px 30px 10px;
+        padding: 15px 30px 10px;
       }
       .action-button {
         margin-top: 20px;
       }
       .item-image-url,
       .item-image {
-        height: 100px;
-        width: 100px;
-        position: absolute;
-        top: 20px;
-        right: 20px;
+        height: 70px;
+        width: 70px;
+        float: right;
       }
       .item-image {
         background-position: center center;
         background-size: contain;
         background-repeat: no-repeat;
       }
+      .name-link {
+        margin-top: 30px;
+        margin-left: 20px;
+        font-size: 16px;
+      }
     </style>
 
     <template is='dom-repeat' items="[[getExtras(stateObj)]]">
       <template is='dom-if' if="[[item.enabled]]">
-        <ha-card class='extras'>
-          <div class='header domain'>
-            <div class='name'>[[item.name]]</div>
-          </div>
-          <div class="content">
-            <div>[[item.description]]</div>
-            <paper-button 
-              class="action-button"
-              data-location="[[item.url]]"
-              raised
-              on-click="goTo"
-            >[[item.button]]</paper-button>
-          </div>
-          <template is='dom-if' if='[[item.image_url]]'>
-            <img 
-              class="item-image-url"
-              src="[[item.image_url]]"
-            ></img>
-          </template>
-          <template is='dom-if' if='[[item.image]]'>
-            <div 
-              class="item-image"
-              style="background-image: url(/static/images/connected_homes/[[item.image]])"
-            ></div>
-          </template>
-        </ha-card>
+        <a 
+          data-location="[[item.url]]"
+          on-click="goTo"
+          class='name'>
+          <ha-card class$='extras [[item.color]]'>
+            <div class='name-link'>
+              [[item.name]]
+            </div>
+            <div class="content">
+              <template is='dom-if' if='[[item.image_url]]'>
+                <img 
+                  class="item-image-url"
+                  src="[[item.image_url]]"
+                ></img>
+              </template>
+              <template is='dom-if' if='[[item.image]]'>
+                <div 
+                  class="item-image"
+                  style="background-image: url(/static/images/connected_homes/[[item.image]])"
+                ></div>
+              </template>
+              [[item.description]]
+            </div>
+            
+          </ha-card>
+        </a>
       </template>
     </template>
   </template>
@@ -103,7 +130,7 @@ Polymer({
       return obj.attributes.extra_items;
   },
   goTo: function (evt) {
-      let url = evt.target.dataLocation;
+      let url = evt.currentTarget.dataLocation;
       
       if (url.indexOf("https://") < 0)
       {
