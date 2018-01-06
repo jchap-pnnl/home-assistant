@@ -13,14 +13,11 @@
       <vaadin-combo-box
         id="ha-select"
         label="Temperature Flexibility"
-        item-value-path="value"
-        allow-custom-value
+        allowCustomValue
+        itemLabelPath="label"
+        itemValuePath="value"
         selectedItem="{{selected_value}}"
-      >
-        <template>
-          <span>[[item.value]] ([[item.label]] &deg;F)</span>
-        </template>
-      </vaadin-combo-box>
+      ></vaadin-combo-box>
     </div>
   </template>
 
