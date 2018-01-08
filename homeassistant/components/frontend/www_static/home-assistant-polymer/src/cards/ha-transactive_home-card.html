@@ -23,7 +23,7 @@
         padding-right: 8px;
       }
       .state .label {
-        color: rgba(0, 0, 0, 0.54);
+        color: var(--paper-blue-900);
       }
       .state .value {
         color: rgba(0, 0, 0, 0.87);
@@ -106,36 +106,43 @@
         text-align: right;
         clear: right;
       }
+      .yearly-text .label {
+        color: var(--paper-blue-900);
+      }
       .state th:first-child {
-        height: 1px;
-        border: 1px solid lightgray;
+        border-top: 1px solid black;
         padding: 0;
         margin: 0;
         box-sizing: border-box;
+      }
+      .current-state {
+        display: inline-block;
       }
     </style>
     <ha-card class='transactive-home'>
       <div class='header domain'>
         <div class='name'>[[stateObj.attributes.friendly_name]]</div>
       </div>
-      <div class='state'>
-        Today (as of now)
-      </div>
-      <table class='state'>
-        <thead>
-          <tr>
-            <th colspan=2><th>
-          </tr>
-        </thead>
-        <tbody>
-          <template is='dom-repeat' items="[[getList(stateObj)]]">
+      <div class='current-state'>
+        <div class='state'>
+          Today (as of now)
+        </div>
+        <table class='state'>
+          <thead>
             <tr>
-              <td class='label'>[[item.label]]</td>
-              <td class='value'>[[item.value]] [[item.unit]]</td>
+              <th colspan=2><th>
             </tr>
-          </template>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <template is='dom-repeat' items="[[getList(stateObj)]]">
+              <tr>
+                <td class='label'>[[item.label]]</td>
+                <td class='value'>[[item.value]] [[item.unit]]</td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
       <div class='progress-container'>
           <div>
             Yearly Savings
@@ -157,12 +164,12 @@
       </div>
       <div class="yearly-text">
         <div>
-          <span>[[stateObj.attributes.progress_bar.lastYearLabel]]:&nbsp;<span>
+          <span class="label">[[stateObj.attributes.progress_bar.lastYearLabel]]:&nbsp;</span>
           <span>[[formatMoney(stateObj.attributes.progress_bar.last_year)]]</span>
         </div>
         <div>
           <span>[[getPercentSavings(stateObj)]]%&nbsp;</span>
-          <span>[[stateObj.attributes.progress_bar.comparisonLabel]]</span>
+          <span class="label">[[stateObj.attributes.progress_bar.comparisonLabel]]</span>
         </div>
       </div>
       <div class="show-hide-chart">
