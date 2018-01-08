@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
-<link rel="import" href="./state-quick-chart.html">
+<link rel="import" href="./state-bar-chart.html">
+<link rel="import" href="./state-line-chart.html">
 
 <dom-module id="state-charts-container">
   <template>
@@ -31,17 +32,30 @@
     <template is='dom-if' if='[[!_isLoading]]'>
       <template is='dom-repeat' items="[[getChartSeries(stateObj)]]">
         <div class="chart-title">[[item.label]]</div>
-        <state-quick-chart
-          hass="[[hass]]"
-          chart-data="[[item.data]]"
-          chart-type="[[item.type]]"
-          chart-label="[[item.label]]"
-          chart-id="[[item.id]]"
-          update-method="[[item.updateMethod]]"
-          component-name="[[stateObj._domain]]"
-          card-width="[[card_width]]"
-          aggregation="[[useAggregation]]">
-        </state-quick-chart>
+        <template is='dom-if' if='[[isLineChart(item)]]'>
+          <state-line-chart
+            hass="[[hass]]"
+            chart-data="[[item.data]]"
+            chart-label="[[item.label]]"
+            chart-id="[[item.id]]"
+            update-method="[[item.updateMethod]]"
+            component-name="[[stateObj._domain]]"
+            card-width="[[card_width]]"
+            aggregation="[[useAggregation]]">
+          </state-line-chart>
+        </template>
+        <template is='dom-if' if='[[isBarChart(item)]]'>
+          <state-bar-chart
+            hass="[[hass]]"
+            chart-data="[[item.data]]"
+            chart-label="[[item.label]]"
+            chart-id="[[item.id]]"
+            update-method="[[item.updateMethod]]"
+            component-name="[[stateObj._domain]]"
+            card-width="[[card_width]]"
+            aggregation="[[useAggregation]]">
+          </state-bar-chart>
+        </template>
       </template>
     </template>
   </template>
@@ -75,6 +89,12 @@ Polymer({
       type: Boolean,
       computed: 'getAggregation(aggregation)'
     }
+  },
+  isLineChart: function (chart) {
+    return chart.type === 'line';
+  },
+  isBarChart: function (chart) {
+    return chart.type === 'bar';
   },
   getAggregation: function (aggregation) {
       const useAggregation = aggregation == 'true';
