@@ -76,20 +76,29 @@
         height: 10px;
         width: 10px;
       }
-      .color-box.estimate {
+      .color-box.savings {
         background: repeating-linear-gradient(
           45deg,
-          orange,
-          orange 2px,
+          var(--paper-grey-400),
+          var(--paper-grey-400) 2px,
           transparent 2px,
           transparent 4px
         );
       }
-      .color-box.goal {
-        background-color: #3b92ef;
+      .color-box.compensation {
+        background: repeating-linear-gradient(
+          45deg,
+          black,
+          black 2px,
+          transparent 2px,
+          transparent 4px
+        );
       }
-      .color-box.actual {
-        background-color: #2db72d;
+      .color-box.estimate {
+        background-color: var(--paper-green-800);
+      }
+      .color-box.goal {
+        background-color: var(--paper-blue-800);
       }
       .legend {
         font-size: 14px;
@@ -129,7 +138,23 @@
                   <div class="color-box goal"></div>
                 </td>
                 <td>
-                  [[getGoalLabel(stateObj)]]
+                  goal (from utility)
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="color-box savings"></div>
+                </td>
+                <td>
+                  savings
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="color-box compensation"></div>
+                </td>
+                <td>
+                  compensation
                 </td>
               </tr>
             </tbody>
@@ -138,21 +163,22 @@
         <div class="comparer-container">
           <div></div>
           <div>
-            <ha-hems-comparer 
-              estimate_label="[[getAttributes(stateObj, 'energyReductionEstimate', 'value')]]"
-              goal_label="[[getAttributes(stateObj, 'energyReductionGoal', 'value')]]"
-              actual_label="[[getAttributes(stateObj, 'energyReductionActual', 'value')]]"
-              units_label="[[getAttributes(stateObj, 'energyReductionEstimate', 'units')]]"
-              item_label="energy reduction"
-              background_style="[[getUseOutlookStyle(stateObj)]]"
-              max_value="[[max_reduction]]"
-            ></ha-hems-comparer>
             <ha-hems-benefit-comparer 
-              compensation_estimate_label="[[getAttributes(stateObj, 'compensationEstimate', 'value')]]"
-              compensation_goal_label="[[getAttributes(stateObj, 'compensationGoal', 'value')]]"
-              savings_estimate_label="[[getAttributes(stateObj, 'savingsEstimate', 'value')]]"
-              savings_goal_label="[[getAttributes(stateObj, 'savingsGoal', 'value')]]"
-              background_style="[[getUseOutlookStyle(stateObj)]]"
+              tou_estimate_label="[[getAttributes(stateObj, 'touReductionEstimate', 'value')]]"
+              tou_goal_label="[[getAttributes(stateObj, 'touReductionGoal', 'value')]]"
+              pp_estimate_label="[[getAttributes(stateObj, 'ppReductionEstimate', 'value')]]"
+              pp_goal_label="[[getAttributes(stateObj, 'ppReductionGoal', 'value')]]"
+              post_units="kWh"
+              item_label="energy reduction"
+              max_value="[[max_reduction]]"
+            ></ha-hems-benefit-comparer>
+            <ha-hems-benefit-comparer 
+              tou_estimate_label="[[getAttributes(stateObj, 'touBenefitEstimate', 'value')]]"
+              tou_goal_label="[[getAttributes(stateObj, 'touBenefitGoal', 'value')]]"
+              pp_estimate_label="[[getAttributes(stateObj, 'ppBenefitEstimate', 'value')]]"
+              pp_goal_label="[[getAttributes(stateObj, 'ppBenefitGoal', 'value')]]"
+              pre_units="$"
+              item_label="benefit"
               max_value="[[max_money]]"
             ></ha-hems-benefit-comparer>
           </div>
@@ -182,11 +208,11 @@ Polymer({
   is: 'ha-whole_house_energy-card',
   properties: {
     hass: {
-      type: Object,
-      observer: 'updateMaxes'
+      type: Object
     },
     stateObj: {
-      type: Object
+      type: Object,
+      observer: 'updateMaxes'
     },
     groupEntity: {
       type: Object,
@@ -207,65 +233,34 @@ Polymer({
     }
   },
   updateMaxes: function () {
-      this.setMaxReduction();
-      this.setMaxMoney();
+      this.max_reduction = this.getMax('Reduction');
+      this.max_money = this.getMax('Benefit');
   },
-  setMaxReduction: function () {
+  getMax: function (type) {
       let max = 0;
 
       if (this.hass)
       {
           const maxes = [];
 
-          const wholeHouseEnergy = this.hass.states["whole_house_energy.whole_house_energy"].attributes;
-
-          if (wholeHouseEnergy.energyReductionActual)
-          {
-            maxes.push(Number(wholeHouseEnergy.energyReductionActual.value));
-          }
-
-          if (wholeHouseEnergy.energyReductionEstimate)
-          {
-            maxes.push(Number(wholeHouseEnergy.energyReductionEstimate.value));
-          }
-
-          if (wholeHouseEnergy.energyReductionGoal)
-          {
-            maxes.push(Number(wholeHouseEnergy.energyReductionGoal.value));
-          }
-
-          max = Math.max(...maxes);
-      }
-
-      this.max_reduction = max;
-  },
-  setMaxMoney: function () {
-      let max = 0;
-
-      if (this.hass)
-      {
-          const maxes = [];
-
-          const wholeHouseEnergy = this.hass.states["whole_house_energy.whole_house_energy"].attributes;
-
-          const estimateTotal = this.getTotal(wholeHouseEnergy, 'Estimate');
+          const estimateTotal = this.getTotal(this.stateObj.attributes, type + 'Estimate');
 
           maxes.push(estimateTotal);
 
-          const goalTotal = this.getTotal(wholeHouseEnergy, 'Goal');
+          const goalTotal = this.getTotal(this.stateObj.attributes, type + 'Goal');
 
           maxes.push(goalTotal);
 
           max = Math.max(...maxes);
       }
 
-      this.max_money = max;
+      return max;
   },
-  getTotal: function (obj, catagory) {
+  getTotal: function (obj, category) {
       let total = 0;
 
-      total = this.addToTotal(total, 'compensation' + catagory, obj);
-      total = this.addToTotal(total, 'savings' + catagory, obj);
+      total = this.addToTotal(total, 'tou' + category, obj);
+      total = this.addToTotal(total, 'pp' + category, obj);
 
       return total;
   },
@@ -284,9 +279,9 @@ Polymer({
       return num;
   },
   getTotalBenefit: function () {
-    const compensation = this.convertNumber(this.stateObj.attributes.compensationEstimate.value);
+    const compensation = this.convertNumber(this.stateObj.attributes.touBenefitEstimate.value);
 
-    const savings = this.convertNumber(this.stateObj.attributes.savingsEstimate.value);
+    const savings = this.convertNumber(this.stateObj.attributes.ppBenefitEstimate.value);
 
     return compensation + savings;
   },

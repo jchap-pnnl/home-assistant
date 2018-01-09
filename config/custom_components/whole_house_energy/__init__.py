@@ -97,24 +97,32 @@ class WholeHouseEnergyComponent(Entity):
         """Return the optional state attributes."""
 
         data = {
-            "energyReductionEstimate":{
+            "ppReductionEstimate":{
                 "value": "7",
                 "units": "kWh"
             },
-            "energyReductionGoal":{
+            "ppReductionGoal":{
                 "value": "9",
                 "units": "kWh"
-            },  
-            "compensationEstimate":{
-                "value": "$7"
             },
-            "compensationGoal":{
-                "value": "$8"
+            "touReductionEstimate":{
+                "value": "10",
+                "units": "kWh"
             },
-            "savingsEstimate":{
+            "touReductionGoal":{
+                "value": "15",
+                "units": "kWh"
+            },
+            "ppBenefitEstimate":{
+                "value": "$0.70"
+            },
+            "ppBenefitGoal":{
+                "value": "$0.90"
+            },
+            "touBenefitEstimate":{
                 "value": "$1"
             },
-            "savingsGoal":{
+            "touBenefitGoal":{
                 "value": "$1.50"
             },
             "useAlgorithm": {
