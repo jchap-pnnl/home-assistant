@@ -47,8 +47,8 @@
           45deg,
           var(--paper-green-800),
           var(--paper-green-800) 5px,
-          black 5px,
-          black 7px
+          var(--paper-grey-400) 5px,
+          var(--paper-grey-400) 7px
         );
       }
       .estimate.benefit.tou {
@@ -56,8 +56,8 @@
           45deg,
           var(--paper-green-800),
           var(--paper-green-800) 5px,
-          var(--paper-grey-400) 5px,
-          var(--paper-grey-400) 7px
+          black 5px,
+          black 7px
         );
       }
       .goal.benefit.pp {
@@ -65,8 +65,8 @@
           45deg,
           var(--paper-blue-800),
           var(--paper-blue-800) 5px,
-          black 5px,
-          black 7px
+          var(--paper-grey-400) 5px,
+          var(--paper-grey-400) 7px
         );
       }
       .goal.benefit.tou {
@@ -74,8 +74,8 @@
           45deg,
           var(--paper-blue-800),
           var(--paper-blue-800) 5px,
-          var(--paper-grey-400) 5px,
-          var(--paper-grey-400) 7px
+          black 5px,
+          black 7px
         );
       }
       .estimate.reduction {
@@ -87,26 +87,30 @@
       .actual {
         background-color: #2db72d;
       }
-      .goal:last-child,
-      .estimate:last-child {
+      .using-peak-period .goal:last-child,
+      .using-peak-period .estimate:last-child {
         box-sizing: border-box;
         border-top: 1px solid white;
+      }
+      .not-peak-period .goal.pp,
+      .not-peak-period .estimate.pp {
+          display: none;
       }
     </style>
     <div class="comparer-outer">
       <div></div>
       <div class="hems-benefit-comparer">
-        <div class="bars-container">
+        <div class$="[[container_class]]">
           <div class="bar">
             <div>[[pre_units]][[estimate_label]]&nbsp;[[post_unitsl]]</div>
             <div class="rect">
               <div
-                class$="estimate [[item_class]] tou"
-                style="height: [[tou_estimate_height]]px"
-              ></div>
-              <div
                 class$="estimate [[item_class]] pp"
                 style="height: [[pp_estimate_height]]px"
+              ></div>
+              <div
+                class$="estimate [[item_class]] tou"
+                style="height: [[tou_estimate_height]]px"
               ></div>
             </div>
           </div>
@@ -114,12 +118,12 @@
             <div>[[pre_units]][[goal_label]]&nbsp;[[post_units]]</div>
             <div class="rect">
               <div
-                class$="goal [[item_class]] tou"
-                style="height: [[tou_goal_height]]px"
-              ></div>
-              <div
                 class$="goal [[item_class]] pp"
                 style="height: [[pp_goal_height]]px"
+              ></div>
+              <div
+                class$="goal [[item_class]] tou"
+                style="height: [[tou_goal_height]]px"
               ></div>
             </div>
           </div>
@@ -193,17 +197,34 @@ Polymer({
       type: Number,
       value: 100
     },
+    using_peak_period: {
+      type: Boolean,
+      observer: 'updateUsingPeakPeriod'
+    },
     max_value: {
       type: Number,
       observer: 'updateHeights'
     },
     item_class: {
       type: String,
-      computed: 'getClass(item_label)'
+      computed: 'getCardClass(item_label)'
     },
+    container_class: {
+      type: String,
+      computed: 'getContainerClass(using_peak_period)'
+    }
   },
-  getClass: function (itemLabel) {
+  getCardClass: function (itemLabel) {
       return (itemLabel == 'energy reduction' ? 'reduction' : 'benefit');
+  },
+  getContainerClass: function (usingPeakPeriod) {
+      let containerClass = 'bars-container ';
+      
+      containerClass = containerClass + (
+        usingPeakPeriod ? 'using-peak-period' : 'not-peak-period'
+      );
+      
+      return containerClass;
   },
   updateHeights: function (maxValue) {
 
@@ -221,18 +242,25 @@ Polymer({
     this.tou_goal_height = this.computeHeight(this.tou_goal_number);
 
 
-    this.estimate_label = this.convertNumber(this.pp_estimate_label) + this.convertNumber(this.tou_estimate_label);
-    this.goal_label = this.convertNumber(this.pp_goal_label) + this.convertNumber(this.tou_goal_label);
+    this.updateUsingPeakPeriod(this.using_peak_period);
+  },
+  updateUsingPeakPeriod: function (usingPeakPeriod)
+  { 
+      if (usingPeakPeriod)
+      {
+          this.estimate_label = this.convertNumber(this.pp_estimate_label) + this.convertNumber(this.tou_estimate_label);
+
+          this.goal_label = this.convertNumber(this.pp_goal_label) + this.convertNumber(this.tou_goal_label);
+      }
+      else
+      {
+          this.estimate_label = this.convertNumber(this.tou_estimate_label);
+
+          this.goal_label = this.convertNumber(this.tou_goal_label);
+      }
   },
   computeHeight: function (num) {
-      let itemHeight = -1;
-      // itemHeight = num / this.getMax([
-      //   (this.pp_estimate_number + this.tou_estimate_number),
-      //   (this.pp_goal_number + this.tou_goal_number)
-      // ]) * this.chartHeight;
-      // console.log('num: ' + num);
-      // console.log('max: ' + this.max_value);
-      itemHeight = num / this.max_value * this.chartHeight;
+      const itemHeight = num / this.max_value * this.chartHeight;
       return Math.ceil(itemHeight);
   },
   convertNumber: function (str) {

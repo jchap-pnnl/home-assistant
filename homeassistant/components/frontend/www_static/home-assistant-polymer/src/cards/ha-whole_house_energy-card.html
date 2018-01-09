@@ -171,6 +171,7 @@
               post_units="kWh"
               item_label="energy reduction"
               max_value="[[max_reduction]]"
+              using_peak_period="[[getAttributes(stateObj, 'useAlgorithm', 'value')]]"
             ></ha-hems-benefit-comparer>
             <ha-hems-benefit-comparer 
               tou_estimate_label="[[getAttributes(stateObj, 'touBenefitEstimate', 'value')]]"
@@ -180,12 +181,13 @@
               pre_units="$"
               item_label="benefit"
               max_value="[[max_money]]"
+              using_peak_period="[[getAttributes(stateObj, 'useAlgorithm', 'value')]]"
             ></ha-hems-benefit-comparer>
           </div>
         </div>
         <div class="your-money">
           <span class="dollar-signs">Total estimated benefit</span>: 
-          $[[getTotalBenefit()]]
+          $[[total_benefit]]
         </div>
         <div class="toggle-container">
           <template is="dom-if" if="[[stateObj.attributes.canToggle]]">
@@ -212,7 +214,7 @@ Polymer({
     },
     stateObj: {
       type: Object,
-      observer: 'updateMaxes'
+      observer: 'updateCardState'
     },
     groupEntity: {
       type: Object,
@@ -230,11 +232,16 @@ Polymer({
     },
     max_money: {
       type: Number
+    },
+    total_benefit: {
+      type: Number
     }
   },
-  updateMaxes: function () {
+  updateCardState: function () {
       this.max_reduction = this.getMax('Reduction');
       this.max_money = this.getMax('Benefit');
+
+      this.total_benefit = this.getTotalBenefit();
   },
   getMax: function (type) {
       let max = 0;
@@ -281,9 +288,16 @@ Polymer({
   getTotalBenefit: function () {
     const compensation = this.convertNumber(this.stateObj.attributes.touBenefitEstimate.value);
 
-    const savings = this.convertNumber(this.stateObj.attributes.ppBenefitEstimate.value);
+    let benefit = compensation;
 
-    return compensation + savings;
+    if (this.stateObj.attributes.useAlgorithm.value)
+    {
+        const savings = this.convertNumber(this.stateObj.attributes.ppBenefitEstimate.value);
+
+        benefit = benefit + savings;
+    }
+
+    return benefit;
   },
   useOutlook: function (evt) {
       const checked = evt.target.checked;
