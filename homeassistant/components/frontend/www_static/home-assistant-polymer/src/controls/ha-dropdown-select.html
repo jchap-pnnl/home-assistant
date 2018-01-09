@@ -70,46 +70,12 @@
 
                 dropdownSelect.value = e.detail;
               });
-
           }
-
-          // var combobox = document.querySelector('#elements-box');
-
-          // // elementsJson is an Array of Objects. Item object format:
-          // //   {name: 'Hydrogen', symbol: 'H', number: 1}
-          // combobox.items = elementsJson;
-
-          // combobox.addEventListener('selected-item-changed', function() {
-          //   document.querySelector('#element-name').innerHTML = combobox.selectedItem && combobox.selectedItem.name;
-          // });
-
-          // combobox.addEventListener('value-changed', function() {
-          //   document.querySelector('#element-value').innerHTML = combobox.value;
-          // });
-
-          // combobox.value = this.selectedValue;
       },
       updateSetting: function (evt) {
-        console.log(evt);
         if (evt.currentTarget)
         {
-
           const value = evt.currentTarget.value;
-
-          // const targetItem = this.items_list.find((item) => {
-          //     console.log(item);
-          //     return item.value === evt.currentTarget.label;
-
-          // });
-
-          // if (typeof targetItem !== 'undefined')
-          // {
-          //     evt.currentTargt.value = targetItem.label;
-          // }
-
-
-
-          // evt.currentTarget.value = 'value: ' + value;
 
           if (value)
           {
