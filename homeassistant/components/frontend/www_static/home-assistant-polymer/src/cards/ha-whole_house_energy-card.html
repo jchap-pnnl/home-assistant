@@ -4,7 +4,6 @@
 <link rel='import' href='../components/ha-card.html'>
 
 <link rel='import' href='../controls/ha-hems-comparer.html'>
-<link rel='import' href='../controls/ha-hems-benefit-comparer.html'>
 
 
 <dom-module id='ha-whole_house_energy-card'>
@@ -163,7 +162,7 @@
         <div class="comparer-container">
           <div></div>
           <div>
-            <ha-hems-benefit-comparer 
+            <ha-hems-comparer 
               tou_estimate_label="[[getAttributes(stateObj, 'touReductionEstimate', 'value')]]"
               tou_goal_label="[[getAttributes(stateObj, 'touReductionGoal', 'value')]]"
               pp_estimate_label="[[getAttributes(stateObj, 'ppReductionEstimate', 'value')]]"
@@ -172,8 +171,8 @@
               item_label="energy reduction"
               max_value="[[max_reduction]]"
               using_peak_period="[[getAttributes(stateObj, 'useAlgorithm', 'value')]]"
-            ></ha-hems-benefit-comparer>
-            <ha-hems-benefit-comparer 
+            ></ha-hems-comparer>
+            <ha-hems-comparer 
               tou_estimate_label="[[getAttributes(stateObj, 'touBenefitEstimate', 'value')]]"
               tou_goal_label="[[getAttributes(stateObj, 'touBenefitGoal', 'value')]]"
               pp_estimate_label="[[getAttributes(stateObj, 'ppBenefitEstimate', 'value')]]"
@@ -182,7 +181,7 @@
               item_label="benefit"
               max_value="[[max_money]]"
               using_peak_period="[[getAttributes(stateObj, 'useAlgorithm', 'value')]]"
-            ></ha-hems-benefit-comparer>
+            ></ha-hems-comparer>
           </div>
         </div>
         <div class="your-money">
