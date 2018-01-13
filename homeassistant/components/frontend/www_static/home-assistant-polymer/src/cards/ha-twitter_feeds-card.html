@@ -1,0 +1,112 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel='import' href='../components/ha-card.html'>
+
+<dom-module id='ha-twitter_feeds-card'>
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      
+      .header {
+        @apply(--paper-font-headline);
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 20px 16px 12px;
+      }
+      .header .name {
+        @apply(--paper-font-common-nowrap);
+      }
+      .header.domain .name {
+        /* Capitalize cards titles for default domain groups. */
+        text-transform: capitalize;
+      }
+      .display-inline {
+        display: block;
+      }
+      .display-inline > * {
+        display: inline-block;
+      }
+      tr {
+        cursor: pointer;
+      }
+      .content {
+        padding: 4px 30px 30px;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td {
+        padding: 10px;
+      }
+      .description {
+        color: dimgray;
+        font-size: 16px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+      }
+      iron-icon {
+        color: green;
+      }
+    </style>
+
+    <ha-card class='twitter-feeds'>
+      <div class='header domain'>
+        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
+      </div>
+      <div class="content">
+        <a class="twitter-timeline" href="https://twitter.com/PGE4Me?ref_src=twsrc%5Etfw">Tweets by PGE4Me</a> 
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'ha-twitter_feeds-card',
+  properties: {
+    hass: {
+      type: Object,
+    },
+    stateObj: {
+      type: Object,
+    }
+  },
+  getSettings: function(obj) {
+      return obj.attributes.feeds_options;
+  },
+  getVisible: function (item) {
+      let style = "visibility: visible";
+
+      if (item.key !== this.stateObj.attributes.feeds_setting)
+      {
+        style = "visibility: hidden";
+      }
+
+      return style;
+  },
+  updateSetting: function (evt) {
+      const newValue = evt.currentTarget.dataSetting;
+
+      const updateObj = { 
+        'value': newValue 
+      };
+        
+      this.callServiceHelper('update_twitter_feeds', updateObj);
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService(this.stateObj._domain, service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
+  }
+});
+</script>

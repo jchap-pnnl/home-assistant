@@ -1,0 +1,106 @@
+Only in bower_components-good_version/: .DS_Store
+Files bower_components/font-roboto/.bower.json and bower_components-good_version/font-roboto/.bower.json differ
+Only in bower_components/font-roboto: CONTRIBUTING.md
+Files bower_components/font-roboto/README.md and bower_components-good_version/font-roboto/README.md differ
+Files bower_components/font-roboto/bower.json and bower_components-good_version/font-roboto/bower.json differ
+Only in bower_components-good_version/font-roboto: fonts
+Only in bower_components/font-roboto: package.json
+Files bower_components/font-roboto/roboto.html and bower_components-good_version/font-roboto/roboto.html differ
+Files bower_components/iron-a11y-announcer/.bower.json and bower_components-good_version/iron-a11y-announcer/.bower.json differ
+Files bower_components/iron-a11y-keys-behavior/.bower.json and bower_components-good_version/iron-a11y-keys-behavior/.bower.json differ
+Files bower_components/iron-dropdown/.bower.json and bower_components-good_version/iron-dropdown/.bower.json differ
+Files bower_components/iron-flex-layout/.bower.json and bower_components-good_version/iron-flex-layout/.bower.json differ
+Files bower_components/iron-flex-layout/bower.json and bower_components-good_version/iron-flex-layout/bower.json differ
+Files bower_components/iron-flex-layout/iron-flex-layout.html and bower_components-good_version/iron-flex-layout/iron-flex-layout.html differ
+Files bower_components/iron-form-element-behavior/.bower.json and bower_components-good_version/iron-form-element-behavior/.bower.json differ
+Files bower_components/iron-icon/.bower.json and bower_components-good_version/iron-icon/.bower.json differ
+Files bower_components/iron-iconset-svg/.bower.json and bower_components-good_version/iron-iconset-svg/.bower.json differ
+Files bower_components/iron-input/.bower.json and bower_components-good_version/iron-input/.bower.json differ
+Files bower_components/iron-overlay-behavior/.bower.json and bower_components-good_version/iron-overlay-behavior/.bower.json differ
+Files bower_components/iron-overlay-behavior/bower.json and bower_components-good_version/iron-overlay-behavior/bower.json differ
+Files bower_components/iron-overlay-behavior/demo/index.html and bower_components-good_version/iron-overlay-behavior/demo/index.html differ
+Files bower_components/iron-overlay-behavior/iron-overlay-behavior.html and bower_components-good_version/iron-overlay-behavior/iron-overlay-behavior.html differ
+Files bower_components/iron-overlay-behavior/iron-overlay-manager.html and bower_components-good_version/iron-overlay-behavior/iron-overlay-manager.html differ
+Files bower_components/iron-overlay-behavior/test/iron-overlay-behavior.html and bower_components-good_version/iron-overlay-behavior/test/iron-overlay-behavior.html differ
+Files bower_components/iron-resizable-behavior/.bower.json and bower_components-good_version/iron-resizable-behavior/.bower.json differ
+Files bower_components/iron-validatable-behavior/.bower.json and bower_components-good_version/iron-validatable-behavior/.bower.json differ
+Files bower_components/neon-animation/.bower.json and bower_components-good_version/neon-animation/.bower.json differ
+Files bower_components/paper-input/.bower.json and bower_components-good_version/paper-input/.bower.json differ
+Files bower_components/paper-menu-button/.bower.json and bower_components-good_version/paper-menu-button/.bower.json differ
+Files bower_components/paper-ripple/.bower.json and bower_components-good_version/paper-ripple/.bower.json differ
+Files bower_components/paper-styles/.bower.json and bower_components-good_version/paper-styles/.bower.json differ
+Files bower_components/paper-styles/README.md and bower_components-good_version/paper-styles/README.md differ
+Files bower_components/paper-styles/bower.json and bower_components-good_version/paper-styles/bower.json differ
+Files bower_components/paper-styles/classes/global.html and bower_components-good_version/paper-styles/classes/global.html differ
+Only in bower_components/paper-styles/classes: shadow-layout.html
+Files bower_components/paper-styles/classes/shadow.html and bower_components-good_version/paper-styles/classes/shadow.html differ
+Files bower_components/paper-styles/classes/typography.html and bower_components-good_version/paper-styles/classes/typography.html differ
+Files bower_components/paper-styles/color.html and bower_components-good_version/paper-styles/color.html differ
+Files bower_components/paper-styles/default-theme.html and bower_components-good_version/paper-styles/default-theme.html differ
+Files bower_components/paper-styles/demo/index.html and bower_components-good_version/paper-styles/demo/index.html differ
+Files bower_components/paper-styles/demo-pages.html and bower_components-good_version/paper-styles/demo-pages.html differ
+Only in bower_components/paper-styles: demo.css
+Files bower_components/paper-styles/element-styles/paper-item-styles.html and bower_components-good_version/paper-styles/element-styles/paper-item-styles.html differ
+Files bower_components/paper-styles/element-styles/paper-material-styles.html and bower_components-good_version/paper-styles/element-styles/paper-material-styles.html differ
+Files bower_components/paper-styles/paper-styles-classes.html and bower_components-good_version/paper-styles/paper-styles-classes.html differ
+Files bower_components/paper-styles/paper-styles.html and bower_components-good_version/paper-styles/paper-styles.html differ
+Files bower_components/paper-styles/shadow.html and bower_components-good_version/paper-styles/shadow.html differ
+Files bower_components/paper-styles/typography.html and bower_components-good_version/paper-styles/typography.html differ
+Files bower_components/paper-tabs/.bower.json and bower_components-good_version/paper-tabs/.bower.json differ
+Files bower_components/paper-time-input/.bower.json and bower_components-good_version/paper-time-input/.bower.json differ
+Files bower_components/polymer/.bower.json and bower_components-good_version/polymer/.bower.json differ
+Files bower_components/polymer/README.md and bower_components-good_version/polymer/README.md differ
+Files bower_components/polymer/bower.json and bower_components-good_version/polymer/bower.json differ
+Files bower_components/polymer/externs/closure-types.js and bower_components-good_version/polymer/externs/closure-types.js differ
+Only in bower_components/polymer/externs: polymer-closure-types.html
+Files bower_components/polymer/externs/polymer-externs.js and bower_components-good_version/polymer/externs/polymer-externs.js differ
+Only in bower_components-good_version/polymer/externs: polymer-internal-shared-types.js
+Only in bower_components-good_version/polymer/externs: polymer-internal-types.html
+Files bower_components/polymer/externs/webcomponents-externs.js and bower_components-good_version/polymer/externs/webcomponents-externs.js differ
+Files bower_components/polymer/lib/elements/array-selector.html and bower_components-good_version/polymer/lib/elements/array-selector.html differ
+Files bower_components/polymer/lib/elements/custom-style.html and bower_components-good_version/polymer/lib/elements/custom-style.html differ
+Files bower_components/polymer/lib/elements/dom-bind.html and bower_components-good_version/polymer/lib/elements/dom-bind.html differ
+Files bower_components/polymer/lib/elements/dom-if.html and bower_components-good_version/polymer/lib/elements/dom-if.html differ
+Files bower_components/polymer/lib/elements/dom-module.html and bower_components-good_version/polymer/lib/elements/dom-module.html differ
+Files bower_components/polymer/lib/elements/dom-repeat.html and bower_components-good_version/polymer/lib/elements/dom-repeat.html differ
+Files bower_components/polymer/lib/legacy/class.html and bower_components-good_version/polymer/lib/legacy/class.html differ
+Files bower_components/polymer/lib/legacy/legacy-element-mixin.html and bower_components-good_version/polymer/lib/legacy/legacy-element-mixin.html differ
+Files bower_components/polymer/lib/legacy/mutable-data-behavior.html and bower_components-good_version/polymer/lib/legacy/mutable-data-behavior.html differ
+Files bower_components/polymer/lib/legacy/polymer.dom.html and bower_components-good_version/polymer/lib/legacy/polymer.dom.html differ
+Files bower_components/polymer/lib/legacy/templatizer-behavior.html and bower_components-good_version/polymer/lib/legacy/templatizer-behavior.html differ
+Only in bower_components-good_version/polymer/lib/mixins: dir-mixin.html
+Files bower_components/polymer/lib/mixins/element-mixin.html and bower_components-good_version/polymer/lib/mixins/element-mixin.html differ
+Files bower_components/polymer/lib/mixins/property-accessors.html and bower_components-good_version/polymer/lib/mixins/property-accessors.html differ
+Files bower_components/polymer/lib/mixins/property-effects.html and bower_components-good_version/polymer/lib/mixins/property-effects.html differ
+Files bower_components/polymer/lib/mixins/template-stamp.html and bower_components-good_version/polymer/lib/mixins/template-stamp.html differ
+Files bower_components/polymer/lib/utils/array-splice.html and bower_components-good_version/polymer/lib/utils/array-splice.html differ
+Files bower_components/polymer/lib/utils/async.html and bower_components-good_version/polymer/lib/utils/async.html differ
+Files bower_components/polymer/lib/utils/boot.html and bower_components-good_version/polymer/lib/utils/boot.html differ
+Files bower_components/polymer/lib/utils/debounce.html and bower_components-good_version/polymer/lib/utils/debounce.html differ
+Files bower_components/polymer/lib/utils/flattened-nodes-observer.html and bower_components-good_version/polymer/lib/utils/flattened-nodes-observer.html differ
+Files bower_components/polymer/lib/utils/flush.html and bower_components-good_version/polymer/lib/utils/flush.html differ
+Files bower_components/polymer/lib/utils/gestures.html and bower_components-good_version/polymer/lib/utils/gestures.html differ
+Files bower_components/polymer/lib/utils/import-href.html and bower_components-good_version/polymer/lib/utils/import-href.html differ
+Files bower_components/polymer/lib/utils/mixin.html and bower_components-good_version/polymer/lib/utils/mixin.html differ
+Files bower_components/polymer/lib/utils/render-status.html and bower_components-good_version/polymer/lib/utils/render-status.html differ
+Files bower_components/polymer/lib/utils/settings.html and bower_components-good_version/polymer/lib/utils/settings.html differ
+Files bower_components/polymer/lib/utils/style-gather.html and bower_components-good_version/polymer/lib/utils/style-gather.html differ
+Files bower_components/polymer/lib/utils/templatize.html and bower_components-good_version/polymer/lib/utils/templatize.html differ
+Only in bower_components-good_version/polymer: package-lock.json
+Files bower_components/polymer/package.json and bower_components-good_version/polymer/package.json differ
+Files bower_components/vaadin-control-state-mixin/.bower.json and bower_components-good_version/vaadin-control-state-mixin/.bower.json differ
+Files bower_components/web-animations-js/.bower.json and bower_components-good_version/web-animations-js/.bower.json differ
+Files bower_components/web-animations-js/CONTRIBUTING.md and bower_components-good_version/web-animations-js/CONTRIBUTING.md differ
+Files bower_components/web-animations-js/History.md and bower_components-good_version/web-animations-js/History.md differ
+Files bower_components/web-animations-js/docs/support.md and bower_components-good_version/web-animations-js/docs/support.md differ
+Files bower_components/web-animations-js/src/apply-preserving-inline-style.js and bower_components-good_version/web-animations-js/src/apply-preserving-inline-style.js differ
+Files bower_components/web-animations-js/src/dimension-handler.js and bower_components-good_version/web-animations-js/src/dimension-handler.js differ
+Files bower_components/web-animations-js/src/matrix-decomposition.js and bower_components-good_version/web-animations-js/src/matrix-decomposition.js differ
+Files bower_components/web-animations-js/src/property-names.js and bower_components-good_version/web-animations-js/src/property-names.js differ
+Files bower_components/web-animations-js/src/transform-handler.js and bower_components-good_version/web-animations-js/src/transform-handler.js differ
+Files bower_components/web-animations-js/web-animations-next-lite.min.js and bower_components-good_version/web-animations-js/web-animations-next-lite.min.js differ
+Files bower_components/web-animations-js/web-animations-next-lite.min.js.map and bower_components-good_version/web-animations-js/web-animations-next-lite.min.js.map differ
+Files bower_components/web-animations-js/web-animations-next.min.js and bower_components-good_version/web-animations-js/web-animations-next.min.js differ
+Files bower_components/web-animations-js/web-animations-next.min.js.map and bower_components-good_version/web-animations-js/web-animations-next.min.js.map differ
+Files bower_components/web-animations-js/web-animations.min.js and bower_components-good_version/web-animations-js/web-animations.min.js differ
+Files bower_components/web-animations-js/web-animations.min.js.map and bower_components-good_version/web-animations-js/web-animations.min.js.map differ

@@ -1,0 +1,12 @@
+
+update_twitter_feeds:
+  description: Update the twitter feeds setting 
+
+  fields:
+    device:
+      description: Name of setting to change
+      example: 'device1'
+
+    obj:
+      description: An object containing the value
+      example: 'obj.value'

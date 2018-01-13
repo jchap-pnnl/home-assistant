@@ -1,0 +1,118 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id='ha-time-select'>
+  <template>
+    <style include="paper-material">
+      :host {
+        display: block;
+        border-radius: 2px;
+        transition: all 0.30s ease-out;
+        padding:0 6px 0 6px;
+        background-color: white;
+      }
+    </style>
+    <!-- <dom-bind>
+      <template is="dom-bind"> -->
+        <custom-style>
+          <style is="custom-style">
+            time-picker.clamp {
+              --datetime-selected-background: #eeeeee;
+              --datetime-selected-color: #001641;
+              --datetime-background: #fff;
+              --datetime-color: #001641;
+            }
+          </style>
+        </custom-style>
+        <div class="vertical-section-container">
+          <span>
+            <b>[[item_label]]:</b>
+          </span>
+          <time-picker
+            id="time-picker"
+            class$="clamp"
+            time="[[getTimeValue(time_value)]]"
+            hours="9"
+            clamp="seconds"
+            vertical-align="bottom"
+          ></time-picker>
+        </div>
+      <!-- </template>
+    </dom-bind> -->
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'ha-time-select',
+  properties: {
+    hass: {
+      type: Object,
+    },
+    time_value: {
+      type: String
+    },
+    state_obj: {
+      type: Object,
+      value: {}
+    },
+    update_method: {
+      type: String,
+      value: ''
+    },
+    item_prop: {
+      type: String,
+      value: ''
+    },
+    item_label: {
+      type: String,
+      value: ''
+    },
+  },
+  ready: function () {
+    const timePicker = this.$$('#time-picker');
+    timePicker.addEventListener('value-changed', this.updateSetting.bind(this));
+    timePicker.time = moment(this.time_value).valueOf();
+  },
+  getTimeValue(timeValue) {
+    const value = moment(timeValue).valueOf();
+    console.log(value);
+    return value;
+  },
+  updateSetting: function (ev) {
+
+    console.log("prop: " + this.item_prop);
+    console.log("update method: " + this.update_method);
+    console.log("value: " + ev.currentTarget.value);
+    // const newValue = ev.currentTarget.value;
+
+    // const prop = ev.currentTarget.dataProp;
+    // const subprop = ev.currentTarget.dataSubprop;
+
+    // if (prop && subprop)
+    // {
+    //   const updateObj = { 
+    //     'target': prop,
+    //     'subtarget': subprop,
+    //     'value': newValue 
+    //   };
+      
+    //   if (this.update_method)
+    //   {
+    //     this.callServiceHelper(this.update_method, updateObj);
+    //   }
+    // }
+  },
+  callServiceHelper: function (service, data) {
+    if (this.hass)
+    {      
+      this.hass.callService(this.state_obj._domain, service, { value: data})
+        .then(function () {
+        }.bind(this));
+    }
+  }
+  
+
+});
+
+
+</script>
