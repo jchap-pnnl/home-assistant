@@ -1,10 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
-<link rel="import" href="./state-bar-chart.html">
-<link rel="import" href="./state-line-chart.html">
+<link rel="import" href="./ch-bar-chart.html">
+<link rel="import" href="./ch-line-chart.html">
 
-<dom-module id="state-charts-container">
+<dom-module id="ch-charts-container">
   <template>
     <style>
     :host {
@@ -33,28 +33,32 @@
       <template is='dom-repeat' items="[[getChartSeries(stateObj)]]">
         <div class="chart-title">[[item.label]]</div>
         <template is='dom-if' if='[[isLineChart(item)]]'>
-          <state-line-chart
+          <ch-line-chart
             hass="[[hass]]"
             chart-data="[[item.data]]"
             chart-label="[[item.label]]"
             chart-id="[[item.id]]"
+            x-axis-label="[[item.xAxisLabel]]"
+            y-axis-label="[[item.yAxisLabel]]"
             update-method="[[item.updateMethod]]"
             component-name="[[stateObj._domain]]"
             card-width="[[card_width]]"
             aggregation="[[useAggregation]]">
-          </state-line-chart>
+          </ch-line-chart>
         </template>
         <template is='dom-if' if='[[isBarChart(item)]]'>
-          <state-bar-chart
+          <ch-bar-chart
             hass="[[hass]]"
             chart-data="[[item.data]]"
             chart-label="[[item.label]]"
             chart-id="[[item.id]]"
+            x-axis-label="[[item.xAxisLabel]]"
+            y-axis-label="[[item.yAxisLabel]]"
             update-method="[[item.updateMethod]]"
             component-name="[[stateObj._domain]]"
             card-width="[[card_width]]"
             aggregation="[[useAggregation]]">
-          </state-bar-chart>
+          </ch-bar-chart>
         </template>
       </template>
     </template>
@@ -63,7 +67,7 @@
 
 <script>
 Polymer({
-  is: 'state-charts-container',
+  is: 'ch-charts-container',
 
   properties: {
     stateObj: {

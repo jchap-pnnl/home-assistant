@@ -53,7 +53,7 @@ def setup(hass, config):
         
         connected_devices["attributes"] = attributes
 
-        hass.states.set('connected_devices.connected_devices', 'On', attributes, True)
+        hass.states.set('connected_devices.connected_devices', 'connected_homes', attributes, True)
 
     hass.services.register(
         DOMAIN,

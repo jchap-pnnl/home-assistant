@@ -5,14 +5,14 @@
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 
 <link rel='import' href='../components/ha-card.html'>
-<link rel="import" href='../components/state-charts-container.html'>
-<link rel='import' href='../controls/ha-progress-scale.html'>
+<link rel="import" href='../components/ch-charts-container.html'>
+<link rel='import' href='../controls/ch-progress-scale.html'>
 
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <link href="../../bower_components/toastr/toastr.css" rel="stylesheet"/>
 <script src="../../bower_components/toastr/toastr.js"></script>
 
-<dom-module id='ha-transactive_home-card'>
+<dom-module id='ch-transactive_home-card'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
@@ -148,7 +148,7 @@
             Yearly Savings
           </div>
           <div class='progress-bar'>
-            <ha-progress-scale 
+            <ch-progress-scale 
               id="overall-progress"
               hass="[[hass]]"
               state_obj="[[stateObj]]"
@@ -159,7 +159,7 @@
               description="[[progressMessage]]"
               item_prop="progress_bar"
               right_prop="end_point"
-            ></ha-progress-scale>
+            ></ch-progress-scale>
           </div>
       </div>
       <div class="yearly-text">
@@ -179,11 +179,11 @@
           icon="mdi:chart-line"
         ></paper-fab>
         <div class='data-chart' hidden$="{{hidden}}">
-          <state-charts-container
+          <ch-charts-container
             state-obj="[[stateObj]]"
             card_width="[[cardWidth]]"
             aggregation="true">
-          </state-charts-container>
+          </ch-charts-container>
         </div>
       </div>
     </ha-card>
@@ -191,7 +191,7 @@
 </dom-module>
 <script>
 Polymer({
-  is: 'ha-transactive_home-card',
+  is: 'ch-transactive_home-card',
   properties: {
     hass: {
       type: Object,

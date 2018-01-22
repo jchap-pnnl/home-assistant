@@ -8,12 +8,12 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel='import' href='../controls/ha-element-chooser.html'>
-<link rel='import' href='../controls/ha-time-select.html'>
+<link rel='import' href='../controls/ch-element-chooser.html'>
+<link rel='import' href='../controls/ch-time-select.html'>
 
 <link rel='import' href='../components/ha-card.html'>
 
-<dom-module id='ha-user_settings-card'>
+<dom-module id='ch-user_settings-card'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
@@ -123,7 +123,7 @@
                   </div>
                   <template is="dom-if" if="[[isRange(setting)]]">
                     <div class='display-inline'>
-                      <ha-element-chooser
+                      <ch-element-chooser
                         item_value="[[getProperty(setting, 0, 'value')]]"
                         item_type="[[getProperty(setting, 0, 'type')]]"
                         item_units="[[getProperty(setting, 0, 'units')]]"
@@ -134,9 +134,9 @@
                         hass="[[hass]]"
                         state_obj="[[stateObj]]"
                       >
-                      </ha-element-chooser>
+                      </ch-element-chooser>
                       <div>&nbsp;to&nbsp;</div>
-                      <ha-element-chooser
+                      <ch-element-chooser
                         item_value="[[getProperty(setting, 1, 'value')]]"
                         item_type="[[getProperty(setting, 1, 'type')]]"
                         item_units="[[getProperty(setting, 1, 'units')]]"
@@ -147,13 +147,13 @@
                         hass="[[hass]]"
                         state_obj="[[stateObj]]"
                       >
-                      </ha-element-chooser>
+                      </ch-element-chooser>
                     </div>
                   </template>
                   <template is="dom-if" if="[[!isRange(setting)]]">
                     <template is='dom-repeat' items="[[getAttributes(setting)]]" as="attr">
                       <div class='display-inline'>
-                        <ha-element-chooser
+                        <ch-element-chooser
                           item_value="[[attr.value]]"
                           item_type="[[attr.type]]"
                           item_units="[[attr.units]]"
@@ -164,7 +164,7 @@
                           hass="[[hass]]"
                           state_obj="[[stateObj]]"
                         >
-                        </ha-element-chooser>
+                        </ch-element-chooser>
                       </div>
                     </template>
                   </template>
@@ -180,7 +180,7 @@
 </dom-module>
 <script>
 Polymer({
-  is: 'ha-user_settings-card',
+  is: 'ch-user_settings-card',
   properties: {
     hass: {
       type: Object,

@@ -63,7 +63,7 @@ def setup(hass, config):
 
         # whole_house_energy["attributes"] = attributes
 
-        hass.states.set('whole_house_energy.whole_house_energy', 'On', attributes, True)
+        hass.states.set('whole_house_energy.whole_house_energy', 'connected_homes', attributes, True)
 
     hass.services.register(
         DOMAIN,

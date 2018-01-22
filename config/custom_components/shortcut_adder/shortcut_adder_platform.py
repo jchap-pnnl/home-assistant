@@ -18,19 +18,19 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
 
 class ShortcutAdderPlatform(ShortcutAdderComponent):
-    """Representation of shortcut adder."""
+    """Representation of the shortcut adder platform."""
 
     def __init__(self):
-        """Initialize the shortcut adder."""
-        self._state = 'On'
+        """Initialize the platform."""
+        self._state = 'connected_homes'
 
     @property
     def state(self):
-        """Return the state of the shortcut adder."""
+        """Return the state of the platform."""
         return self._state
 
     @property
     def name(self):
-        """Return the name of the shortcut adder."""
+        """Return the name of the platform."""
         return 'shortcut adder'
 

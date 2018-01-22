@@ -77,7 +77,7 @@ def setup(hass, config):
         
         _LOGGER.info("after update: %s", attributes)
 
-        hass.states.set('extras.extras', 'On', attributes, True)
+        hass.states.set('extras.extras', 'connected_homes', attributes, True)
 
     hass.services.register(
         DOMAIN,

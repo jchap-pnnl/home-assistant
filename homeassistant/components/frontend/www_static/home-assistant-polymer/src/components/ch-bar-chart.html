@@ -3,7 +3,7 @@
 <script src="http://d3js.org/d3.v4.js"></script>
 <script src="../../bower_components/moment/min/moment.min.js"></script>
 
-<dom-module id="state-bar-chart">
+<dom-module id="ch-bar-chart">
 
   <template>
     <style include="paper-material">
@@ -36,7 +36,7 @@
   'use strict';
 
   Polymer({
-    is: 'state-bar-chart',
+    is: 'ch-bar-chart',
 
     properties: {
       hass: {
@@ -58,26 +58,11 @@
         type: String,
         value: ""
       },
-      unit: {
+      xAxisLabel: {
         type: String,
       },
-
-      isAttached: {
-        type: Boolean,
-        value: false
-      },
-
-      chartEngine: {
-        type: Object,
-      },
-
-      _apiLoaded: {
-        type: Boolean,
-        value: false,
-      },
-      url: {
+      yAxisLabel: {
         type: String,
-        value: 'data.csv'
       },
       chartData: {
         type: Object,
@@ -97,9 +82,9 @@
       // this.setUpChart();
     },
     setDimensions: function () {
-      this.margin = {top: 20, right: 80, bottom: 30, left: 20};
+      this.margin = {top: 20, right: 80, bottom: 40, left: 20};
       this.chartWidth = this.cardWidth - this.margin.left - this.margin.right;
-      this.chartHeight = this.cardWidth - this.margin.top - this.margin.bottom;
+      this.chartHeight = 300;
     },
     dataChanged: function (chartData) {
 
@@ -174,7 +159,7 @@
         .append("g")
           .attr("class", "svg-g")
           .attr("transform",
-                "translate(0," + this.margin.top + ")");
+                "translate(40," + this.margin.top + ")");
 
       this.barX = d3.scaleBand()
           .rangeRound([0, this.chartWidth]);
@@ -202,7 +187,7 @@
       var xAxis = d3.axisBottom(this.barX).tickFormat(d3.timeFormat("%H:%M"));
 
       // var yAxis = d3.axisRight(y);
-      var yAxis = d3.axisRight(this.barY)
+      var yAxis = d3.axisLeft(this.barY)
           .scale(this.barY);
           
       svg.append("g")
@@ -212,7 +197,7 @@
 
       svg.append("g")
           .attr("class", "axis y-axis")
-          .attr("transform", "translate(" + this.chartWidth + ",0)")
+          .attr("transform", "translate(0,0)")
           .call(yAxis);
 
       this.addLegend(series, chartInfo);
@@ -244,16 +229,33 @@
       var xAxis = d3.axisBottom(this.barX).tickFormat(d3.timeFormat("%H:%M"));
 
       // var yAxis = d3.axisRight(y);
-      var yAxis = d3.axisRight(this.barY)
+      var yAxis = d3.axisLeft(this.barY)
           .scale(this.barY);
 
       // Add the X Axis
       svg.selectAll(".x-axis")
           .call(xAxis);
 
+      // text label for the x axis
+      svg.append("text")             
+          .attr("transform",
+                "translate(" + (this.chartWidth / 2) + " ," + (this.chartHeight + this.margin.top + 20) + ")")
+          .style("text-anchor", "middle")
+          .text(this.xAxisLabel);
+
+
       // Add the Y Axis
       svg.selectAll(".y-axis")
           .call(yAxis);
+
+      // text label for the y axis
+      svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - (this.margin.left + 20))
+          .attr("x",0 - (this.chartHeight / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text(this.yAxisLabel);
 
       const that = this;
 
@@ -292,13 +294,13 @@
     },
     addLegend: function (series, chartInfo) {
       var lwidth = 500;
-      var lheight = 75;
+      var lheight = series.length * 20;
       var svgh = 20;
 
       var svgLegend = d3.select(this.$.outerlegend)
           .append("svg")
           .attr("width", lwidth)
-          .attr("height", lheight - 50)
+          .attr("height", lheight)
           .attr("transform", "translate(50,20)");
       
       var dataL = 0;
@@ -309,15 +311,17 @@
           .enter().append('g')
           .attr("class", "legend")
           .attr("transform", function (d, i) {
-           if (i === 0) {
-              dataL = d.length + offset; 
-              return "translate(0,0)";
-          } else { 
-           var newdataL = dataL;
-           dataL +=  d.length + offset;
-           return "translate(" + (newdataL) + ",0)";
-          }
-      });
+              if (i === 0) {
+                  dataL = d.length + offset; 
+                  return "translate(0,0)";
+              } 
+              else 
+              { 
+                  var newdataL = dataL;
+                  dataL +=  d.length + offset;
+                  return "translate(0," + (14 * i) + ")";
+              }
+          });
       
       var z = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -336,21 +340,21 @@
           .attr("height", swatchHeight)
           .style("fill", function (d, i) {
 
-            const color = (
-              chartInfo[series[i]].color ? 
-              chartInfo[series[i]].color : 
-              z(i)
-            );
-          return color;
-      });
+              const color = (
+                  chartInfo[series[i]].color ? 
+                  chartInfo[series[i]].color : 
+                  z(i)
+              );
+
+              return color;
+          });
       
       legend.append('text')
-          .attr("x", swatchWidth + 2)
+          .attr("x", swatchWidth + 4)
           .attr("y", 10)
-      //.attr("dy", ".35em")
-      .text(function (d, i) {
-          return d;
-      })
+          .text(function (d, i) {
+              return chartInfo[series[i]].name;
+          })
           .attr("class", "textselected")
           .style("text-anchor", "start")
           .style("font-size", 15);
@@ -359,14 +363,14 @@
       var me = this;
 
       me.g.data(me.pie(me.data))
-        .select("path").attr("d", me.arc);
+          .select("path").attr("d", me.arc);
 
       me.g.select("text")
-        .attr("transform", function(d) { 
-          console.log("d: " + d);
-          console.log("translate(" + me.arc.centroid(d) + ")");
-          return "translate(" + me.arc.centroid(d) + ")"; 
-        });
+          .attr("transform", function(d) { 
+              console.log("d: " + d);
+              console.log("translate(" + me.arc.centroid(d) + ")");
+              return "translate(" + me.arc.centroid(d) + ")"; 
+          });
     },
     extractData: function (chartData) {
       const totals = {};
@@ -477,48 +481,42 @@
 
       return data;
     },
-
     created: function () {
       this.style.display = 'block';
     },
+    colorMap: function (index) {
+      
+      const colors = [
+        '#29A6FF', // Celestine +1
+        '#E87511', // Carnelian
 
-    attached: function () {
-      this.isAttached = true;
+        '#46A661', // Olivine
+        '#00AFAA', // Malachite
+        '#EA82FF', // Fluorite +1
+
+        '#FF6B70', // Cinnabar +1
+
+        '#00BDDD', // Zircon +1
+        '#AFA1FF', // Amethyst +1
+        '#F5EC5A', // Topaz
+
+        '#8CCD5A', // Peridot
+        '#FFBA59', // Citrine
+        '#BF2A75', // Tourmaline
+      ];
+
+      const safeIndex = (colors.length - 1) % (index + 1);
+
+      return colors[safeIndex];
     },
-  colorMap: function (index) {
-    
-    const colors = [
-      '#29A6FF', // Celestine +1
-      '#E87511', // Carnelian
-
-      '#46A661', // Olivine
-      '#00AFAA', // Malachite
-      '#EA82FF', // Fluorite +1
-
-      '#FF6B70', // Cinnabar +1
-
-      '#00BDDD', // Zircon +1
-      '#AFA1FF', // Amethyst +1
-      '#F5EC5A', // Topaz
-
-      '#8CCD5A', // Peridot
-      '#FFBA59', // Citrine
-      '#BF2A75', // Tourmaline
-    ];
-
-    const safeIndex = (colors.length - 1) % (index + 1);
-
-    return colors[safeIndex];
-  },
-  callServiceHelper: function (service, data) {
-    if (this.hass && this.componentName)
-    {      
-      this.hass.callService(this.componentName, service, { value: data})
-        .then(function () {
-        }.bind(this));
-    }
-  },
-
+    callServiceHelper: function (service, data) {
+      if (this.hass && this.componentName)
+      {      
+        this.hass.callService(this.componentName, service, { value: data})
+          .then(function () {
+          }.bind(this));
+      }
+    },
   });
 }());
 </script>

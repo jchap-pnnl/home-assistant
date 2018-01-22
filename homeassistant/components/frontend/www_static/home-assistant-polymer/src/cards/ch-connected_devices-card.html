@@ -7,9 +7,9 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../controls/ha-dropdown-select.html'>
+<link rel='import' href='../controls/ch-dropdown-select.html'>
 
-<dom-module id='ha-connected_devices-card'>
+<dom-module id='ch-connected_devices-card'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
@@ -172,7 +172,7 @@
                 </td>
                 <td class="flexibility-cell">
                   <div class$="[[getDropdown(item.participate)]]">
-                    <ha-dropdown-select
+                    <ch-dropdown-select
                       items_list="[[flexibilityOptions]]"
                       update_method="update_connected_device"
                       update_platform="connected_devices"
@@ -180,7 +180,7 @@
                       device="[[item.key]]"
                       hass="[[hass]]"
                       selected_value="[[convertFlexibility(item)]]"
-                    ></ha-dropdown-select>
+                    ></ch-dropdown-select>
                   </div>
                 </td>
                 <td class='reset'>
@@ -219,7 +219,7 @@
 </dom-module>
 <script>
 Polymer({
-  is: 'ha-connected_devices-card',
+  is: 'ch-connected_devices-card',
   properties: {
     hass: {
       type: Object,
@@ -234,15 +234,15 @@ Polymer({
       type: Array,
       value: [
         {
-          label: 'high (8 °F)',
+          label: 'high (8° F)',
           value: 'high'
         },
         {
-          label: 'medium (4 °F)',
+          label: 'medium (4° F)',
           value: 'medium'
         },
         {
-          label: 'low (2 °F)',
+          label: 'low (2° F)',
           value: 'low'
         }
       ]

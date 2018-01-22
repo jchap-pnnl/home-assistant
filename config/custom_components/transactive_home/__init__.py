@@ -151,7 +151,9 @@ class TransactiveComponent(Entity):
                         }
                     },
                     "type": "line",
-                    "label": "Energy (kWh)",
+                    "label": "Energy",
+                    "yAxisLabel": "kWh",
+                    "xAxisLabel": "Date",
                     "id": "transactive-home"
                 }
             ]

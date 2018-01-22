@@ -54,7 +54,7 @@ def setup(hass, config):
 
         _LOGGER.info("after update: %s", attributes)
 
-        hass.states.set('data_privacy.data_privacy', 'On', attributes, True)
+        hass.states.set('data_privacy.data_privacy', 'connected_homes', attributes, True)
 
     hass.services.register(
         DOMAIN,

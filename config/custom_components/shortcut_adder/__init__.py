@@ -54,7 +54,7 @@ def setup(hass, config):
 
         _LOGGER.info("after update: %s", attributes)
 
-        hass.states.set('shortcut_adder.shortcut_adder', 'On', attributes, True)
+        hass.states.set('shortcut_adder.shortcut_adder', 'connected_homes', attributes, True)
 
     hass.services.register(
         DOMAIN,
