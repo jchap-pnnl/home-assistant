@@ -43,7 +43,6 @@ def setup(hass, config):
 
         target_device = update_obj["device"]
         target_setting = update_obj["setting"]
-        target_attr = update_obj["attr"]
         update_value = update_obj["value"]
 
         user_settings = hass.states.get('user_settings.device_settings').as_dict()
@@ -63,14 +62,20 @@ def setup(hass, config):
 
                 _LOGGER.info("found setting: %s", found_setting)
 
-                for a in found_setting["attributes"]:
-                    if a["name"] == target_attr:
-                        found_attr = a
+                if "attr" in update_obj:
+                    target_attr = update_obj["attr"]
 
-                        _LOGGER.info("found attribute: %s", found_attr)
+                    for a in found_setting["attributes"]:
+                        if a["name"] == target_attr:
+                            found_attr = a
 
-                        found_attr["value"] = update_value
-                        break
+                            _LOGGER.info("found attribute: %s", found_attr)
+
+                            found_attr["value"] = update_value
+                            break
+                else:
+                    found_setting["value"] = update_value
+
                 break
 
         _LOGGER.info("after update: %s", attributes)
@@ -117,97 +122,72 @@ class UserSettingsComponent(Entity):
             "devices": {
                 "AC1":  {
                     "name": "Air Conditioner living space",
+                    "current_settings": [
+                        {
+                            "name": "setpoint",
+                            "label": "Currently Set To",
+                            "type": "temperature",
+                            "units": "F",
+                            "value": 70
+                        }
+                    ], 
                     "settings": [
                         {
-                            "name": "preferred_temperature",
-                            "label": "Preferred",
-                            "type": "",
-                            "attributes": [
-                                {
-                                    "name": "temperature",
-                                    "type": "number",
-                                    "units": "F",
-                                    "value": 75
-                                }
-                                
-                            ]
-                        },  
+                            "name": "highest_cool_temp",
+                            "label": "Highest Cooling Temp",
+                            "type": "temperature",
+                            "units": "F",
+                            "value": 74
+                        },
                         {
-                            "name": "active_setback",
-                            "label": "Active Setback",
-                            "type": "range",
-                            "attributes": [
-                                {
-                                    "name": "min",
-                                    "type": "number",
-                                    "units": "F",
-                                    "value": 65
-                                },
-                                {
-                                    "name": "max",
-                                    "type": "number",
-                                    "units": "F",
-                                    "value": 80
-                                }
-                            ]
-                        }       
+                            "name": "lowest_heat_temp",
+                            "label": "Lowest Heating Temp",
+                            "type": "temperature",
+                            "units": "F",
+                            "value": 68
+                        }
                     ]
                 },
                 "AC2": {
                     "name": "Air Conditioner bedroom",
+                    "current_settings": [
+                        {
+                            "name": "setpoint",
+                            "label": "Currently Set To",
+                            "type": "temperature",
+                            "units": "F",
+                            "value": 68
+                        }
+                    ], 
                     "settings": [
                         {
-                            "name": "preferred",
-                            "label": "Preferred",
-                            "type": "",
-                            "attributes": [
-                                {
-                                    "name": "temperature",
-                                    "type": "number",
-                                    "units": "F",
-                                    "value": 78
-                                }
-                                
-                            ]
+                            "name": "highest_cool_temp",
+                            "label": "Highest Cooling Temp",
+                            "type": "temperature",
+                            "units": "F",
+                            "value": 72
                         },
                         {
-                            "name": "active_setback",
-                            "label": "Active Setback",
-                            "type": "range",
-                            "attributes": [
-                                {
-                                    "name": "min",
-                                    "type": "number",
-                                    "units": "F",
-                                    "value": 65
-                                },
-                                {
-                                    "name": "max",
-                                    "type": "number",
-                                    "units": "F",
-                                    "value": 80
-                                }
-                            ]
-                        }           
+                            "name": "lowest_heat_temp",
+                            "label": "Lowest Heating Temp",
+                            "type": "temperature",
+                            "units": "F",
+                            "value": 64
+                        }
                     ]
                 },
                 "WH1": {
                     "name": "Water Heater",
-                    "settings": [
+                    "current_settings": [
                         {
-                            "name": "max",
-                            "label": "Max",
-                            "type": "",
-                            "attributes": [
-                                {
-                                    "name": "temperature",
-                                    "type": "number",
-                                    "units": "F",
-                                    "value": 150
-                                }
-                                
-                            ]
-                        },
+                            "name": "setpoint",
+                            "label": "Currently Set To",
+                            "type": "temperature",
+                            "units": "F",
+                            "value": 150
+                        }
+                    ], 
+                    "settings": [
                         {
                             "name": "shower_time",
                             "label": "Shower Time",

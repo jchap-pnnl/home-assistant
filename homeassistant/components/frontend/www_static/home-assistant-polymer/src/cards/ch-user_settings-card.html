@@ -79,11 +79,19 @@
       .user-settings paper-icon-button {
         color: gray;
       }
+      .current-setting {
+        font-size: 12px;
+        width: 90%;
+      }
+      .current-setting > div {
+        width: 90%;
+        margin-left: 20px;
+      }
     </style>
 
     <ha-card class='user-settings'>
       <div class='header domain'>
-        <div class='name'>[[stateObj.attributes.friendly_name]]</div>
+        <div class='name'>Transactive Settings</div>
       </div>
       <div class='data-table'>
         <template is='dom-repeat' items="[[getDataDevices(stateObj)]]">
@@ -99,12 +107,17 @@
                   <span>[[getPropertyByType(setting, 1, 'value')]]</span>
                   <span>[[getProperty(setting, 1, 'units')]]</span>
                 </template>
-                <template is="dom-if" if="[[!isRange(setting)]]">
+                <template is="dom-if" if="[[isList(setting)]]">
                   <span class="setting-label">[[setting.label]]: </span>
                   <template is='dom-repeat' items="[[getAttributes(setting)]]" as="attr">
                     <span>[[getValueByType(attr.value, attr.type)]]</span>
                     <span>[[attr.units]]</span>
                   </template>
+                </template>
+                <template is="dom-if" if="[[isTemperature(setting)]]">
+                  <span class="setting-label">[[setting.label]]: </span>
+                  <span>[[setting.value]]</span>
+                  <span>[[getPostUnits(setting)]]</span>
                 </template>
               </div>
             </template>
@@ -114,64 +127,82 @@
               data-setting="[[getId(item.key)]]"
               on-click="editSetting"
             ></paper-icon-button>
-            <paper-dialog id="[[getId(item.key)]]" class="popup">
-              <h3>Change settings for: [[item.name]]</h3>
-              <div class='display-inline'>
-                <template is='dom-repeat' items="[[getSettings(item)]]" as="setting">
-                  <div class="setting-label">
-                    <div>[[setting.label]]:</div>
+            <template is="dom-repeat" items="[[getCurrentSettings(item)]]" as="setting">
+              <div class="display-inline current-setting">
+                <div>[[setting.label]]:&nbsp;[[setting.value]][[getPostUnits(setting)]]</div>
+              </div>
+            </template>
+          </div>
+          <paper-dialog id="[[getId(item.key)]]" class="popup">
+            <h3>Change settings for: [[item.name]]</h3>
+            <div class='display-inline'>
+              <template is='dom-repeat' items="[[getSettings(item)]]" as="setting">
+                <div class="setting-label">
+                  <div>[[setting.label]]:</div>
+                </div>
+                <template is="dom-if" if="[[isRange(setting)]]">
+                  <div class='display-inline'>
+                    <ch-element-chooser
+                      item_value="[[getProperty(setting, 0, 'value')]]"
+                      item_type="[[getProperty(setting, 0, 'type')]]"
+                      item_units="[[getProperty(setting, 0, 'units')]]"
+                      item_update_method="update_user_settings"
+                      device_name="[[item.key]]"
+                      setting_name="[[setting.name]]"
+                      attr_name="[[getProperty(setting, 0, 'name')]]"
+                      hass="[[hass]]"
+                      state_obj="[[stateObj]]"
+                    >
+                    </ch-element-chooser>
+                    <div>&nbsp;to&nbsp;</div>
+                    <ch-element-chooser
+                      item_value="[[getProperty(setting, 1, 'value')]]"
+                      item_type="[[getProperty(setting, 1, 'type')]]"
+                      item_units="[[getProperty(setting, 1, 'units')]]"
+                      item_update_method="update_user_settings"
+                      device_name="[[item.key]]"
+                      setting_name="[[setting.name]]"
+                      attr_name="[[getProperty(setting, 1, 'name')]]"
+                      hass="[[hass]]"
+                      state_obj="[[stateObj]]"
+                    >
+                    </ch-element-chooser>
                   </div>
-                  <template is="dom-if" if="[[isRange(setting)]]">
+                </template>
+                <template is="dom-if" if="[[isList(setting)]]">
+                  <template is='dom-repeat' items="[[getAttributes(setting)]]" as="attr">
                     <div class='display-inline'>
                       <ch-element-chooser
-                        item_value="[[getProperty(setting, 0, 'value')]]"
-                        item_type="[[getProperty(setting, 0, 'type')]]"
-                        item_units="[[getProperty(setting, 0, 'units')]]"
+                        item_value="[[attr.value]]"
+                        item_type="[[attr.type]]"
+                        item_units="[[attr.units]]"
                         item_update_method="update_user_settings"
                         device_name="[[item.key]]"
                         setting_name="[[setting.name]]"
-                        attr_name="[[getProperty(setting, 0, 'name')]]"
-                        hass="[[hass]]"
-                        state_obj="[[stateObj]]"
-                      >
-                      </ch-element-chooser>
-                      <div>&nbsp;to&nbsp;</div>
-                      <ch-element-chooser
-                        item_value="[[getProperty(setting, 1, 'value')]]"
-                        item_type="[[getProperty(setting, 1, 'type')]]"
-                        item_units="[[getProperty(setting, 1, 'units')]]"
-                        item_update_method="update_user_settings"
-                        device_name="[[item.key]]"
-                        setting_name="[[setting.name]]"
-                        attr_name="[[getProperty(setting, 1, 'name')]]"
+                        attr_name="[[attr.name]]"
                         hass="[[hass]]"
                         state_obj="[[stateObj]]"
                       >
                       </ch-element-chooser>
                     </div>
                   </template>
-                  <template is="dom-if" if="[[!isRange(setting)]]">
-                    <template is='dom-repeat' items="[[getAttributes(setting)]]" as="attr">
-                      <div class='display-inline'>
-                        <ch-element-chooser
-                          item_value="[[attr.value]]"
-                          item_type="[[attr.type]]"
-                          item_units="[[attr.units]]"
-                          item_update_method="update_user_settings"
-                          device_name="[[item.key]]"
-                          setting_name="[[setting.name]]"
-                          attr_name="[[attr.name]]"
-                          hass="[[hass]]"
-                          state_obj="[[stateObj]]"
-                        >
-                        </ch-element-chooser>
-                      </div>
-                    </template>
-                  </template>
                 </template>
-              </div>
-            </paper-dialog>
-          </div>
+                <template is="dom-if" if="[[isTemperature(setting)]]">
+                    <ch-element-chooser
+                      item_value="[[setting.value]]"
+                      item_type="temperature"
+                      item_units="[[getPostUnits(setting)]]"
+                      item_update_method="update_user_settings"
+                      device_name="[[item.key]]"
+                      setting_name="[[setting.name]]"
+                      hass="[[hass]]"
+                      state_obj="[[stateObj]]"
+                    >
+                    </ch-element-chooser>
+                </template>
+              </template>
+            </div>
+          </paper-dialog>
           <div class="space-row"></div>
         </template>
       </div>
@@ -226,8 +257,27 @@ Polymer({
 
       return val;
   },
+  getPostUnits: function (item) {
+      let units = item.units;
+
+      if (item.type === 'temperature')
+      {
+          units = '°' + units;
+      }
+
+      return units;
+  },
+  getCurrentSettings: function (item) {
+      return item.current_settings;
+  },
   isRange: function (setting) {
       return setting.type === 'range';
+  },
+  isList: function (setting) {
+      return setting.type === 'list';
+  },
+  isTemperature: function (setting) {
+      return setting.type === 'temperature';
   },
   getAttributes: function (setting) {
       return setting.attributes;

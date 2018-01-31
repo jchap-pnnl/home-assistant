@@ -49,6 +49,18 @@
         </div>
         <div>[[item_units]]</div>
       </template>
+      <template is="dom-if" if="[[isTemperature()]]">
+        <div>
+          <paper-input 
+            label=""
+            type="number"
+            on-change="updateSetting" 
+            value="[[item_value]]" 
+          >
+          </paper-input>
+        </div>
+        <div>[[item_units]]</div>
+      </template>
     </div>
   </template>
 </dom-module>
@@ -91,15 +103,22 @@ Polymer({
   isNumber: function () {
       return this.item_type === 'number';
   },
+  isTemperature: function () {
+      return this.item_type === 'temperature';
+  },
   updateSetting: function (evt) {
       const newValue = evt.currentTarget.value;
 
       const updateObj = { 
         'device': this.device_name,
         'setting': this.setting_name,
-        'attr': this.attr_name,
         'value': newValue 
       };
+
+      if (this.attr_name)
+      {
+          updateObj['attr'] = this.attr_name;
+      }
         
       this.callServiceHelper(this.item_update_method, updateObj);
   },
